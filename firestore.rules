@@ -1,0 +1,123 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function getUserBrokerId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.brokerId;
+    }
+
+    function isBroker() {
+      return isAuthenticated() && getUserRole() == 'broker';
+    }
+
+    function isAgent() {
+      return isAuthenticated() && getUserRole() in ['agent', 'sub-agent'];
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAssignedOrBroker(resource) {
+      return isBroker() || (isAgent() && resource.data.assignedTo == request.auth.uid);
+    }
+
+    // Users
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isBroker();
+      allow delete: if false; // No deletion — deactivate instead
+    }
+
+    // Leads
+    match /leads/{leadId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // Listings
+    match /listings/{listingId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // Deals
+    match /deals/{dealId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // Commission Plans
+    match /commissionPlans/{planId} {
+      allow read: if isAuthenticated();
+      allow create: if isBroker();
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // Payouts
+    match /payouts/{payoutId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isBroker();
+      allow delete: if false;
+    }
+
+    // Viewings
+    match /viewings/{viewingId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isBroker() || resource.data.agentId == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // Tasks
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isBroker() || resource.data.agentId == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // Expenses
+    match /expenses/{expenseId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isOwner(resource.data.agentId) || isBroker();
+      allow delete: if isBroker();
+    }
+
+    // Notifications
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if resource.data.userId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    // Audit Logs — append only
+    match /auditLogs/{logId} {
+      allow read: if isBroker();
+      allow create: if isAuthenticated();
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}
