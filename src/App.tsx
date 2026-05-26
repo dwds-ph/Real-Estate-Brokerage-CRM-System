@@ -14,6 +14,7 @@ import TasksPage from '@/pages/TasksPage';
 import AgentsPage from '@/pages/AgentsPage';
 import SettingsPage from '@/pages/SettingsPage';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import OnboardingPage from '@/pages/OnboardingPage';
 import AppLayout from '@/components/layout/AppLayout';
 import BrochurePage from '@/pages/BrochurePage';
 import ClientPortalPage from '@/pages/ClientPortalPage';
@@ -25,6 +26,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="/b/:listingId" element={<BrochurePage />} />
           <Route path="/p/:leadToken" element={<ClientPortalPage />} />
           <Route element={<ProtectedRoute />}>
