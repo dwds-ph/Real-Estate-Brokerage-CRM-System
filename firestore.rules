@@ -379,6 +379,20 @@ service cloud.firestore {
     }
 
     // -----------------------------------------------------------------------
+    // TOURS  (property tour itineraries)
+    //   read:    broker, same org, or owning agent
+    //   create:  any staff
+    //   update:  broker or owning agent
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /tours/{tourId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['title', 'clientName', 'scheduledDate', 'agentId']);
+      allow update: if isBroker() || resource.data.agentId == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
     // LEAD ACTIVITY (subcollection under each lead) — append-only timeline
     //   read:    broker or same org
     //   create:  any staff (append)

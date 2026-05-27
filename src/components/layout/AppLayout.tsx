@@ -23,6 +23,7 @@ const navItems = [
   { to: "/calendar", label: "Calendar", icon: "📅" },
   { to: "/checklist-templates", label: "Checklists", icon: "✅" },
   { to: "/activity", label: "Activity", icon: "🔄" },
+  { to: "/tours", label: "Tours", icon: "📍" },
   { to: "/leaderboard", label: "Leaderboard", icon: "🏆" },
 ];
 export default function AppLayout() {

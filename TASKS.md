@@ -122,30 +122,40 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 
 ---
 
-## Validation Results
+## ✅ Phase 5: 📍 Property Tour Builder — COMPLETE
 
-| Gate                               | Result                                      |
-| ---------------------------------- | ------------------------------------------- |
-| **TypeScript** (`tsc --noEmit`)    | ✅ Passes — 0 errors                        |
-| **Lint** (`eslint .`)              | ✅ 0 errors, 22 warnings (all pre-existing) |
-| **Tests** (vitest)                 | ✅ All 47+ test files pass                  |
-| **Build** (`tsc -b && vite build`) | ✅ Succeeds — PWA service worker generated  |
-| **Firestore rules**                | ✅ Updated for `payments` collection        |
+**Goal:** Build multi-property tour itineraries — select listings, arrange stops, schedule times, collect post-tour feedback.
 
-## Dependencies Between Phases
+### Tasks
 
-```
-Phase 1 (PWA) ── foundation, no dependency on others
-Phase 3 (Payments) ── depends on Deal types (already existed)
-Phase 4 (Contracts) ── depends on Lead, Deal, Listing types (already existed)
-```
+- [x] **5.1** Define `Tour`, `TourStop`, `TourStatus` types in `src/types/index.ts`
+- [x] **5.2** Create `src/services/tourService.ts` — CRUD + real-time listeners + helper functions (duration calc, maps URL generation, status colors)
+- [x] **5.3** Create `TourBuilder.tsx` — 4-step wizard: client info → select listings → arrange/schedule → review & save
+- [x] **5.4** Create `TourList.tsx` — grouped by status, filters, search, quick actions (edit/start/complete/delete)
+- [x] **5.5** Create `TourItinerary.tsx` — day-of view with stop cards, timeline, maps link, print support, status transitions
+- [x] **5.6** Create `TourFeedback.tsx` — per-stop feedback form (interest level, concerns, next steps, photos)
+- [x] **5.7** Create `TourStopCard.tsx` — reusable stop display with position marker, duration, drive time, feedback
+- [x] **5.8** Add route `/tours` + sidebar nav entry
+- [x] **5.9** Firestore rules for `tours` collection
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/types/index.ts` — Tour, TourStop, TourStatus types
+- `src/services/tourService.ts`
+- `src/components/tours/TourBuilder.tsx`
+- `src/components/tours/TourList.tsx`
+- `src/components/tours/TourItinerary.tsx`
+- `src/components/tours/TourFeedback.tsx`
+- `src/components/tours/TourStopCard.tsx`
+- `src/components/tours/index.ts`
+- `src/pages/ToursPage.tsx`
+- `src/App.tsx` / `src/components/layout/AppLayout.tsx` — routing + nav
+- `firestore.rules` — tours collection
 
 ---
 
-## Future Phases (not yet implemented)
+## Remaining Phases (not yet implemented)
 
-- **Phase 2:** 🏆 Agent Scorecard & Leaderboard
-- **Phase 5:** 📍 Property Tour Builder
 - **Phase 6:** 🆔 License Expiry Tracker
 - **Phase 7:** 📊 Market Report Generator
 - **Phase 8:** 🏗️ Project / Subdivision Management
