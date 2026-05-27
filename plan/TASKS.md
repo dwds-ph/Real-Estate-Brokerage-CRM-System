@@ -418,17 +418,15 @@ Reduce repetitive work for agents.
 
 Cross-cutting features that improve the entire app.
 
-- [ ] **T-1901** Filipino language toggle (i18n) — wrap all UI strings in translation function, create tagalog.json translation file
-- [ ] **T-1902** Build language switcher in settings (English / Filipino), persist preference
-- [ ] **T-1903** Multi-office/branch support — add `officeId`, `officeName` to User doc, broker creates offices, agents assigned to office
-- [ ] **T-1904** Office-level dashboard — broker sees metrics per office
-- [ ] **T-1905** Keyboard shortcuts — global shortcuts: `G + D` = go to dashboard, `G + L` = leads, `G + N` = new lead, `?` = shortcuts help modal
-- [ ] **T-1906** Dark mode polish — ensure all components respect dark theme, add system preference detection
-- [ ] **T-1907** Build onboarding tooltips — guided tour for new users on first login
-- [ ] **T-1908** Build notification preferences page (per-type toggles: email push, in-app, SMS)
-- [ ] **T-1909** Add loading skeletons to all pages (ShadCN Skeleton component)
-- [ ] **T-1910** Add error states to all data views (retry button, fallback message)
-- [ ] **T-1911** Tests: language switching, keyboard shortcuts, dark mode consistency
+- [ ] **T-1901** Multi-office/branch support — add `officeId`, `officeName` to User doc, broker creates offices, agents assigned to office
+- [ ] **T-1902** Office-level dashboard — broker sees metrics per office
+- [ ] **T-1903** Keyboard shortcuts — global shortcuts: `G + D` = go to dashboard, `G + L` = leads, `G + N` = new lead, `?` = shortcuts help modal
+- [ ] **T-1904** Dark mode polish — ensure all components respect dark theme, add system preference detection
+- [ ] **T-1905** Build onboarding tooltips — guided tour for new users on first login
+- [ ] **T-1906** Build notification preferences page (per-type toggles: email push, in-app, SMS)
+- [ ] **T-1907** Add loading skeletons to all pages (ShadCN Skeleton component)
+- [ ] **T-1908** Add error states to all data views (retry button, fallback message)
+- [ ] **T-1909** Tests: keyboard shortcuts, dark mode, notification preferences
 
 ## Future / v2 (Backlog)
 
