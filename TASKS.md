@@ -380,6 +380,287 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 
 ---
 
-## 🏁 All 14 Phases Complete ✅
+---
 
-The CRM now includes **30 modules**, **170+ components**, **30+ services**, and a comprehensive dashboard that proactively surfaces items needing attention.
+## ✅ Phase 15: 📋 Task & Activity Manager — COMPLETE
+
+**Goal:** Full task management with Kanban board, per-client activity timeline, call logging, and checklist templates for agent workflows.
+
+### Tasks
+
+- [x] **15.1** Define `Task`, `TaskStatus`, `TaskPriority`, `ActivityLog`, `CallLog`, `Checklist`, `ChecklistTemplate` types in `src/types/index.ts`
+- [x] **15.2** Create `src/services/taskService.ts` — CRUD + real-time listeners, status transitions, priority sorting, date-based filtering, checklist progress computation
+- [x] **15.3** Create `src/services/activityService.ts` — activity log CRUD + real-time listener per lead/deal
+- [x] **15.4** Create `TaskKanbanBoard.tsx` — 3-column Kanban (To Do / In Progress / Done), drag indicators, task cards with priority badges, due date, assignee avatars
+- [x] **15.5** Create `TaskCard.tsx` — compact task card with status badge, priority indicator, due date (overdue highlighting), assignee, subtask progress
+- [x] **15.6** Create `TaskForm.tsx` — full task create/edit with assignee, due date, priority, checklist, description, deal/lead linking
+- [x] **15.7** Create `TaskFilters.tsx` — filter by status, priority, assignee, due date range
+- [x] **15.8** Create `ActivityTimeline.tsx` — vertical timeline of all interactions per lead/deal (calls, meetings, notes, emails, status changes)
+- [x] **15.9** Create `CallLogForm.tsx` — quick call log entry (contact, duration, notes, follow-up date)
+- [x] **15.10** Create `ChecklistManager.tsx` — per-task checklist with check/uncheck, progress bar, template loading
+- [x] **15.11** Create `ChecklistTemplateManager.tsx` — create/edit/delete reusable checklist templates (e.g., "New Lead Onboarding", "Deal Closing Requirements")
+- [x] **15.12** Create `TasksPage.tsx` — Kanban view + filters + new task FAB
+- [x] **15.13** Integrate activity timeline into `LeadDetailPage.tsx` and `DealDetailPage.tsx`
+- [x] **15.14** Add route `/tasks` + sidebar nav entry
+- [x] **15.15** Firestore rules for `tasks`, `activities`, `callLogs`, `checklists`, `checklistTemplates` collections
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/types/index.ts` — Task, TaskStatus, TaskPriority, ActivityLog, CallLog, Checklist, ChecklistTemplate types
+- `src/services/taskService.ts`
+- `src/services/activityService.ts`
+- `src/components/tasks/TaskKanbanBoard.tsx`
+- `src/components/tasks/TaskCard.tsx`
+- `src/components/tasks/TaskForm.tsx`
+- `src/components/tasks/TaskFilters.tsx`
+- `src/components/tasks/ActivityTimeline.tsx`
+- `src/components/tasks/CallLogForm.tsx`
+- `src/components/tasks/ChecklistManager.tsx`
+- `src/components/tasks/ChecklistTemplateManager.tsx`
+- `src/components/tasks/index.ts`
+- `src/pages/TasksPage.tsx`
+
+**Files modified:**
+- `src/App.tsx` — added /tasks route (lazy loaded)
+- `src/components/layout/AppLayout.tsx` — added Tasks nav entry
+- `src/pages/LeadDetailPage.tsx` — integrated ActivityTimeline
+- `src/pages/DealDetailPage.tsx` — integrated ActivityTimeline
+- `firestore.rules` — added rules for new collections
+
+---
+
+## ✅ Phase 16: 🗺️ Property Map View — COMPLETE
+
+**Goal:** Interactive map of all listings using Leaflet (no API key required) with filters, property markers, and popup cards.
+
+### Tasks
+
+- [x] **16.1** Add `leaflet`, `react-leaflet`, `@types/leaflet` dependencies
+- [x] **16.2** Define `MapMarker`, `MapViewport`, `MapFilters` types
+- [x] **16.3** Create `src/lib/mapUtils.ts` — geocoding helper (OpenStreetMap Nominatim), marker clustering config, default PH viewport (center on Manila), address-to-coordinates with cache
+- [x] **16.4** Create `PropertyMap.tsx` — interactive Leaflet map with tile layer, marker clustering, popup cards, fit-to-bounds
+- [x] **16.5** Create `MapFilters.tsx` — filter sidebar/overlay: property type, price range, status, location
+- [x] **16.6** Create `PropertyMapPopup.tsx` — popup card with image thumbnail, price, status badge, address, "View Details" link
+- [x] **16.7** Create `MapPage.tsx` — full-page map with filter panel, listing count, legend
+- [x] **16.8** Add "Open in Map" button on ListingDetailPage
+- [x] **16.9** Add route `/map` + sidebar nav entry
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/lib/mapUtils.ts`
+- `src/components/map/PropertyMap.tsx`
+- `src/components/map/MapFilters.tsx`
+- `src/components/map/PropertyMapPopup.tsx`
+- `src/components/map/index.ts`
+- `src/pages/MapPage.tsx`
+
+**Files modified:**
+- `src/App.tsx` — added /map route (lazy loaded)
+- `src/components/layout/AppLayout.tsx` — added Map nav entry
+- `src/pages/ListingDetailPage.tsx` — added "Open in Map" button
+- `package.json` — added leaflet, react-leaflet
+
+---
+
+## ✅ Phase 17: 🏦 PH Loan Calculator — COMPLETE
+
+**Goal:** Philippine-specific loan calculators — Pag-IBIG, bank financing, in-house financing — with amortization schedules, affordability checks, and save-to-deal capability.
+
+### Tasks
+
+- [x] **17.1** Create `src/lib/loanEngine.ts` — computation engine with:
+  - Pag-IBIG: max amount based on contribution tier, fixed 3%/6% rates, 30-year max term
+  - Bank financing: variable rates (5-9%), 20-year max, BSP rediscounting considerations
+  - In-house financing: developer rates (0-6% 1st year escalating), shorter terms
+  - Monthly amortization (standard amortization formula)
+  - Affordability check (30% gross income rule, 50% debt-to-income)
+  - Amortization schedule generator (monthly breakdown: principal + interest + balance)
+- [x] **17.2** Create `LoanCalculator.tsx` — 3-tab calculator (Pag-IBIG / Bank / In-House), input form with PH-specific fields (gross income, existing debts, Pag-IBIG tier)
+- [x] **17.3** Create `AmortizationSchedule.tsx` — scrollable/paginated amortization table with year/month views, totals row
+- [x] **17.4** Create `AffordabilityCheck.tsx` — income-based affordability gauge (green/yellow/red), max affordable price, max loan amount
+- [x] **17.5** Create `LoanComparison.tsx` — side-by-side comparison of all 3 loan types with monthly payment, total interest, total cost
+- [x] **17.6** Create `LoanCalculatorPage.tsx` — standalone calculator page
+- [x] **17.7** Add "Calculate Financing" button on ListingDetailPage (pre-fills property price)
+- [x] **17.8** Add route `/loans` + sidebar nav entry
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/lib/loanEngine.ts`
+- `src/components/loans/LoanCalculator.tsx`
+- `src/components/loans/AmortizationSchedule.tsx`
+- `src/components/loans/AffordabilityCheck.tsx`
+- `src/components/loans/LoanComparison.tsx`
+- `src/components/loans/index.ts`
+- `src/pages/LoanCalculatorPage.tsx`
+
+**Files modified:**
+- `src/App.tsx` — added /loans route (lazy loaded)
+- `src/components/layout/AppLayout.tsx` — added Loan Calculator nav entry
+- `src/pages/ListingDetailPage.tsx` — added "Calculate Financing" button
+
+---
+
+## ✅ Phase 18: 📊 Lead Source & Agent Analytics — COMPLETE
+
+**Goal:** Track lead sources with conversion analytics, set agent sales targets with progress tracking, and build an advanced analytics dashboard with revenue projections.
+
+### Tasks
+
+- [x] **18.1** Define `LeadSource`, `AgentGoal`, `GoalPeriod`, `SourceAnalytics` types
+- [x] **18.2** Add `source` field to Lead type (facebook, referral, walk-in, website, call, sms, email, open-house, event, other)
+- [x] **18.3** Create `src/services/goalService.ts` — CRUD + real-time listeners for agent goals
+- [x] **18.4** Create `src/lib/sourceAnalytics.ts` — computation engine: conversion rate by source, cost estimates, ROI, time-to-deal by source
+- [x] **18.5** Create `LeadSourceAnalytics.tsx` — source breakdown bar chart, conversion funnel, per-source metrics table (leads, deals, conversion %, avg value)
+- [x] **18.6** Create `AgentGoalTracker.tsx` — per-agent goal card with progress bar, period selector, goal vs actual comparison
+- [x] **18.7** Create `GoalForm.tsx` — create/edit sales targets (monthly/quarterly/yearly, gross commission, deals closed)
+- [x] **18.8** Create `GoalOverview.tsx` — team-wide goal progress, top performers against target
+- [x] **18.9** Create `AdvancedAnalytics.tsx` — combined dashboard with revenue projections (linear trend), agent ranking trends, period-over-period comparisons, deal velocity metrics
+- [x] **18.10** Create `AnalyticsPage.tsx` — 4-tab layout (Lead Sources, Goals, Advanced, Overview)
+- [x] **18.11** Add route `/analytics` + sidebar nav entry
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/types/index.ts` — LeadSource, AgentGoal, GoalPeriod, SourceAnalytics types
+- `src/services/goalService.ts`
+- `src/lib/sourceAnalytics.ts`
+- `src/components/analytics/LeadSourceAnalytics.tsx`
+- `src/components/analytics/AgentGoalTracker.tsx`
+- `src/components/analytics/GoalForm.tsx`
+- `src/components/analytics/GoalOverview.tsx`
+- `src/components/analytics/AdvancedAnalytics.tsx`
+- `src/components/analytics/index.ts`
+- `src/pages/AnalyticsPage.tsx`
+
+**Files modified:**
+- `src/App.tsx` — added /analytics route (lazy loaded)
+- `src/components/layout/AppLayout.tsx` — added Analytics nav entry
+- `src/types/index.ts` — added source field to Lead
+- `firestore.rules` — added rules for goals collection
+
+---
+
+## ✅ Phase 19: 🤝 Co-Brokerage, Teams & Branch Management — COMPLETE
+
+**Goal:** Manage co-broker relationships across brokerages, create agent teams with team leads, and support multi-branch/office operations.
+
+### Tasks
+
+- [x] **19.1** Define `CoBroker`, `CoBrokerDeal`, `SplitAgreement`, `AgentTeam`, `TeamMember`, `Branch`, `BranchType` types
+- [x] **19.2** Create `src/services/coBrokerService.ts` — CRUD for co-broker profiles, deals, split agreements + commission calculations
+- [x] **19.3** Create `src/services/teamService.ts` — CRUD for teams, members, team performance rollups
+- [x] **19.4** Create `src/services/branchService.ts` — CRUD for branches, agent assignments, branch-level reporting
+- [x] **19.5** Create `CoBrokerList.tsx` — co-broker directory with search, broker info card, deal count
+- [x] **19.6** Create `CoBrokerForm.tsx` — add/edit co-broker profile (name, brokerage, license, contact)
+- [x] **19.7** Create `CoBrokerDealSplit.tsx` — per-deal split configuration (percentages per party, commission breakdown)
+- [x] **19.8** Create `TeamList.tsx` — team grid with member counts, total commissions, team lead info
+- [x] **19.9** Create `TeamForm.tsx` — create/edit team, assign members, designate team lead
+- [x] **19.10** Create `TeamDetail.tsx` — team detail with member list, performance summary, per-member breakdown
+- [x] **19.11** Create `BranchList.tsx` — branch directory with agent count, deal volume, location map
+- [x] **19.12** Create `BranchForm.tsx` — add/edit branch (name, address, contact, manager)
+- [x] **19.13** Create `BranchDetail.tsx` — branch KPIs, agent roster, deal pipeline
+- [x] **19.14** Create `CoBrokeragePage.tsx` — 3-tab page (Co-Brokers, Teams, Branches)
+- [x] **19.15** Add route `/cobrokerage` + sidebar nav entry
+- [x] **19.16** Firestore rules for `coBrokers`, `coBrokerDeals`, `splitAgreements`, `teams`, `branches` collections
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/types/index.ts` — CoBroker, CoBrokerDeal, SplitAgreement, AgentTeam, TeamMember, Branch, BranchType types
+- `src/services/coBrokerService.ts`
+- `src/services/teamService.ts`
+- `src/services/branchService.ts`
+- `src/components/cobrokerage/CoBrokerList.tsx`
+- `src/components/cobrokerage/CoBrokerForm.tsx`
+- `src/components/cobrokerage/CoBrokerDealSplit.tsx`
+- `src/components/cobrokerage/TeamList.tsx`
+- `src/components/cobrokerage/TeamForm.tsx`
+- `src/components/cobrokerage/TeamDetail.tsx`
+- `src/components/cobrokerage/BranchList.tsx`
+- `src/components/cobrokerage/BranchForm.tsx`
+- `src/components/cobrokerage/BranchDetail.tsx`
+- `src/components/cobrokerage/index.ts`
+- `src/pages/CoBrokeragePage.tsx`
+
+**Files modified:**
+- `src/App.tsx` — added /cobrokerage route (lazy loaded)
+- `src/components/layout/AppLayout.tsx` — added Co-Brokerage nav entry
+- `firestore.rules` — added rules for new collections
+
+---
+
+## ✅ Phase 20: 📱 QR Code & Listing Syndication — COMPLETE
+
+**Goal:** Generate QR codes for property listings and client portal access. Auto-create social media cards and downloadable listing sheets for marketing.
+
+### Tasks
+
+- [x] **20.1** Add `qrcode.react` dependency
+- [x] **20.2** Create `src/lib/syndication.ts` — listing sheet PDF generator (jspdf-based with property photos, details, agent info, QR code), social card image generator (html-to-image canvas)
+- [x] **20.3** Create `QRCodeGenerator.tsx` — generate QR for listing URL and client portal token, download PNG, copy to clipboard
+- [x] **20.4** Create `ListingSheet.tsx` — preview + download A4 listing sheet with property details, photos, price, agent, QR code
+- [x] **20.5** Create `SocialMediaCard.tsx` — generate property social card image (1200×628px optimized for Facebook/Instagram), download
+- [x] **20.6** Create `SyndicationPanel.tsx` — combined panel on ListingDetailPage with tabs: QR Code / Listing Sheet / Social Card
+- [x] **20.7** Add QR code to Client Portal (token-based access QR in portal page)
+- [x] **20.8** Validate: typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/lib/syndication.ts`
+- `src/components/syndication/QRCodeGenerator.tsx`
+- `src/components/syndication/ListingSheet.tsx`
+- `src/components/syndication/SocialMediaCard.tsx`
+- `src/components/syndication/SyndicationPanel.tsx`
+- `src/components/syndication/index.ts`
+
+**Files modified:**
+- `src/pages/ListingDetailPage.tsx` — added SyndicationPanel
+- `src/pages/ClientPortalPage.tsx` — added portal access QR
+- `package.json` — added qrcode.react
+
+---
+
+## ✅ Phase 21: 📑 Property Documents Vault & Compliance — COMPLETE
+
+**Goal:** Central document repository per property (title, tax declaration, permits, contracts), deal closing compliance checklist with PH-specific requirements, and Comparative Market Analysis reports.
+
+### Tasks
+
+- [x] **21.1** Define `PropertyDocument`, `DocumentCategory`, `ComplianceChecklist`, `ComplianceItem`, `CMReport` types
+- [x] **21.2** Create `src/services/documentVaultService.ts` — CRUD for property documents, upload to Firebase Storage, category filtering, expiry tracking
+- [x] **21.3** Create `src/services/complianceService.ts` — checklist CRUD, PH compliance template generation (Maceda Law, CGT, DST, Notary, RA 9646, BIR requirements), per-deal status tracking
+- [x] **21.4** Create `src/lib/cmaEngine.ts` — CMA computation engine: comparable properties (location, size, type, price per sqm), adjusted price ranges, market trend adjustment, report summary
+- [x] **21.5** Create `DocumentVault.tsx` — per-property document grid with category tabs, upload button (Firebase Storage), expiry badges, download
+- [x] **21.6** Create `DocumentUploadForm.tsx` — upload form with category selector, name, expiry date, multiple file support
+- [x] **21.7** Create `ComplianceChecklist.tsx` — deal closing checklist grouped by category (Legal, Tax, Documentary, Financial), status indicators, progress bar, attach-document linking
+- [x] **21.8** Create `CMAReport.tsx` — CMA report view: subject property summary, comparable table, price per sqm comparison, adjusted value range, market trend context
+- [x] **21.9** Create `CMAReportGenerator.tsx` — CMA creation wizard: select subject property → select comparables → adjust → generate PDF
+- [x] **21.10** Create `DocumentsPage.tsx` — per-property document vault page
+- [x] **21.11** Create `CompliancePage.tsx` — per-deal compliance checklist page
+- [x] **21.12** Create `CMAPage.tsx` — CMA report list + create new
+- [x] **21.13** Add routes `/documents`, `/compliance`, `/cma` + sidebar nav entries
+- [x] **21.14** Firestore rules for `propertyDocuments`, `complianceChecklists`, `cmaReports` collections
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/types/index.ts` — PropertyDocument, DocumentCategory, ComplianceChecklist, ComplianceItem, CMReport types
+- `src/services/documentVaultService.ts`
+- `src/services/complianceService.ts`
+- `src/lib/cmaEngine.ts`
+- `src/components/documents/DocumentVault.tsx`
+- `src/components/documents/DocumentUploadForm.tsx`
+- `src/components/documents/ComplianceChecklist.tsx`
+- `src/components/documents/CMAReport.tsx`
+- `src/components/documents/CMAReportGenerator.tsx`
+- `src/components/documents/index.ts`
+- `src/pages/DocumentsPage.tsx`
+- `src/pages/CompliancePage.tsx`
+- `src/pages/CMAPage.tsx`
+
+**Files modified:**
+- `src/App.tsx` — added /documents, /compliance, /cma routes (lazy loaded)
+- `src/components/layout/AppLayout.tsx` — added Documents, Compliance, CMA nav entries
+- `firestore.rules` — added rules for new collections
+
+---
+
+## 🏁 All **21 Phases Complete** ✅ — 37+ Modules, 200+ Components, 40+ Services
+
+The CRM is a comprehensive, production-ready system covering the full real estate brokerage lifecycle: leads → tours → deals → commissions → payouts → compliance, with advanced features including market analysis, loan calculators, property maps, document vault, smart reminders, PWA offline support, client portal, bulk import, and agent performance tracking.
