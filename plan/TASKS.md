@@ -314,14 +314,128 @@
 
 ---
 
+---
+
+## Phase 13: 📄 Document Vault & Management
+
+Move v2 backlog to active development — PH real estate is document-intensive.
+
+- [ ] **T-1301** Create `DocumentVault` Firestore doc structure (dealId, listingId, stage, name, fileUrl, fileType, fileSize, uploadedBy, uploadedAt, version)
+- [ ] **T-1302** Implement document upload to Firebase Storage per deal/listing with preview
+- [ ] **T-1303** Build document list view per deal (sort by stage, type, date)
+- [ ] **T-1304** Build document detail panel (view, download, version history)
+- [ ] **T-1305** Version tracking — new upload of same doc name creates new version, keeps old
+- [ ] **T-1306** Per-stage document requirements (e.g. "BIR CGT stage needs: BIR Form 1706, CAR, Tax Clearance")
+- [ ] **T-1307** Document expiry alerts — set expiry dates, push notification when nearing
+- [ ] **T-1308** Document categories: Title, Tax, Contract, ID, HOA, Miscellaneous
+- [ ] **T-1309** Bulk document upload (multiple files at once)
+- [ ] **T-1310** Document request — broker requests doc from agent, creates notification
+- [ ] **T-1311** Tests: upload, versioning, expiry alerts, permission-based access
+
+## Phase 14: 🏗️ Mortgage & Deal Progress Tracker
+
+Per-deal mortgage loan application tracking — PH banks have distinct processes.
+
+- [ ] **T-1401** Create `Mortgage` Firestore doc structure (dealId, bankId, loanAmount, status, stages[], notes)
+- [ ] **T-1402** Define mortgage stages: Application → Bank Evaluation → BIR Docs → ROD → Loan Release
+- [ ] **T-1403** Pre-fill PH bank profiles: BPI, BDO, Metrobank, Security Bank, EastWest (estimated timelines, typical rates)
+- [ ] **T-1404** Build mortgage tracker widget on deal detail page
+- [ ] **T-1405** Build stage progress bar with estimated and actual dates
+- [ ] **T-1406** Document checklist per mortgage stage (what docs the bank needs)
+- [ ] **T-1407** Timeline view — how long each mortgage stage took (for agent reference)
+- [ ] **T-1408** Push notification on mortgage stage changes
+- [ ] **T-1409** Link mortgage to Document Vault — upload bank-required docs directly from tracker
+- [ ] **T-1410** Add mortgage status summary to broker dashboard (deals awaiting bank approval)
+- [ ] **T-1411** Tests: stage transitions, timeline accuracy, doc linkage
+
+## Phase 15: 🗺️ Map View & Location Features
+
+Interactive map for listings with PH-relevant overlays.
+
+- [ ] **T-1501** Integrate Leaflet/MapLibre (free, no API key) for interactive maps
+- [ ] **T-1502** Build map component with listing pins (price, status, type color-coded)
+- [ ] **T-1503** Listing detail shows embedded map with location marker
+- [ ] **T-1504** Add geocoding — store lat/lng on listing creation (from address string via Nominatim/OSM)
+- [ ] **T-1505** Map filters: filter by price range, property type, status, flood risk
+- [ ] **T-1506** Nearby POIs overlay: schools, hospitals, malls, LRT/MRT stations
+- [ ] **T-1507** Cluster pins at zoom-out level (performance for many listings)
+- [ ] **T-1508** Click pin → popup with listing thumbnail, price, status, agent contact
+- [ ] **T-1509** Click popup → navigate to listing detail
+- [ ] **T-1510** Agent dashboard shows "My Listings Map" view
+- [ ] **T-1511** Tests: map rendering, pin placement, filter interaction
+
+## Phase 16: 📈 Advanced Analytics & Performance Reports
+
+Broker command center on steroids — data-driven decisions.
+
+- [ ] **T-1601** Build lead conversion funnel chart (New → Contacted → Viewed → Negotiating → Closed, with drop-off % at each stage)
+- [ ] **T-1602** Build agent performance board (per agent: leads acquired, deals closed, commission earned, conversion rate, response time)
+- [ ] **T-1603** Build expense vs commission P&L report (per agent: total expenses claimed vs total commission earned)
+- [ ] **T-1604** Build listing performance report (views, brochure shares, inquiries, days on market, conversion to deal)
+- [ ] **T-1605** Build source analytics dashboard (lead source → conversion → revenue, by channel: Facebook, Referral, Walk-in, Manual)
+- [ ] **T-1606** Build team comparison view (side-by-side agent metrics, rankable by any column)
+- [ ] **T-1607** Build monthly/quarterly trend charts (leads, deals, revenue over time)
+- [ ] **T-1608** Build exportable report generator (PDF/CSV of any report, date-range selectable)
+- [ ] **T-1609** Build custom date range picker for all reports
+- [ ] **T-1610** Add report widgets to broker dashboard (configurable KPI grid)
+- [ ] **T-1611** Tests: chart data accuracy, permission filtering (agent sees own, broker sees all)
+
+## Phase 17: 📅 Unified Calendar & Smart Reminders
+
+Merge viewings, tasks, follow-ups, and deal milestones into one timeline.
+
+- [ ] **T-1701** Build unified calendar component (month/week/day views) using a calendar library (react-big-calendar or FullCalendar)
+- [ ] **T-1702** Ingest data sources: Viewings, Tasks, Deal milestones, Document expiry dates
+- [ ] **T-1703** Color-code by type: viewing (blue), task (orange), deal milestone (green), document expiry (red)
+- [ ] **T-1704** Click event → show detail popup with quick actions (reschedule viewing, mark task done)
+- [ ] **T-1705** Click event → navigate to source page (lead detail, listing detail, etc.)
+- [ ] **T-1706** Add new event quick-create from calendar (schedule viewing, create task)
+- [ ] **T-1707** Build smart follow-up engine:
+  - Lead inactive N days → auto-create "Follow up with {lead}" task
+  - Viewing done, feedback pending → auto-notify agent
+  - Document expiring in 7 days → push notification
+- [ ] **T-1708** Build recurring task support (daily/weekly/monthly follow-ups, configurable)
+- [ ] **T-1709** Build notification preferences page with smart reminder toggles
+- [ ] **T-1710** Builder's calendar view on dashboard (today's events widget)
+- [ ] **T-1711** Tests: event rendering, CRUD operations, reminder triggers
+
+## Phase 18: 🔄 Automation & Productivity Tools
+
+Reduce repetitive work for agents.
+
+- [ ] **T-1801** Build communication log templates — agent creates a template ("Initial follow-up", "Viewing confirmation", "Thank you") and applies it to a lead with one tap
+- [ ] **T-1802** Quick-log SMS/Viber/WhatsApp communication from template (type + prepopulated note)
+- [ ] **T-1803** Build email templates — create templated emails (HTML), send via mailto: link with pre-filled body
+- [ ] **T-1804** Build reusable checklists system — broker creates checklist templates (e.g. "New Listing Intake", "Deal Closing Checklist"), agents apply to specific items
+- [ ] **T-1805** Checklist progress tracking per lead/listing/deal (checked items %, auto-advance logic)
+- [ ] **T-1806** Build referral tracking — log referral source (existing client, other agent, partner), auto-assign referral fee when deal closes
+- [ ] **T-1807** Referral dashboard for broker (see all referrals, conversion rate, referral fees paid)
+- [ ] **T-1808** Build automated lead assignment — broker sets rules (round-robin, by property type specialty, by location) → system assigns new leads automatically
+- [ ] **T-1809** Build activity feed widget (real-time stream of all team actions: "John moved lead to Negotiating", "Maria uploaded docs for Deal #42")
+- [ ] **T-1810** Tests: template application, checklist progress, referral tracking flow
+
+## Phase 19: 🧩 Platform Enhancements
+
+Cross-cutting features that improve the entire app.
+
+- [ ] **T-1901** Filipino language toggle (i18n) — wrap all UI strings in translation function, create tagalog.json translation file
+- [ ] **T-1902** Build language switcher in settings (English / Filipino), persist preference
+- [ ] **T-1903** Multi-office/branch support — add `officeId`, `officeName` to User doc, broker creates offices, agents assigned to office
+- [ ] **T-1904** Office-level dashboard — broker sees metrics per office
+- [ ] **T-1905** Keyboard shortcuts — global shortcuts: `G + D` = go to dashboard, `G + L` = leads, `G + N` = new lead, `?` = shortcuts help modal
+- [ ] **T-1906** Dark mode polish — ensure all components respect dark theme, add system preference detection
+- [ ] **T-1907** Build onboarding tooltips — guided tour for new users on first login
+- [ ] **T-1908** Build notification preferences page (per-type toggles: email push, in-app, SMS)
+- [ ] **T-1909** Add loading skeletons to all pages (ShadCN Skeleton component)
+- [ ] **T-1910** Add error states to all data views (retry button, fallback message)
+- [ ] **T-1911** Tests: language switching, keyboard shortcuts, dark mode consistency
+
 ## Future / v2 (Backlog)
 
 - [ ] **v2-001** React Native mobile app (iOS + Android)
 - [ ] **v2-002** Offline-first mode (PWA or local-first sync)
-- [ ] **v2-003** Filipino language toggle (i18n)
 - [ ] **v2-004** Facebook Marketplace auto-posting (Graph API)
 - [ ] **v2-005** AI lead scoring & recommendations
-- [ ] **v2-006** Document management (contracts, receipts upload)
 - [ ] **v2-007** Payment gateway integration (GCash/Maya via PayMongo)
 - [ ] **v2-008** Public listing website (SEO-optimized, separate Firebase site)
 - [ ] **v2-009** Multi-brokerage support (cross-broker collaboration)
