@@ -169,6 +169,20 @@ service cloud.firestore {
     }
 
     // -----------------------------------------------------------------------
+    // PAYMENTS  (per-deal payment/collection tracker)
+    //   read:    broker or same org
+    //   create:  any staff
+    //   update:  broker or creator
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isAuthenticated() && requireFields(['dealId', 'type', 'amount', 'dueDate', 'brokerId']);
+      allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
     // COMMISSION PLANS
     //   read:    broker or same org
     //   create:  broker only

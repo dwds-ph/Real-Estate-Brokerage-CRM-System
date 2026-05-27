@@ -8,6 +8,7 @@ import { DealKanban } from "@/components/deals/DealKanban";
 import { DealMortgageSection } from "@/components/deals/DealMortgageSection";
 import { DealReferralSection } from "@/components/deals/DealReferralSection";
 import MortgageForm from "@/components/mortgage/MortgageForm";
+import { DealPaymentSection } from "@/components/payments/DealPaymentSection";
 
 export default function DealsPage() {
   const navigate = useNavigate();
@@ -79,9 +80,7 @@ export default function DealsPage() {
                 "lost",
               ] as LeadStatus[]
             ).map((status) => {
-              const count = allLeads.filter(
-                (l) => l.status === status,
-              ).length;
+              const count = allLeads.filter((l) => l.status === status).length;
               return (
                 <div key={status} className="space-y-1">
                   <p className="text-2xl font-bold">{count}</p>
@@ -118,6 +117,9 @@ export default function DealsPage() {
         }}
         dealId={selectedDealId}
       />
+
+      {/* Payment Schedule Section */}
+      <DealPaymentSection allDeals={allDeals} />
 
       {/* Referral Section */}
       <DealReferralSection allDeals={allDeals} />

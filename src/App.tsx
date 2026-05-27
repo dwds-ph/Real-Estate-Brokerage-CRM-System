@@ -33,6 +33,7 @@ import MortgagePage from "@/pages/MortgagePage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import ChecklistTemplatesPage from "@/pages/ChecklistTemplatesPage";
 import ActivityPage from "@/pages/ActivityPage";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 
 function AppContent() {
   useFcmService();
@@ -54,6 +55,7 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <OfflineIndicator />
         <AppContent />
         <AppKeyboardShortcuts />
         <Routes>
