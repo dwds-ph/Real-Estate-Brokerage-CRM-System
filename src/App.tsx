@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { useFcmService } from '@/services/fcm';
 import LoginPage from '@/pages/LoginPage';
 import DashboardPage from '@/pages/DashboardPage';
 import LeadsPage from '@/pages/LeadsPage';
@@ -19,11 +20,19 @@ import AppLayout from '@/components/layout/AppLayout';
 import BrochurePage from '@/pages/BrochurePage';
 import ClientPortalPage from '@/pages/ClientPortalPage';
 import ExpensesPage from '@/pages/ExpensesPage';
+import PhToolsPage from '@/pages/PhToolsPage';
+import NotificationsPage from '@/pages/NotificationsPage';
+
+function AppContent() {
+  useFcmService();
+  return null;
+}
 
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <AppContent />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
@@ -43,6 +52,8 @@ function App() {
               <Route path="/tasks" element={<TasksPage />} />
               <Route path="/agents" element={<AgentsPage />} />
               <Route path="/expenses" element={<ExpensesPage />} />
+              <Route path="/ph-tools" element={<PhToolsPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
           </Route>
