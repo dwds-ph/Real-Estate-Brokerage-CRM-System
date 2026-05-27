@@ -13,7 +13,7 @@ vi.mock("@/services/mortgageService", async () => {
   };
 });
 
-const { createMortgage, updateMortgage } = await import("@/services/mortgageService");
+const { createMortgage } = await import("@/services/mortgageService");
 
 describe("MortgageForm", () => {
   const defaultProps = {
@@ -134,10 +134,7 @@ describe("MortgageForm", () => {
     };
 
     render(
-      <MortgageForm
-        {...defaultProps}
-        existingMortgage={existingMortgage}
-      />,
+      <MortgageForm {...defaultProps} existingMortgage={existingMortgage} />,
     );
 
     expect(screen.getByText("Edit Mortgage")).toBeInTheDocument();

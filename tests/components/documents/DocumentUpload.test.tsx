@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import DocumentUpload from "@/components/documents/DocumentUpload";
 
 // Mock AuthContext
@@ -13,24 +13,44 @@ vi.mock("@/context/AuthContext", () => ({
 
 // Mock documentVault service
 vi.mock("@/services/documentVault", () => ({
-  uploadVaultFile: vi.fn((_file: File, _userId: string, progressCb?: (p: { progress: number; bytesTransferred: number; totalBytes: number }) => void) => {
-    if (progressCb) {
-      progressCb({ progress: 50, bytesTransferred: 512, totalBytes: 1024 });
-    }
-    return Promise.resolve("https://storage.example.com/file.pdf");
-  }),
+  uploadVaultFile: vi.fn(
+    (
+      _file: File,
+      _userId: string,
+      progressCb?: (p: {
+        progress: number;
+        bytesTransferred: number;
+        totalBytes: number;
+      }) => void,
+    ) => {
+      if (progressCb) {
+        progressCb({ progress: 50, bytesTransferred: 512, totalBytes: 1024 });
+      }
+      return Promise.resolve("https://storage.example.com/file.pdf");
+    },
+  ),
   createVaultDocument: vi.fn(() => Promise.resolve("doc-id")),
   UploadProgress: {},
 }));
 
 // Mock child components - these are all NAMED exports
 vi.mock("@/components/documents/FilePicker", () => ({
-  FilePicker: ({ onFileSelect, file }: { onFileSelect: (f: File) => void; file: File | null }) => (
+  FilePicker: ({
+    onFileSelect,
+    file,
+  }: {
+    onFileSelect: (f: File) => void;
+    file: File | null;
+  }) => (
     <div data-testid="file-picker">
       {!file && (
         <button
           data-testid="select-file-btn"
-          onClick={() => onFileSelect(new File(["test"], "test.pdf", { type: "application/pdf" }))}
+          onClick={() =>
+            onFileSelect(
+              new File(["test"], "test.pdf", { type: "application/pdf" }),
+            )
+          }
         >
           Select File
         </button>
@@ -41,7 +61,13 @@ vi.mock("@/components/documents/FilePicker", () => ({
 }));
 
 vi.mock("@/components/documents/DocumentMetadataForm", () => ({
-  DocumentMetadataForm: ({ form, onChange }: { form: { name: string }; onChange: (field: string, value: string) => void }) => (
+  DocumentMetadataForm: ({
+    form,
+    onChange,
+  }: {
+    form: { name: string };
+    onChange: (field: string, value: string) => void;
+  }) => (
     <div data-testid="metadata-form">
       <input
         data-testid="doc-name-input"

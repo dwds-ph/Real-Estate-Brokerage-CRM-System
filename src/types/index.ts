@@ -26,7 +26,18 @@ export type LeadStatus =
   | "negotiating"
   | "closed"
   | "lost";
-export type LeadSource = "facebook" | "manual" | "referral" | "walk-in" | "website" | "call" | "sms" | "email" | "open-house" | "event" | "other";
+export type LeadSource =
+  | "facebook"
+  | "manual"
+  | "referral"
+  | "walk-in"
+  | "website"
+  | "call"
+  | "sms"
+  | "email"
+  | "open-house"
+  | "event"
+  | "other";
 export type LeadScore = "hot" | "warm" | "cold";
 
 export interface Lead {
@@ -721,7 +732,11 @@ export interface Task {
   dueDate?: number;
   brokerId: string;
   checklist?: ChecklistItem[];
-  relatedTo?: { type: "lead" | "deal" | "listing" | "project"; id: string; title?: string };
+  relatedTo?: {
+    type: "lead" | "deal" | "listing" | "project";
+    id: string;
+    title?: string;
+  };
   tags?: string[];
   recurring?: "none" | "daily" | "weekly" | "monthly";
   createdAt: number;
@@ -734,7 +749,15 @@ export interface ChecklistItem {
   checked: boolean;
 }
 
-export type ActivityType = "call" | "meeting" | "email" | "note" | "status_change" | "task" | "tour" | "document";
+export type ActivityType =
+  | "call"
+  | "meeting"
+  | "email"
+  | "note"
+  | "status_change"
+  | "task"
+  | "tour"
+  | "document";
 
 export interface ActivityLog {
   id: string;
@@ -935,8 +958,13 @@ export interface SplitAgreement {
 export type DocumentCategory =
   | "title"
   | "tax-declaration"
+  | "tax-clearance"
   | "permit"
   | "contract"
+  | "hoa-docs"
+  | "appraisal"
+  | "inspection"
+  | "deed-of-sale"
   | "identification"
   | "financial"
   | "legal"

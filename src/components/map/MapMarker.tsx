@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { Listing } from "@/types";
@@ -80,7 +81,12 @@ export function createMarkerIcon(
 
 // ─── MapMarker Component ────────────────────────────────────────────
 
-export function MapMarker({ listing, isSelected, onClick, children }: MapMarkerProps) {
+export function MapMarker({
+  listing,
+  isSelected,
+  onClick,
+  children,
+}: MapMarkerProps) {
   if (!listing._lat || !listing._lng) return null;
 
   const icon = createMarkerIcon(

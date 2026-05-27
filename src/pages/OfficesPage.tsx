@@ -32,7 +32,6 @@ export default function OfficesPage() {
 
   const loadOffices = async () => {
     if (!userProfile?.id) return;
-    setLoading(true);
     try {
       const data = await getOffices(userProfile.id);
       setOffices(data);
@@ -45,7 +44,9 @@ export default function OfficesPage() {
   };
 
   useEffect(() => {
-    setTimeout(() => loadOffices(), 0);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadOffices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {

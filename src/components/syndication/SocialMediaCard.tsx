@@ -1,8 +1,18 @@
 import { useRef, useCallback } from "react";
 import { formatCurrency } from "@/lib/utils";
 
+interface SocialMediaListing {
+  id?: string;
+  title?: string;
+  price?: number;
+  propertyType?: string;
+  address?: string;
+  location?: string;
+  images?: string[];
+}
+
 interface Props {
-  listing: any;
+  listing: SocialMediaListing;
 }
 
 export default function SocialMediaCard({ listing }: Props) {
@@ -21,22 +31,41 @@ export default function SocialMediaCard({ listing }: Props) {
 
   return (
     <div className="space-y-3">
-      <div ref={cardRef} className="relative w-full max-w-sm overflow-hidden rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 p-6" style={{ aspectRatio: "1200/628" }}>
+      <div
+        ref={cardRef}
+        className="relative w-full max-w-sm overflow-hidden rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 p-6"
+        style={{ aspectRatio: "1200/628" }}
+      >
         {listing.images?.[0] && (
-          <img src={listing.images[0]} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />
+          <img
+            src={listing.images[0]}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-30"
+          />
         )}
         <div className="relative z-10 flex h-full flex-col justify-between">
           <div>
-            <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium capitalize">{listing.propertyType?.replace("-", " ")}</span>
+            <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium capitalize">
+              {listing.propertyType?.replace("-", " ")}
+            </span>
           </div>
           <div className="space-y-1 text-white">
-            <h3 className="text-xl font-bold drop-shadow-lg">{listing.title}</h3>
-            <p className="text-3xl font-bold drop-shadow-lg">{formatCurrency(listing.price)}</p>
-            <p className="text-sm drop-shadow-md opacity-90">{listing.address || listing.location}</p>
+            <h3 className="text-xl font-bold drop-shadow-lg">
+              {listing.title}
+            </h3>
+            <p className="text-3xl font-bold drop-shadow-lg">
+              {formatCurrency(listing.price ?? 0)}
+            </p>
+            <p className="text-sm drop-shadow-md opacity-90">
+              {listing.address || listing.location}
+            </p>
           </div>
         </div>
       </div>
-      <button onClick={handleDownload} className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+      <button
+        onClick={handleDownload}
+        className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+      >
         🖼️ Download Social Card
       </button>
     </div>

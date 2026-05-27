@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 export type ShortcutAction =
@@ -46,7 +46,10 @@ export function useKeyboardShortcuts(customShortcuts: ShortcutDef[] = []) {
   const [helpOpen, setHelpOpen] = useState(false);
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
 
-  const allShortcuts = [...DEFAULT_SHORTCUTS, ...customShortcuts];
+  const allShortcuts = useMemo(
+    () => [...DEFAULT_SHORTCUTS, ...customShortcuts],
+    [customShortcuts],
+  );
 
   // Find the ? shortcut and wire it to toggle help
   const helpShortcut = allShortcuts.find(

@@ -1,29 +1,59 @@
 import { useState, useEffect } from "react";
-import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { type MapFilters } from "@/types";
+import type { MapFilters } from "@/types";
 import { PropertyMap, MapFilters as MapFilterPanel } from "@/components/map";
 import { geocodeAddress } from "@/lib/mapUtils";
 import { cn } from "@/lib/utils";
 
-const defaultFilters: MapFilters = { propertyType: "", status: "", minPrice: 0, maxPrice: 0, location: "" };
+interface MapListingData {
+  id: string;
+  title?: string;
+  price?: number;
+  propertyType?: string;
+  status?: string;
+  address?: string;
+  location?: string;
+  description?: string;
+  _lat?: number;
+  _lng?: number;
+  [key: string]: unknown;
+}
+
+const defaultFilters: MapFilters = {
+  propertyType: "",
+  status: "",
+  minPrice: 0,
+  maxPrice: 0,
+  location: "",
+};
 
 export default function MapPage() {
   const { userProfile } = useAuth();
   const brokerId = userProfile?.brokerId || userProfile?.id;
-  const [listings, setListings] = useState<any[]>([]);
+  const [listings, setListings] = useState<MapListingData[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<MapFilters>(defaultFilters);
   const [showFilters, setShowFilters] = useState(true);
 
   useEffect(() => {
     if (!brokerId) return;
-    const q = query(collection(db, "listings"), where("brokerId", "==", brokerId), orderBy("createdAt", "desc"));
+    const q = query(
+      collection(db, "listings"),
+      where("brokerId", "==", brokerId),
+      orderBy("createdAt", "desc"),
+    );
     const unsub = onSnapshot(q, async (snap) => {
       const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       const withCoords = await Promise.all(
-        items.map(async (l: any) => {
+        items.map(async (l: MapListingData) => {
           if (l._lat && l._lng) return l;
           const addr = l.address || l.location;
           if (addr) {
@@ -39,16 +69,28 @@ export default function MapPage() {
     return unsub;
   }, [brokerId]);
 
-  const handleMarkerClick = (id: string) => { window.open(`/listings/${id}`, "_self"); };
+  const handleMarkerClick = (id: string) => {
+    window.open(`/listings/${id}`, "_self");
+  };
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col">
       <div className="flex items-center justify-between mb-2 shrink-0">
         <div>
           <h1 className="text-xl font-bold">Property Map</h1>
-          <p className="text-xs text-muted-foreground">{listings.filter((l) => l._lat).length} properties on map</p>
+          <p className="text-xs text-muted-foreground">
+            {listings.filter((l) => l._lat).length} properties on map
+          </p>
         </div>
-        <button onClick={() => setShowFilters(!showFilters)} className={cn("rounded-lg border px-3 py-1.5 text-xs font-medium", showFilters ? "bg-primary/10 border-primary" : "bg-card hover:bg-muted")}>
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className={cn(
+            "rounded-lg border px-3 py-1.5 text-xs font-medium",
+            showFilters
+              ? "bg-primary/10 border-primary"
+              : "bg-card hover:bg-muted",
+          )}
+        >
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>
       </div>
@@ -60,9 +102,15 @@ export default function MapPage() {
         )}
         <div className="flex-1 rounded-lg overflow-hidden border">
           {loading ? (
-            <div className="flex h-full items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>
+            <div className="flex h-full items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            </div>
           ) : (
-            <PropertyMap listings={listings} onMarkerClick={handleMarkerClick} filters={filters} />
+            <PropertyMap
+              listings={listings}
+              onMarkerClick={handleMarkerClick}
+              filters={filters}
+            />
           )}
         </div>
       </div>

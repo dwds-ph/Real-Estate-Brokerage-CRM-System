@@ -6,7 +6,9 @@ test.describe("Project / Subdivision E2E", () => {
     await seedTestUsers();
   });
 
-  test("create project → add phases → add units → verify status board → track milestone", async ({ page }) => {
+  test("create project → add phases → add units → verify status board → track milestone", async ({
+    page,
+  }) => {
     await loginAs(page, TEST_USERS.broker.email, TEST_USERS.broker.password);
 
     // ── Navigate to projects ───────────────────────────────────────
@@ -24,24 +26,34 @@ test.describe("Project / Subdivision E2E", () => {
     await page.fill('input[name="address"]', "Lot 123, E2E Subdivision");
 
     // Set units
-    const totalUnitsField = page.locator('input[type="number"]').filter({ has: page.locator('[name="totalUnits"]') });
+
     // Try different selectors for the total units field
-    const unitsField = page.locator('input[name="totalUnits"], input[placeholder*="total" i]').first();
+    const unitsField = page
+      .locator('input[name="totalUnits"], input[placeholder*="total" i]')
+      .first();
     if (await unitsField.isVisible()) {
       await unitsField.fill("20");
     }
 
-    const availField = page.locator('input[name="availableUnits"], input[placeholder*="available" i]').first();
+    const availField = page
+      .locator(
+        'input[name="availableUnits"], input[placeholder*="available" i]',
+      )
+      .first();
     if (await availField.isVisible()) {
       await availField.fill("15");
     }
 
     // Set price range
-    const priceMinField = page.locator('input[name="priceMin"], input[placeholder*="min" i]').first();
+    const priceMinField = page
+      .locator('input[name="priceMin"], input[placeholder*="min" i]')
+      .first();
     if (await priceMinField.isVisible()) {
       await priceMinField.fill("2000000");
     }
-    const priceMaxField = page.locator('input[name="priceMax"], input[placeholder*="max" i]').first();
+    const priceMaxField = page
+      .locator('input[name="priceMax"], input[placeholder*="max" i]')
+      .first();
     if (await priceMaxField.isVisible()) {
       await priceMaxField.fill("5000000");
     }
@@ -60,7 +72,9 @@ test.describe("Project / Subdivision E2E", () => {
     }
 
     await page.click('button[type="submit"]:has-text("Create")');
-    await expect(page.locator("text=E2E Test Subdivision")).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator("text=E2E Test Subdivision")).toBeVisible({
+      timeout: 5_000,
+    });
 
     // ── Open project detail ────────────────────────────────────────
     await page.click("text=E2E Test Subdivision");
@@ -68,7 +82,9 @@ test.describe("Project / Subdivision E2E", () => {
     await page.waitForTimeout(500);
 
     // Verify project stats are shown
-    await expect(page.locator("text=Total Units")).toBeVisible({ timeout: 3_000 });
+    await expect(page.locator("text=Total Units")).toBeVisible({
+      timeout: 3_000,
+    });
 
     // ── Check phases tab ─────────────────────────────────────────────
     const phasesTab = page.locator("text=Phases");
@@ -96,6 +112,8 @@ test.describe("Project / Subdivision E2E", () => {
 
     // ── Return to projects list ────────────────────────────────────
     await page.click("text=Projects");
-    await expect(page.locator("text=E2E Test Subdivision")).toBeVisible({ timeout: 3_000 });
+    await expect(page.locator("text=E2E Test Subdivision")).toBeVisible({
+      timeout: 3_000,
+    });
   });
 });

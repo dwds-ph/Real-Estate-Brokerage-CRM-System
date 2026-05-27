@@ -32,7 +32,6 @@ export default function LeadDetailPage() {
   const [activitiesLoading, setActivitiesLoading] = useState(true);
 
   useEffect(() => {
-    setActivitiesLoading(true);
     const unsub = subscribeActivityForLead(id, (items) => {
       setActivities(items);
       setActivitiesLoading(false);
@@ -230,7 +229,6 @@ export default function LeadDetailPage() {
               loading={activitiesLoading}
             />
           </div>
-
         </div>
 
         {/* Communication Log */}

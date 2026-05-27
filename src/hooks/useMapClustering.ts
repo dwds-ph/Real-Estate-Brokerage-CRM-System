@@ -47,21 +47,28 @@ export function useMapClustering<T extends { _lat: number; _lng: number }>(
           if (!l._lat || !l._lng) return false;
           if (
             filters.propertyTypes.length > 0 &&
-            !filters.propertyTypes.includes((l as unknown as Record<string, string>).propertyType)
+            !filters.propertyTypes.includes(
+              (l as unknown as Record<string, string>).propertyType,
+            )
           )
             return false;
           if (
             filters.statuses.length > 0 &&
-            !filters.statuses.includes((l as unknown as Record<string, string>).status)
+            !filters.statuses.includes(
+              (l as unknown as Record<string, string>).status,
+            )
           )
             return false;
           if (
             filters.floodRisks.length > 0 &&
-            !filters.floodRisks.includes((l as unknown as Record<string, string>).floodRisk)
+            !filters.floodRisks.includes(
+              (l as unknown as Record<string, string>).floodRisk,
+            )
           )
             return false;
           const price = (l as unknown as Record<string, number>).price;
-          if (price < filters.priceMin || price > filters.priceMax) return false;
+          if (price < filters.priceMin || price > filters.priceMax)
+            return false;
           return true;
         })
       : listings.filter((l) => l._lat && l._lng);
@@ -71,7 +78,8 @@ export function useMapClustering<T extends { _lat: number; _lng: number }>(
     }
 
     // Grid-based clustering
-    const activeGridSize = zoom !== undefined ? gridSize * (1 + (15 - zoom) * 0.05) : gridSize;
+    const activeGridSize =
+      zoom !== undefined ? gridSize * (1 + (15 - zoom) * 0.05) : gridSize;
     const grid = new Map<string, T[]>();
     for (const l of filtered) {
       const cx = Math.round(l._lng / activeGridSize);
@@ -100,5 +108,5 @@ export function useMapClustering<T extends { _lat: number; _lng: number }>(
     }
 
     return { clusters: clusterList, individuals: individualList };
-  }, [listings, _bounds, zoom, gridSize, minClusterSize, singleMarker, filters]);
+  }, [listings, zoom, gridSize, minClusterSize, singleMarker, filters]);
 }

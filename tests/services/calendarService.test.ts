@@ -109,32 +109,17 @@ describe("calendarService", () => {
     });
 
     it("should skip tasks without dueDate", () => {
-      const events = getAggregatedEvents(
-        [],
-        [mockTaskWithoutDue],
-        [],
-        [],
-      );
+      const events = getAggregatedEvents([], [mockTaskWithoutDue], [], []);
       expect(events).toHaveLength(0);
     });
 
     it("should skip documents without expiryDate", () => {
-      const events = getAggregatedEvents(
-        [],
-        [],
-        [],
-        [mockDocWithoutExpiry],
-      );
+      const events = getAggregatedEvents([], [], [], [mockDocWithoutExpiry]);
       expect(events).toHaveLength(0);
     });
 
     it("should create two events for a closed deal (created + closed)", () => {
-      const events = getAggregatedEvents(
-        [],
-        [],
-        [mockClosedDeal],
-        [],
-      );
+      const events = getAggregatedEvents([], [], [mockClosedDeal], []);
       expect(events).toHaveLength(2);
       const titles = events.map((e) => e.title);
       expect(titles).toContain(`Deal Created: ${mockClosedDeal.clientName}`);
@@ -159,7 +144,6 @@ describe("calendarService", () => {
 
   describe("getEventsForDay", () => {
     it("should return events that fall within the given day", () => {
-      const day = new Date("1970-01-01T00:00:00Z");
       // mockViewing.scheduledAt = 1000000 (Jan 12 1970 10:16:40 UTC + some)
       // We'll use a day that encompasses that timestamp
       const events = [

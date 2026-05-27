@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { type AchievementBadge, type AchievementBadgeId } from "@/types";
 
 // ─── All possible badges ────────────────────────────────────────────

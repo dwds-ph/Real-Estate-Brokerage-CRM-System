@@ -2,8 +2,17 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCollection } from "@/hooks/useFirestore";
 import { cn } from "@/lib/utils";
-import { subscribeGoals, createGoal, updateGoal, deleteGoal } from "@/services/goalService";
-import { computeSourceAnalytics, computeGoalProgress } from "@/lib/sourceAnalytics";
+import {
+  subscribeGoals,
+  createGoal,
+  updateGoal,
+  deleteGoal,
+} from "@/services/goalService";
+import {
+  computeSourceAnalytics,
+  computeGoalProgress,
+} from "@/lib/sourceAnalytics";
+import type { SourceDealData } from "@/lib/sourceAnalytics";
 import {
   LeadSourceAnalytics,
   AgentGoalTracker,
@@ -11,7 +20,7 @@ import {
   GoalOverview,
   AdvancedAnalytics,
 } from "@/components/analytics";
-import type { Lead, Deal, AgentGoal } from "@/types";
+import type { Lead, Deal, AgentGoal, GoalPeriod } from "@/types";
 
 const TABS = [
   { id: "sources", label: "Lead Sources", icon: "📡" },
@@ -28,11 +37,25 @@ export default function AnalyticsPage() {
   const [activeTab, setActiveTab] = useState("sources");
 
   // Data
-  const { data: leads, loading: leadsLoading } = useCollection<Lead>("leads", []);
-  const { data: deals, loading: dealsLoading } = useCollection<Deal>("deals", []);
+  const { data: leads, loading: leadsLoading } = useCollection<Lead>(
+    "leads",
+    [],
+  );
+  const { data: deals, loading: dealsLoading } = useCollection<Deal>(
+    "deals",
+    [],
+  );
   const [goals, setGoals] = useState<AgentGoal[]>([]);
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<AgentGoal | null>(null);
+
+  // Convert Deal[] to SourceDealData[] (flatten commission object to number)
+  const dealData: SourceDealData[] = deals.map((deal) => ({
+    commission: deal.commission?.total ?? 0,
+    dealValue: deal.dealPrice,
+    createdAt: deal.createdAt,
+    status: deal.status,
+  }));
 
   // Goals subscription
   useEffect(() => {
@@ -42,17 +65,28 @@ export default function AnalyticsPage() {
   }, [brokerId]);
 
   // Source analytics
-  const sourceAnalytics = computeSourceAnalytics(leads, deals);
+  const sourceAnalytics = computeSourceAnalytics(leads, dealData);
 
   // Goal progress
-  const goalsWithProgress = computeGoalProgress(goals, deals).map((item) => ({
-    goal: item.goal,
-    progress: {
-      dealsClosed: item.dealsClosed,
-      commission: item.commission,
-      dealProgress: item.dealProgress,
-      commissionProgress: item.commissionProgress,
-    },
+  const goalsWithProgress = computeGoalProgress(goals, dealData).map(
+    (item) => ({
+      goal: item.goal,
+      progress: {
+        dealsClosed: item.dealsClosed,
+        commission: item.commission,
+        dealProgress: item.dealProgress,
+        commissionProgress: item.commissionProgress,
+      },
+    }),
+  );
+
+  // Flat goal progress for GoalOverview component
+  const goalOverviewItems = goalsWithProgress.map((gp) => ({
+    goal: gp.goal,
+    dealsClosed: gp.progress.dealsClosed,
+    commission: gp.progress.commission,
+    dealProgress: gp.progress.dealProgress,
+    commissionProgress: gp.progress.commissionProgress,
   }));
 
   const isLoading = leadsLoading || dealsLoading;
@@ -70,7 +104,9 @@ export default function AnalyticsPage() {
     setEditingGoal(null);
   };
 
-  const handleUpdateGoal = async (data: any) => {
+  const handleUpdateGoal = async (
+    data: Omit<AgentGoal, "id" | "createdAt" | "updatedAt">,
+  ) => {
     if (!editingGoal || !userProfile) return;
     await updateGoal(editingGoal.id, {
       ...data,
@@ -135,7 +171,28 @@ export default function AnalyticsPage() {
           </h3>
           <GoalForm
             initial={editingGoal || undefined}
-            onSubmit={(data: any) => (editingGoal ? handleUpdateGoal(data) : handleCreateGoal({ ...data, agentId: userProfile?.id || "", agentName: userProfile?.displayName, createdBy: userProfile?.id || "" }))}
+            onSubmit={(data: {
+              targetDeals: number;
+              targetCommission: number;
+              period: GoalPeriod;
+              periodStart: number;
+              periodEnd: number;
+            }) => {
+              const fullData: Omit<
+                AgentGoal,
+                "id" | "createdAt" | "updatedAt"
+              > = {
+                ...data,
+                agentId: userProfile?.id || "",
+                agentName: userProfile?.displayName,
+                createdBy: userProfile?.id || "",
+              };
+              if (editingGoal) {
+                handleUpdateGoal(fullData);
+              } else {
+                handleCreateGoal(fullData);
+              }
+            }}
             onCancel={() => {
               setShowGoalForm(false);
               setEditingGoal(null);
@@ -171,7 +228,8 @@ export default function AnalyticsPage() {
                 <h2 className="text-lg font-semibold">Agent Goals</h2>
                 {goals.length === 0 && !showGoalForm ? (
                   <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-                    No goals set yet. Click "+ New Goal" to create one.
+                    No goals set yet. Click &quot;+ New Goal&quot; to create
+                    one.
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -213,7 +271,7 @@ export default function AnalyticsPage() {
                 <p className="text-sm text-muted-foreground mb-6">
                   Revenue trends, agent rankings, and period comparisons
                 </p>
-                <AdvancedAnalytics deals={deals} />
+                <AdvancedAnalytics deals={dealData} />
               </div>
             )}
 
@@ -227,18 +285,24 @@ export default function AnalyticsPage() {
                   <p className="text-sm text-muted-foreground mb-6">
                     Agent performance vs targets
                   </p>
-                  <GoalOverview goalsWithProgress={goalsWithProgress} />
+                  <GoalOverview goalsWithProgress={goalOverviewItems} />
                 </div>
 
                 {/* Goals Summary Cards */}
                 {goalsWithProgress.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="rounded-lg border bg-card p-4">
-                      <p className="text-xs text-muted-foreground mb-1">Total Goals</p>
-                      <p className="text-2xl font-bold">{goalsWithProgress.length}</p>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Total Goals
+                      </p>
+                      <p className="text-2xl font-bold">
+                        {goalsWithProgress.length}
+                      </p>
                     </div>
                     <div className="rounded-lg border bg-card p-4">
-                      <p className="text-xs text-muted-foreground mb-1">Avg Deal Progress</p>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Avg Deal Progress
+                      </p>
                       <p className="text-2xl font-bold">
                         {goalsWithProgress.length > 0
                           ? `${Math.round(
@@ -247,11 +311,13 @@ export default function AnalyticsPage() {
                                 0,
                               ) / goalsWithProgress.length,
                             )}%`
-                          : "—"}
+                          : "\u2014"}
                       </p>
                     </div>
                     <div className="rounded-lg border bg-card p-4">
-                      <p className="text-xs text-muted-foreground mb-1">Avg Commission Progress</p>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Avg Commission Progress
+                      </p>
                       <p className="text-2xl font-bold">
                         {goalsWithProgress.length > 0
                           ? `${Math.round(
@@ -260,7 +326,7 @@ export default function AnalyticsPage() {
                                 0,
                               ) / goalsWithProgress.length,
                             )}%`
-                          : "—"}
+                          : "\u2014"}
                       </p>
                     </div>
                   </div>

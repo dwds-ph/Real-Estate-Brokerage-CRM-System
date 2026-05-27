@@ -17,7 +17,7 @@ describe("OnboardingTooltip", () => {
     render(
       <OnboardingTooltip
         tooltipKey="test-tooltip"
-        renderTrigger={(show) => (
+        renderTrigger={(_show) => (
           <button data-testid="trigger">Hover me</button>
         )}
       >
@@ -34,7 +34,7 @@ describe("OnboardingTooltip", () => {
     render(
       <OnboardingTooltip
         tooltipKey="test-tooltip"
-        renderTrigger={(show) => (
+        renderTrigger={(_show) => (
           <button data-testid="trigger">Hover me</button>
         )}
       >
@@ -58,7 +58,7 @@ describe("OnboardingTooltip", () => {
     render(
       <OnboardingTooltip
         tooltipKey="test-tooltip"
-        renderTrigger={(show) => (
+        renderTrigger={(_show) => (
           <button data-testid="trigger">Hover me</button>
         )}
       >
@@ -91,7 +91,7 @@ describe("OnboardingTooltip", () => {
     render(
       <OnboardingTooltip
         tooltipKey="test-tooltip"
-        renderTrigger={(show) => (
+        renderTrigger={(_show) => (
           <button data-testid="trigger">Hover me</button>
         )}
       >

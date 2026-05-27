@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCollection } from "@/hooks/useFirestore";
 import {
@@ -8,6 +8,7 @@ import {
   updateTaskChecklist,
 } from "@/services/taskService";
 import type { Task, ChecklistTemplate } from "@/types";
+import type { AppUser } from "@/types";
 import { cn } from "@/lib/utils";
 import {
   TaskKanbanBoard,
@@ -35,16 +36,15 @@ export default function TasksPage() {
   const brokerId = userProfile?.brokerId || userProfile?.id;
 
   // ─── Data ──────────────────────────────────────────────────────
-  const { data: agents } = useCollection<any>(
+  const { data: agents } = useCollection<AppUser>(
     "users",
-    brokerId
-      ? ([where("brokerId", "==", brokerId)] as any)
-      : ([] as any),
+    brokerId ? [where("brokerId", "==", brokerId)] : [],
   );
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [templates, setTemplates] = useState<ChecklistTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  const now = useMemo(() => Date.now(), []); // eslint-disable-line react-hooks/purity
 
   // Listen to tasks
   useEffect(() => {
@@ -70,7 +70,9 @@ export default function TasksPage() {
       orderBy("createdAt", "desc"),
     );
     const unsub = onSnapshot(q, (snap) => {
-      setTemplates(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ChecklistTemplate));
+      setTemplates(
+        snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ChecklistTemplate),
+      );
     });
     return unsub;
   }, [brokerId]);
@@ -79,7 +81,9 @@ export default function TasksPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [saving, setSaving] = useState(false);
-  const [showChecklistPanel, setShowChecklistPanel] = useState<string | null>(null);
+  const [showChecklistPanel, setShowChecklistPanel] = useState<string | null>(
+    null,
+  );
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const [filters, setFilters] = useState<TaskFilterValues>({
@@ -94,50 +98,72 @@ export default function TasksPage() {
   const filteredTasks = tasks.filter((t) => {
     if (filters.search) {
       const s = filters.search.toLowerCase();
-      if (!t.title.toLowerCase().includes(s) && !t.description?.toLowerCase().includes(s)) return false;
+      if (
+        !t.title.toLowerCase().includes(s) &&
+        !t.description?.toLowerCase().includes(s)
+      )
+        return false;
     }
     if (filters.status !== "all" && t.status !== filters.status) return false;
-    if (filters.priority !== "all" && t.priority !== filters.priority) return false;
+    if (filters.priority !== "all" && t.priority !== filters.priority)
+      return false;
     if (filters.assignedTo && t.assignedTo !== filters.assignedTo) return false;
-    if (filters.overdue && (!t.dueDate || t.dueDate >= Date.now() || t.status === "done")) return false;
+    if (
+      filters.overdue &&
+      (!t.dueDate || t.dueDate >= now || t.status === "done")
+    )
+      return false;
     return true;
   });
 
   // ─── Handlers ──────────────────────────────────────────────────
-  const handleCreateTask = useCallback(async (data: TaskFormData) => {
-    if (!userProfile || !brokerId) return;
-    setSaving(true);
-    try {
-      await createTask({
-        title: data.title,
-        description: data.description,
-        priority: data.priority,
-        status: data.status,
-        assignedTo: data.assignedTo || userProfile.id,
-        assignedName: data.assignedName || userProfile.displayName,
-        createdBy: userProfile.id,
-        createdByName: userProfile.displayName,
-        brokerId,
-        dueDate: data.dueDate ? new Date(data.dueDate).getTime() : undefined,
-        checklist: [],
-        relatedTo: data.relatedToType
-          ? { type: data.relatedToType as any, id: data.relatedToId, title: data.relatedToTitle }
-          : undefined,
-        tags: data.tags
-          ? data.tags.split(",").map((s: string) => s.trim()).filter(Boolean)
-          : [],
-        recurring: data.recurring,
-      });
-      setShowForm(false);
-      setEditingTask(null);
-    } finally {
-      setSaving(false);
-    }
-  }, [userProfile, brokerId]);
+  const handleCreateTask = useCallback(
+    async (data: TaskFormData) => {
+      if (!userProfile || !brokerId) return;
+      setSaving(true);
+      try {
+        await createTask({
+          title: data.title,
+          description: data.description,
+          priority: data.priority,
+          status: data.status,
+          assignedTo: data.assignedTo || userProfile.id,
+          assignedName: data.assignedName || userProfile.displayName,
+          createdBy: userProfile.id,
+          createdByName: userProfile.displayName,
+          brokerId,
+          dueDate: data.dueDate ? new Date(data.dueDate).getTime() : undefined,
+          checklist: [],
+          relatedTo: data.relatedToType
+            ? {
+                type: data.relatedToType,
+                id: data.relatedToId,
+                title: data.relatedToTitle,
+              }
+            : undefined,
+          tags: data.tags
+            ? data.tags
+                .split(",")
+                .map((s: string) => s.trim())
+                .filter(Boolean)
+            : [],
+          recurring: data.recurring,
+        });
+        setShowForm(false);
+        setEditingTask(null);
+      } finally {
+        setSaving(false);
+      }
+    },
+    [userProfile, brokerId],
+  );
 
-  const handleStatusChange = useCallback(async (taskId: string, status: Task["status"]) => {
-    await updateTaskStatus(taskId, status);
-  }, []);
+  const handleStatusChange = useCallback(
+    async (taskId: string, status: Task["status"]) => {
+      await updateTaskStatus(taskId, status);
+    },
+    [],
+  );
 
   const handleTaskClick = useCallback((task: Task) => {
     setSelectedTask(task);
@@ -149,19 +175,22 @@ export default function TasksPage() {
     setSelectedTask(null);
   }, []);
 
-  const handleCreateTemplate = useCallback(async (data: { name: string; description: string; items: string[] }) => {
-    if (!brokerId || !userProfile) return;
-    await addDoc(collection(db, "checklistTemplates"), {
-      name: data.name,
-      description: data.description,
-      items: data.items.map((text) => ({ label: text, required: false })),
-      scope: "deal",
-      brokerId,
-      createdBy: userProfile.id,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
-  }, [brokerId, userProfile]);
+  const handleCreateTemplate = useCallback(
+    async (data: { name: string; description: string; items: string[] }) => {
+      if (!brokerId || !userProfile) return;
+      await addDoc(collection(db, "checklistTemplates"), {
+        name: data.name,
+        description: data.description,
+        items: data.items.map((text) => ({ label: text, required: false })),
+        scope: "deal",
+        brokerId,
+        createdBy: userProfile.id,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    },
+    [brokerId, userProfile],
+  );
 
   const handleDeleteTemplate = useCallback(async (id: string) => {
     await deleteDoc(doc(db, "checklistTemplates", id));
@@ -212,7 +241,7 @@ export default function TasksPage() {
           </h3>
           <TaskForm
             initial={editingTask || undefined}
-            agents={(agents || []) as any}
+            agents={agents || []}
             onSubmit={handleCreateTask}
             onCancel={() => {
               setShowForm(false);
@@ -225,7 +254,7 @@ export default function TasksPage() {
 
       {/* Filters */}
       <TaskFilters
-        agents={(agents || []) as any}
+        agents={agents || []}
         values={filters}
         onChange={setFilters}
       />
@@ -252,7 +281,9 @@ export default function TasksPage() {
           <div className="w-full lg:w-96 shrink-0 space-y-3">
             <div className="rounded-lg border bg-card p-4 space-y-3">
               <div className="flex items-start justify-between">
-                <h3 className="font-semibold text-sm flex-1">{selectedTask.title}</h3>
+                <h3 className="font-semibold text-sm flex-1">
+                  {selectedTask.title}
+                </h3>
                 <button
                   onClick={() => setSelectedTask(null)}
                   className="text-muted-foreground hover:text-foreground text-sm"
@@ -262,33 +293,43 @@ export default function TasksPage() {
               </div>
 
               {selectedTask.description && (
-                <p className="text-sm text-muted-foreground">{selectedTask.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {selectedTask.description}
+                </p>
               )}
 
               {/* Meta */}
               <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                 <div>
-                  <span className="font-medium">Priority:</span> {selectedTask.priority}
+                  <span className="font-medium">Priority:</span>{" "}
+                  {selectedTask.priority}
                 </div>
                 <div>
-                  <span className="font-medium">Status:</span> {selectedTask.status.replace("_", " ")}
+                  <span className="font-medium">Status:</span>{" "}
+                  {selectedTask.status.replace("_", " ")}
                 </div>
                 {selectedTask.assignedName && (
                   <div>
-                    <span className="font-medium">Assigned to:</span> {selectedTask.assignedName}
+                    <span className="font-medium">Assigned to:</span>{" "}
+                    {selectedTask.assignedName}
                   </div>
                 )}
                 {selectedTask.dueDate && (
                   <div>
                     <span className="font-medium">Due:</span>{" "}
-                    <span className={cn(selectedTask.dueDate < Date.now() && "text-red-500")}>
+                    <span
+                      className={cn(
+                        selectedTask.dueDate < now && "text-red-500",
+                      )}
+                    >
                       {new Date(selectedTask.dueDate).toLocaleDateString()}
                     </span>
                   </div>
                 )}
                 {selectedTask.relatedTo && (
                   <div className="col-span-2">
-                    <span className="font-medium">Related:</span> {selectedTask.relatedTo.type} —{" "}
+                    <span className="font-medium">Related:</span>{" "}
+                    {selectedTask.relatedTo.type} —{" "}
                     {selectedTask.relatedTo.title || selectedTask.relatedTo.id}
                   </div>
                 )}
@@ -318,10 +359,18 @@ export default function TasksPage() {
                   Edit
                 </button>
                 <button
-                  onClick={() => setShowChecklistPanel(showChecklistPanel === selectedTask.id ? null : selectedTask.id)}
+                  onClick={() =>
+                    setShowChecklistPanel(
+                      showChecklistPanel === selectedTask.id
+                        ? null
+                        : selectedTask.id,
+                    )
+                  }
                   className={cn(
                     "flex-1 rounded-lg border px-3 py-1.5 text-xs font-medium",
-                    showChecklistPanel === selectedTask.id ? "bg-primary/10 border-primary" : "hover:bg-muted",
+                    showChecklistPanel === selectedTask.id
+                      ? "bg-primary/10 border-primary"
+                      : "hover:bg-muted",
                   )}
                 >
                   Checklist ({selectedTask.checklist?.length || 0})

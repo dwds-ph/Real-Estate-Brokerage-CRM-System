@@ -1,8 +1,19 @@
 import { formatCurrency } from "@/lib/utils";
 import { generateListingSheetPdf } from "@/lib/syndication";
 
+interface ListingSheetData {
+  id?: string;
+  title?: string;
+  price?: number;
+  propertyType?: string;
+  status?: string;
+  address?: string;
+  location?: string;
+  description?: string;
+}
+
 interface Props {
-  listing: any;
+  listing: ListingSheetData;
   agentName: string;
 }
 
@@ -11,12 +22,26 @@ export default function ListingSheet({ listing, agentName }: Props) {
     <div className="space-y-3">
       <div className="rounded-lg border bg-card p-4 space-y-2">
         <h4 className="font-semibold text-sm">{listing.title}</h4>
-        <p className="text-2xl font-bold text-primary">{formatCurrency(listing.price)}</p>
+        <p className="text-2xl font-bold text-primary">
+          {formatCurrency(listing.price ?? 0)}
+        </p>
         <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-          <div><span className="font-medium">Type:</span> {listing.propertyType}</div>
-          <div><span className="font-medium">Status:</span> {listing.status}</div>
-          <div className="col-span-2"><span className="font-medium">Address:</span> {listing.address || listing.location || "—"}</div>
-          {listing.description && <div className="col-span-2"><span className="font-medium">Description:</span> {listing.description}</div>}
+          <div>
+            <span className="font-medium">Type:</span> {listing.propertyType}
+          </div>
+          <div>
+            <span className="font-medium">Status:</span> {listing.status}
+          </div>
+          <div className="col-span-2">
+            <span className="font-medium">Address:</span>{" "}
+            {listing.address || listing.location || "—"}
+          </div>
+          {listing.description && (
+            <div className="col-span-2">
+              <span className="font-medium">Description:</span>{" "}
+              {listing.description}
+            </div>
+          )}
         </div>
       </div>
       <button

@@ -1,10 +1,18 @@
+import { useMemo } from "react";
 import { cn, formatDate } from "@/lib/utils";
 import { type Task, type TaskPriority } from "@/types";
 
-const priorityConfig: Record<TaskPriority, { label: string; dot: string; border: string }> = {
+const priorityConfig: Record<
+  TaskPriority,
+  { label: string; dot: string; border: string }
+> = {
   urgent: { label: "Urgent", dot: "bg-red-500", border: "border-l-red-500" },
   high: { label: "High", dot: "bg-orange-500", border: "border-l-orange-400" },
-  medium: { label: "Medium", dot: "bg-yellow-500", border: "border-l-yellow-400" },
+  medium: {
+    label: "Medium",
+    dot: "bg-yellow-500",
+    border: "border-l-yellow-400",
+  },
   low: { label: "Low", dot: "bg-green-500", border: "border-l-green-400" },
 };
 
@@ -14,9 +22,15 @@ interface TaskCardProps {
   onClick: (task: Task) => void;
 }
 
-export default function TaskCard({ task, onStatusChange, onClick }: TaskCardProps) {
+export default function TaskCard({
+  task,
+  onStatusChange,
+  onClick,
+}: TaskCardProps) {
   const p = priorityConfig[task.priority];
-  const isOverdue = task.dueDate && task.dueDate < Date.now() && task.status !== "done";
+  const now = useMemo(() => Date.now(), []); // eslint-disable-line react-hooks/purity
+  const isOverdue =
+    task.dueDate && task.dueDate < now && task.status !== "done";
   const checkedCount = task.checklist?.filter((c) => c.checked).length ?? 0;
   const totalItems = task.checklist?.length ?? 0;
 
@@ -39,21 +53,39 @@ export default function TaskCard({ task, onStatusChange, onClick }: TaskCardProp
         >
           {task.title}
         </p>
-        <span className={cn("h-2 w-2 rounded-full shrink-0 mt-1.5", p.dot)} title={p.label} />
+        <span
+          className={cn(
+            "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium",
+            p.dot === "bg-red-500" && "bg-red-100 text-red-700",
+            p.dot === "bg-orange-500" && "bg-orange-100 text-orange-700",
+            p.dot === "bg-yellow-500" && "bg-yellow-100 text-yellow-700",
+            p.dot === "bg-green-500" && "bg-green-100 text-green-700",
+          )}
+        >
+          {p.label}
+        </span>
       </div>
 
-      {/* Description */}
-      {task.description && (
-        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{task.description}</p>
+      {/* Due Date */}
+      {task.dueDate && (
+        <p
+          className={cn(
+            "mt-2 text-xs text-muted-foreground",
+            isOverdue && "font-semibold text-red-500",
+          )}
+        >
+          {isOverdue ? "⚠ Overdue: " : "Due: "}
+          {formatDate(task.dueDate)}
+        </p>
       )}
 
-      {/* Checklist progress */}
+      {/* Checklist Progress */}
       {totalItems > 0 && (
         <div className="mt-2 flex items-center gap-2">
-          <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
             <div
               className="h-full rounded-full bg-primary transition-all"
-              style={{ width: `${Math.round((checkedCount / totalItems) * 100)}%` }}
+              style={{ width: `${(checkedCount / totalItems) * 100}%` }}
             />
           </div>
           <span className="text-[10px] text-muted-foreground">
@@ -62,45 +94,41 @@ export default function TaskCard({ task, onStatusChange, onClick }: TaskCardProp
         </div>
       )}
 
-      {/* Footer */}
-      <div className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
-        {task.assignedName && (
-          <span className="truncate max-w-[100px]" title={task.assignedName}>
-            👤 {task.assignedName}
-          </span>
+      {/* Assignee & Status */}
+      <div className="mt-2 flex items-center justify-between">
+        {task.assignedName ? (
+          <div className="flex items-center gap-1.5">
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[9px] font-semibold text-primary">
+              {task.assignedName.charAt(0).toUpperCase()}
+            </div>
+            <span className="text-[10px] text-muted-foreground">
+              {task.assignedName}
+            </span>
+          </div>
+        ) : (
+          <div />
         )}
-        {task.dueDate && (
-          <span className={cn(isOverdue && "text-red-500 font-medium")}>
-            {isOverdue ? "⚠️ " : "📅 "}
-            {isOverdue ? "Overdue" : formatDate(task.dueDate)}
-          </span>
-        )}
-        {task.relatedTo && (
-          <span className="truncate max-w-[80px]">
-            🔗 {task.relatedTo.title || task.relatedTo.type}
-          </span>
-        )}
-      </div>
 
-      {/* Quick status toggle */}
-      <div className="mt-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        {(["todo", "in_progress", "done"] as const).map((s) => (
-          <button
-            key={s}
-            onClick={(e) => {
-              e.stopPropagation();
-              onStatusChange(task.id, s);
-            }}
-            className={cn(
-              "flex-1 rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors",
-              task.status === s
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-accent",
-            )}
-          >
-            {s === "todo" ? "To Do" : s === "in_progress" ? "Doing" : "Done"}
-          </button>
-        ))}
+        {/* Status Actions */}
+        <div className="flex gap-1">
+          {(["todo", "in_progress", "done"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={(e) => {
+                e.stopPropagation();
+                onStatusChange(task.id, s);
+              }}
+              className={cn(
+                "rounded px-1.5 py-0.5 text-[9px] font-medium transition-colors",
+                task.status === s
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent",
+              )}
+            >
+              {s === "todo" ? "Todo" : s === "in_progress" ? "Doing" : "Done"}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

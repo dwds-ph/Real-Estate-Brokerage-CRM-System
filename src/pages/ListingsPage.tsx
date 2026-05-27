@@ -5,7 +5,7 @@ import { useListings } from "@/hooks/useFirestore";
 import { createDoc, updateDocById, deleteDocById } from "@/hooks/useFirestore";
 import { Listing, ListingStatus, PropertyType, FloodRisk } from "@/types";
 import { formatCurrency, getListingStatusColor, cn } from "@/lib/utils";
-import PropertyMap from "@/components/map/PropertyMap";
+import PropertyMap, { type ListingMarker } from "@/components/map/PropertyMap";
 
 export default function ListingsPage() {
   const navigate = useNavigate();
@@ -452,7 +452,7 @@ export default function ListingsPage() {
           </div>
         ) : (
           <PropertyMap
-            listings={filtered as Listing[]}
+            listings={filtered as ListingMarker[]}
             height="600px"
             showFilters={true}
             showPOIs={true}

@@ -31,7 +31,8 @@ const mockGetDownloadURL = vi.fn();
 const mockDeleteObject = vi.fn();
 vi.mock("firebase/storage", () => ({
   ref: vi.fn((_storage, path) => ({ path, fullPath: path })),
-  uploadBytesResumable: (...args: unknown[]) => mockUploadBytesResumable(...args),
+  uploadBytesResumable: (...args: unknown[]) =>
+    mockUploadBytesResumable(...args),
   getDownloadURL: (...args: unknown[]) => mockGetDownloadURL(...args),
   deleteObject: (...args: unknown[]) => mockDeleteObject(...args),
 }));
@@ -43,11 +44,16 @@ vi.mock("@/hooks/useFirestore", () => ({
   deleteDocById: vi.fn(() => Promise.resolve()),
 }));
 
-const { createDoc, updateDocById, deleteDocById } = await import("@/hooks/useFirestore");
+const { createDoc, updateDocById, deleteDocById } =
+  await import("@/hooks/useFirestore");
 const { getDocs } = await import("firebase/firestore");
 
 // Create a minimal File-like object for testing
-function createMockFile(name = "test.pdf", size = 1024, type = "application/pdf"): File {
+function createMockFile(
+  name = "test.pdf",
+  size = 1024,
+  type = "application/pdf",
+): File {
   const blob = new Blob([new Uint8Array(size)], { type });
   return Object.assign(blob, {
     name,
@@ -66,15 +72,26 @@ describe("documentVault", () => {
       const file = createMockFile("contract.pdf");
       mockUploadBytesResumable.mockImplementation((_ref, _file) => {
         const uploadTask = {
-          on: (_event: string, progressCb: (...args: unknown[]) => void, errorCb: (...args: unknown[]) => void, completeCb: (...args: unknown[]) => void) => {
+          on: (
+            _event: string,
+            progressCb: (...args: unknown[]) => void,
+            errorCb: (...args: unknown[]) => void,
+            completeCb: (...args: unknown[]) => void,
+          ) => {
             progressCb({ bytesTransferred: 512, totalBytes: 1024 });
             completeCb();
           },
-          snapshot: { bytesTransferred: 512, totalBytes: 1024, state: "running" },
+          snapshot: {
+            bytesTransferred: 512,
+            totalBytes: 1024,
+            state: "running",
+          },
         };
         return uploadTask;
       });
-      mockGetDownloadURL.mockResolvedValue("https://storage.example.com/file.pdf");
+      mockGetDownloadURL.mockResolvedValue(
+        "https://storage.example.com/file.pdf",
+      );
 
       const url = await uploadVaultFile(file, "user-1");
       expect(url).toBe("https://storage.example.com/file.pdf");
@@ -86,16 +103,27 @@ describe("documentVault", () => {
 
       mockUploadBytesResumable.mockImplementation((_ref, _file) => {
         const uploadTask = {
-          on: (_event: string, progressCbInner: (...args: unknown[]) => void, _errorCb: (...args: unknown[]) => void, completeCb: (...args: unknown[]) => void) => {
+          on: (
+            _event: string,
+            progressCbInner: (...args: unknown[]) => void,
+            _errorCb: (...args: unknown[]) => void,
+            completeCb: (...args: unknown[]) => void,
+          ) => {
             progressCbInner({ bytesTransferred: 256, totalBytes: 1024 });
             completeCb();
           },
-          snapshot: { bytesTransferred: 256, totalBytes: 1024, state: "running" },
+          snapshot: {
+            bytesTransferred: 256,
+            totalBytes: 1024,
+            state: "running",
+          },
         };
         return uploadTask;
       });
 
-      mockGetDownloadURL.mockResolvedValue("https://storage.example.com/doc.pdf");
+      mockGetDownloadURL.mockResolvedValue(
+        "https://storage.example.com/doc.pdf",
+      );
 
       await uploadVaultFile(file, "user-1", progressCb);
       expect(progressCb).toHaveBeenCalledWith(
@@ -110,14 +138,20 @@ describe("documentVault", () => {
       const file = createMockFile("error.pdf");
       mockUploadBytesResumable.mockImplementation((_ref, _file) => {
         const uploadTask = {
-          on: (_event: string, _pc: (...args: unknown[]) => void, errorCb: (...args: unknown[]) => void) => {
+          on: (
+            _event: string,
+            _pc: (...args: unknown[]) => void,
+            errorCb: (...args: unknown[]) => void,
+          ) => {
             errorCb(new Error("Upload failed"));
           },
         };
         return uploadTask;
       });
 
-      await expect(uploadVaultFile(file, "user-1")).rejects.toThrow("Upload failed");
+      await expect(uploadVaultFile(file, "user-1")).rejects.toThrow(
+        "Upload failed",
+      );
     });
   });
 
@@ -211,16 +245,29 @@ describe("documentVault", () => {
       const file = createMockFile("new.pdf");
       mockUploadBytesResumable.mockImplementation((_ref, _file) => {
         const uploadTask = {
-          on: (_event: string, _pc: (...args: unknown[]) => void, _ec: (...args: unknown[]) => void, completeCb: (...args: unknown[]) => void) => {
+          on: (
+            _event: string,
+            _pc: (...args: unknown[]) => void,
+            _ec: (...args: unknown[]) => void,
+            completeCb: (...args: unknown[]) => void,
+          ) => {
             completeCb();
           },
           snapshot: { bytesTransferred: 0, totalBytes: 100, state: "running" },
         };
         return uploadTask;
       });
-      mockGetDownloadURL.mockResolvedValue("https://storage.example.com/new.pdf");
+      mockGetDownloadURL.mockResolvedValue(
+        "https://storage.example.com/new.pdf",
+      );
 
-      await updateVaultDocumentWithVersion("doc-1", currentDoc, {}, file, "user-1");
+      await updateVaultDocumentWithVersion(
+        "doc-1",
+        currentDoc,
+        {},
+        file,
+        "user-1",
+      );
 
       expect(updateDocById).toHaveBeenCalledWith(
         "vaultDocuments",
@@ -351,16 +398,16 @@ describe("documentVault", () => {
   describe("Category helpers", () => {
     it("getCategoryInfo should return correct info for each category", () => {
       expect(getCategoryInfo("title").label).toBe("Title");
-      expect(getCategoryInfo("tax").label).toBe("Tax");
+      expect(getCategoryInfo("tax-declaration").label).toBe("Tax Declaration");
       expect(getCategoryInfo("contract").label).toBe("Contract");
       expect(getCategoryInfo("identification").label).toBe("ID");
-      expect(getCategoryInfo("hoa").label).toBe("HOA");
-      expect(getCategoryInfo("miscellaneous").label).toBe("Misc");
+      expect(getCategoryInfo("permit").label).toBe("Permit");
+      expect(getCategoryInfo("other").label).toBe("Other");
     });
 
     it("getCategoryInfo should fallback to miscellaneous for unknown category", () => {
       const result = getCategoryInfo("unknown" as any); // eslint-disable-line @typescript-eslint/no-explicit-any
-      expect(result.label).toBe("Misc");
+      expect(result.label).toBe("Other");
     });
 
     it("DOCUMENT_CATEGORIES should have correct structure", () => {

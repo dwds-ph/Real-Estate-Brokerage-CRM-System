@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { SkeletonCard, SkeletonTable, SkeletonListItem } from "@/components/Skeleton";
+import { render } from "@testing-library/react";
+import {
+  SkeletonCard,
+  SkeletonTable,
+  SkeletonListItem,
+} from "@/components/Skeleton";
 
 describe("Skeleton", () => {
   describe("SkeletonCard", () => {

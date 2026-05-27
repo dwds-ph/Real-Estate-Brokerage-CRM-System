@@ -290,6 +290,7 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
                                     <button
                                       onClick={() => {
                                         if (!rule.specialtyMap) return;
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         const { [interest]: _, ...rest } =
                                           rule.specialtyMap;
                                         updateRule(i, { specialtyMap: rest });
@@ -375,6 +376,7 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
                                     <button
                                       onClick={() => {
                                         if (!rule.locationMap) return;
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         const { [location]: _, ...rest } =
                                           rule.locationMap;
                                         updateRule(i, { locationMap: rest });

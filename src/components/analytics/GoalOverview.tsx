@@ -1,10 +1,22 @@
+interface GoalProgress {
+  goal: import("@/types").AgentGoal;
+  dealsClosed: number;
+  dealProgress: number;
+  commissionProgress: number;
+  commission: number;
+}
+
 interface Props {
-  goalsWithProgress: any[];
+  goalsWithProgress: GoalProgress[];
 }
 
 export default function GoalOverview({ goalsWithProgress }: Props) {
   if (goalsWithProgress.length === 0) {
-    return <div className="rounded-lg border bg-card p-6 text-center text-sm text-muted-foreground">No goals set yet</div>;
+    return (
+      <div className="rounded-lg border bg-card p-6 text-center text-sm text-muted-foreground">
+        No goals set yet
+      </div>
+    );
   }
 
   return (
@@ -21,14 +33,24 @@ export default function GoalOverview({ goalsWithProgress }: Props) {
           </tr>
         </thead>
         <tbody>
-          {goalsWithProgress.map((item: any) => (
+          {goalsWithProgress.map((item: GoalProgress) => (
             <tr key={item.goal.id} className="border-t">
-              <td className="px-2 py-1.5 font-medium">{item.goal.agentName || "—"}</td>
+              <td className="px-2 py-1.5 font-medium">
+                {item.goal.agentName || "—"}
+              </td>
               <td className="px-2 py-1.5 capitalize">{item.goal.period}</td>
-              <td className="px-2 py-1.5 text-right">{item.goal.targetDeals} deals</td>
-              <td className="px-2 py-1.5 text-right font-medium">{item.dealsClosed}</td>
-              <td className="px-2 py-1.5 text-right">{Math.round(item.dealProgress * 100)}%</td>
-              <td className="px-2 py-1.5 text-right">{Math.round(item.commissionProgress * 100)}%</td>
+              <td className="px-2 py-1.5 text-right">
+                {item.goal.targetDeals} deals
+              </td>
+              <td className="px-2 py-1.5 text-right font-medium">
+                {item.dealsClosed}
+              </td>
+              <td className="px-2 py-1.5 text-right">
+                {Math.round(item.dealProgress * 100)}%
+              </td>
+              <td className="px-2 py-1.5 text-right">
+                {Math.round(item.commissionProgress * 100)}%
+              </td>
             </tr>
           ))}
         </tbody>

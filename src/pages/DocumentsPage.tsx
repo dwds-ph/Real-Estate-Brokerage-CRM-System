@@ -1,9 +1,19 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { subscribePropertyDocuments, createDocument, uploadDocumentFile } from "@/services/documentVaultService";
+import {
+  subscribePropertyDocuments,
+  createDocument,
+  uploadDocumentFile,
+} from "@/services/documentVaultService";
 import { DocumentVault, DocumentUploadForm } from "@/components/documents";
-import type { PropertyDocument } from "@/types";
-import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import type { PropertyDocument, DocumentCategory, Listing } from "@/types";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export default function DocumentsPage() {
@@ -14,28 +24,44 @@ export default function DocumentsPage() {
   const [showUpload, setShowUpload] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selectedListingId, setSelectedListingId] = useState("");
-  const [listings, setListings] = useState<any[]>([]);
+  const [listings, setListings] = useState<Listing[]>([]);
 
   useEffect(() => {
     if (!brokerId) return;
     const unsub = onSnapshot(
-      query(collection(db, "listings"), where("brokerId", "==", brokerId), orderBy("createdAt", "desc")),
-      (snap) => setListings(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      query(
+        collection(db, "listings"),
+        where("brokerId", "==", brokerId),
+        orderBy("createdAt", "desc"),
+      ),
+      (snap) =>
+        setListings(
+          snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Listing[],
+        ),
     );
     return unsub;
   }, [brokerId]);
 
   useEffect(() => {
     if (!brokerId) return;
-    setLoading(true);
-    const unsub = subscribePropertyDocuments(brokerId, selectedListingId || undefined, (items) => {
-      setDocuments(items);
-      setLoading(false);
-    });
+    const unsub = subscribePropertyDocuments(
+      brokerId,
+      selectedListingId || undefined,
+      (items) => {
+        setDocuments(items);
+        setLoading(false);
+      },
+    );
     return unsub;
   }, [brokerId, selectedListingId]);
 
-  const handleUpload = async (data: { name: string; category: any; file: File | null; expiryDate: string; notes: string }) => {
+  const handleUpload = async (data: {
+    name: string;
+    category: DocumentCategory;
+    file: File | null;
+    expiryDate: string;
+    notes: string;
+  }) => {
     if (!data.file || !userProfile || !brokerId) return;
     setSaving(true);
     try {
@@ -48,7 +74,9 @@ export default function DocumentsPage() {
         fileType: data.file.type,
         listingId: selectedListingId || undefined,
         notes: data.notes || undefined,
-        expiryDate: data.expiryDate ? new Date(data.expiryDate).getTime() : undefined,
+        expiryDate: data.expiryDate
+          ? new Date(data.expiryDate).getTime()
+          : undefined,
         uploadedBy: userProfile.id,
         uploadedByName: userProfile.displayName,
         brokerId,
@@ -64,22 +92,40 @@ export default function DocumentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Documents Vault</h1>
-          <p className="text-sm text-muted-foreground">{documents.length} documents</p>
+          <p className="text-sm text-muted-foreground">
+            {documents.length} documents
+          </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         <label className="text-xs font-medium">Filter by listing:</label>
-        <select value={selectedListingId} onChange={(e) => setSelectedListingId(e.target.value)} className="rounded-lg border bg-background px-3 py-1.5 text-sm max-w-xs">
+        <select
+          value={selectedListingId}
+          onChange={(e) => setSelectedListingId(e.target.value)}
+          className="rounded-lg border bg-background px-3 py-1.5 text-sm max-w-xs"
+        >
           <option value="">All Listings</option>
-          {listings.map((l) => <option key={l.id} value={l.id}>{l.title}</option>)}
+          {listings.map((l) => (
+            <option key={l.id} value={l.id}>
+              {l.title}
+            </option>
+          ))}
         </select>
       </div>
 
       {showUpload ? (
-        <DocumentUploadForm onSave={handleUpload} onCancel={() => setShowUpload(false)} saving={saving} />
+        <DocumentUploadForm
+          onSave={handleUpload}
+          onCancel={() => setShowUpload(false)}
+          saving={saving}
+        />
       ) : (
-        <DocumentVault documents={documents} onUpload={() => setShowUpload(true)} loading={loading} />
+        <DocumentVault
+          documents={documents}
+          onUpload={() => setShowUpload(true)}
+          loading={loading}
+        />
       )}
     </div>
   );
