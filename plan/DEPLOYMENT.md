@@ -33,7 +33,7 @@
 
 | Tool         | Version       | Check Command        |
 | ------------ | ------------- | -------------------- |
-| Node.js      | ^18.0.0 (LTS) | `node --version`     |
+| Node.js      | ^24.0.0 (LTS) | `node --version`     |
 | yarn         | ^1.22.0       | `yarn --version`     |
 | Firebase CLI | ^13.0.0       | `firebase --version` |
 | Git          | ^2.30.0       | `git --version`      |
@@ -767,7 +767,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 24
           cache: yarn
 
       - run: yarn install --immutable
