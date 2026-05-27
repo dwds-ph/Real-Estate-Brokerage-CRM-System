@@ -403,7 +403,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **15.13** Integrate activity timeline into `LeadDetailPage.tsx` and `DealDetailPage.tsx`
 - [x] **15.14** Add route `/tasks` + sidebar nav entry
 - [x] **15.15** Firestore rules for `tasks`, `activities`, `callLogs`, `checklists`, `checklistTemplates` collections
-- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+- [x] **Validation:** typecheck ✓ build ✓
 
 **Files created:**
 - `src/types/index.ts` — Task, TaskStatus, TaskPriority, ActivityLog, CallLog, Checklist, ChecklistTemplate types

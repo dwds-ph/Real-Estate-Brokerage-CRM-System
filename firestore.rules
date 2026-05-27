@@ -239,6 +239,20 @@ service cloud.firestore {
     }
 
     // -----------------------------------------------------------------------
+    // CALL LOGS  (per-lead/per-deal call tracking)
+    //   read:    broker, same org, or owning agent
+    //   create:  any staff
+    //   update:  broker or owning agent
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /callLogs/{logId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.createdBy == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['contactName', 'duration', 'brokerId']);
+      allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
     // EXPENSES
     //   read:    broker, same org, or self (agentId)
     //   create:  any staff

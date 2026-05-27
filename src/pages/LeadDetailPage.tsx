@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDoc, updateDocById } from "@/hooks/useFirestore";
 import { useAuth } from "@/context/AuthContext";
-import { Lead, CommLogEntry } from "@/types";
+import { Lead, CommLogEntry, type ActivityLog } from "@/types";
 import { timeAgo, getLeadStatusColor, getScoreColor, cn } from "@/lib/utils";
 import QuickLog from "@/components/automation/QuickLog";
 import ChecklistWidget from "@/components/automation/ChecklistWidget";
 import LeadMatchPanel from "@/components/matching/LeadMatchPanel";
+import { ActivityTimeline } from "@/components/tasks";
+import { subscribeActivityForLead } from "@/services/activityService";
 
 const STATUS_OPTIONS = [
   "new",
@@ -26,6 +28,17 @@ export default function LeadDetailPage() {
   const [commText, setCommText] = useState("");
   const [commType, setCommType] = useState<CommLogEntry["type"]>("call");
   const [saving, setSaving] = useState(false);
+  const [activities, setActivities] = useState<ActivityLog[]>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
+
+  useEffect(() => {
+    setActivitiesLoading(true);
+    const unsub = subscribeActivityForLead(id, (items) => {
+      setActivities(items);
+      setActivitiesLoading(false);
+    });
+    return unsub;
+  }, [id]);
 
   if (loading) {
     return (
@@ -208,6 +221,16 @@ export default function LeadDetailPage() {
               )}
             </div>
           </div>
+
+          {/* External Activity Log */}
+          <div className="rounded-lg border bg-card p-6">
+            <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
+            <ActivityTimeline
+              activities={activities}
+              loading={activitiesLoading}
+            />
+          </div>
+
         </div>
 
         {/* Communication Log */}
