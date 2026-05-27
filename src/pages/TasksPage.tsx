@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useTasks, createDoc, updateDocById } from '@/hooks/useFirestore';
 import { TaskItem } from '@/types';
 import { formatDate, cn } from '@/lib/utils';
+import { addDays, addWeeks, addMonths } from 'date-fns';
 
 export default function TasksPage() {
   const { userProfile } = useAuth();
@@ -15,6 +16,7 @@ export default function TasksPage() {
     description: '',
     priority: 'medium' as TaskItem['priority'],
     dueDate: '',
+    recurring: 'none' as TaskItem['recurring'],
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,14 +29,45 @@ export default function TasksPage() {
       createdBy: userProfile.id,
       status: 'pending',
     });
-    setForm({ title: '', description: '', priority: 'medium', dueDate: '' });
+    setForm({ title: '', description: '', priority: 'medium', dueDate: '', recurring: 'none' });
     setShowForm(false);
   };
 
   const handleToggle = async (task: TaskItem) => {
+    const newStatus = task.status === 'done' ? 'pending' : 'done';
     await updateDocById('tasks', task.id, {
-      status: task.status === 'done' ? 'pending' : 'done',
+      status: newStatus,
     });
+
+    // If marked as done and has recurring, auto-create next instance
+    if (newStatus === 'done' && task.recurring && task.recurring !== 'none' && task.dueDate) {
+      let nextDue: Date;
+      const due = new Date(task.dueDate);
+      switch (task.recurring) {
+        case 'daily':
+          nextDue = addDays(due, 1);
+          break;
+        case 'weekly':
+          nextDue = addWeeks(due, 1);
+          break;
+        case 'monthly':
+          nextDue = addMonths(due, 1);
+          break;
+        default:
+          nextDue = addWeeks(due, 1);
+      }
+      await createDoc('tasks', {
+        title: task.title,
+        description: task.description || '',
+        priority: task.priority,
+        dueDate: nextDue.getTime(),
+        agentId: task.agentId,
+        createdBy: task.createdBy,
+        status: 'pending',
+        recurring: task.recurring,
+        relatedTo: task.relatedTo || null,
+      });
+    }
   };
 
   const filtered = tasks
@@ -91,6 +124,15 @@ export default function TasksPage() {
               <input type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
             </div>
           </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Recurring</label>
+            <select value={form.recurring} onChange={(e) => setForm({ ...form, recurring: e.target.value as TaskItem['recurring'] })} className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
+              <option value="none">None</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
           <button type="submit" className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Create Task</button>
         </form>
       )}
@@ -121,6 +163,11 @@ export default function TasksPage() {
                     })}>
                       {task.priority}
                     </span>
+                    {task.recurring && task.recurring !== 'none' && (
+                      <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                        ↻ {task.recurring}
+                      </span>
+                    )}
                   </div>
                   {task.description && <p className="text-xs text-muted-foreground mt-1">{task.description}</p>}
                   {task.dueDate && <p className="text-xs text-muted-foreground mt-1">Due: {formatDate(task.dueDate)}</p>}

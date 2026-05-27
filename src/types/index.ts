@@ -5,6 +5,8 @@ export interface AppUser {
   role: UserRole;
   brokerId?: string;
   teamId?: string;
+  officeId?: string;
+  officeName?: string;
   displayName: string;
   email: string;
   phone?: string;
@@ -193,6 +195,7 @@ export interface TaskItem {
   priority: 'high' | 'medium' | 'low';
   dueDate?: number;
   status: 'pending' | 'done';
+  recurring?: 'none' | 'daily' | 'weekly' | 'monthly';
   relatedTo?: {
     type: 'lead' | 'listing' | 'deal';
     id: string;
@@ -238,4 +241,140 @@ export interface AuditLog {
   before?: unknown;
   after?: unknown;
   timestamp: number;
+}
+
+// ─── Phase 13: Document Vault ─────────────────────────────────────
+
+export type DocumentCategory = 'title' | 'tax' | 'contract' | 'identification' | 'hoa' | 'miscellaneous';
+
+export interface VaultDocument {
+  id: string;
+  dealId?: string;
+  listingId?: string;
+  stage?: string;
+  name: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  category: DocumentCategory;
+  uploadedBy: string;
+  uploadedAt: number;
+  version: number;
+  previousVersionId?: string;
+  expiryDate?: number;
+  notes?: string;
+  tags: string[];
+}
+
+export interface DocumentRequest {
+  id: string;
+  fromUserId: string;
+  toUserId: string;
+  dealId?: string;
+  description: string;
+  status: 'pending' | 'uploaded' | 'cancelled';
+  createdAt: number;
+  respondedAt?: number;
+  uploadedDocId?: string;
+}
+
+// ─── Phase 14: Mortgage Tracker ───────────────────────────────────
+
+export type MortgageStage = 'application' | 'bank-evaluation' | 'bir-docs' | 'rod' | 'loan-release';
+export type MortgageStatus = 'ongoing' | 'approved' | 'rejected';
+
+export interface Mortgage {
+  id: string;
+  dealId: string;
+  bankId: string;
+  bankName: string;
+  loanAmount: number;
+  status: MortgageStatus;
+  currentStage: MortgageStage;
+  stages: {
+    key: MortgageStage;
+    label: string;
+    status: 'pending' | 'in-progress' | 'done';
+    startedAt?: number;
+    completedAt?: number;
+    notes?: string;
+  }[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface BankProfile {
+  id: string;
+  name: string;
+  typicalRate: string;
+  estimatedTimelineDays: number;
+}
+
+// ─── Phase 17: Unified Calendar ───────────────────────────────────
+
+export type CalendarEventType = 'viewing' | 'task' | 'deal-milestone' | 'document-expiry';
+
+export interface CalendarEvent {
+  id: string;
+  type: CalendarEventType;
+  title: string;
+  start: number;
+  end?: number;
+  allDay?: boolean;
+  sourceId: string;
+  sourceUrl: string;
+  color: string;
+  metadata?: Record<string, unknown>;
+}
+
+// ─── Phase 18: Automation ─────────────────────────────────────────
+
+export interface CommTemplate {
+  id: string;
+  name: string;
+  type: 'call' | 'text' | 'meeting' | 'email';
+  body: string;
+  createdBy: string;
+  createdAt: number;
+}
+
+export interface ChecklistTemplate {
+  id: string;
+  name: string;
+  scope: 'lead' | 'listing' | 'deal';
+  items: { label: string; required: boolean }[];
+  createdBy: string;
+  createdAt: number;
+}
+
+export interface ChecklistInstance {
+  id: string;
+  templateId: string;
+  templateName: string;
+  scopeType: 'lead' | 'listing' | 'deal';
+  scopeId: string;
+  items: { label: string; required: boolean; done: boolean }[];
+  progress: number;
+  createdAt: number;
+}
+
+export interface Referral {
+  id: string;
+  dealId: string;
+  referrerName: string;
+  referrerContact: string;
+  referralFee: number;
+  status: 'pending' | 'paid';
+  paidAt?: number;
+  createdAt: number;
+}
+
+// ─── Phase 19: Platform ───────────────────────────────────────────
+
+export interface Office {
+  id: string;
+  name: string;
+  address: string;
+  brokerId: string;
+  createdAt: number;
 }

@@ -185,6 +185,26 @@ export default function SettingsPage() {
               <p className="text-xs text-muted-foreground capitalize">{userProfile.role}</p>
             </div>
           </div>
+
+          {userProfile.officeName && (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Office</p>
+                <p className="text-xs text-muted-foreground">{userProfile.officeName}</p>
+              </div>
+            </div>
+          )}
+
+          {userProfile.officeId && (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Office ID</p>
+                <p className="text-xs text-muted-foreground">
+                  <code className="text-xs">{userProfile.officeId}</code>
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDoc } from '@/hooks/useFirestore';
 import { Listing } from '@/types';
 import { formatCurrency, getListingStatusColor, cn } from '@/lib/utils';
+import PropertyMap from '@/components/map/PropertyMap';
 
 export default function ListingDetailPage() {
   const { id } = useParams();
@@ -98,6 +99,18 @@ export default function ListingDetailPage() {
             <h2 className="text-lg font-semibold mb-3">Location</h2>
             <p className="text-sm">{listing.location?.address}</p>
             <p className="text-sm text-muted-foreground">{listing.location?.city}, {listing.location?.province}</p>
+          </div>
+
+          {/* Map */}
+          <div className="rounded-lg border bg-card overflow-hidden">
+            <h2 className="text-lg font-semibold p-6 pb-0">Property Map</h2>
+            <PropertyMap
+              listings={[listing]}
+              height="350px"
+              singleMarker={true}
+              showFilters={false}
+              showPOIs={true}
+            />
           </div>
 
           {/* Amenities */}

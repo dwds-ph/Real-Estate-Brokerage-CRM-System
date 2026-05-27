@@ -5,6 +5,7 @@ import { useListings } from '@/hooks/useFirestore';
 import { createDoc, updateDocById, deleteDocById } from '@/hooks/useFirestore';
 import { Listing, ListingStatus, PropertyType, FloodRisk } from '@/types';
 import { formatCurrency, getListingStatusColor, cn } from '@/lib/utils';
+import PropertyMap from '@/components/map/PropertyMap';
 
 export default function ListingsPage() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function ListingsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<ListingStatus | 'all'>('all');
   const [search, setSearch] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
 
   const [form, setForm] = useState({
     title: '',
@@ -120,9 +122,36 @@ export default function ListingsPage() {
           <h1 className="text-2xl font-bold">Listings</h1>
           <p className="text-muted-foreground">{listings.length} total listings</p>
         </div>
-        <button onClick={() => { resetForm(); setShowForm(!showForm); }} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-          {showForm ? 'Cancel' : '+ New Listing'}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Map/Grid Toggle */}
+          <div className="flex rounded-lg border bg-card overflow-hidden">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={cn(
+                'px-3 py-2 text-sm font-medium transition-colors',
+                viewMode === 'grid'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-muted',
+              )}
+            >
+              📋 Grid
+            </button>
+            <button
+              onClick={() => setViewMode('map')}
+              className={cn(
+                'px-3 py-2 text-sm font-medium transition-colors',
+                viewMode === 'map'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-muted',
+              )}
+            >
+              🗺️ Map
+            </button>
+          </div>
+          <button onClick={() => { resetForm(); setShowForm(!showForm); }} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            {showForm ? 'Cancel' : '+ New Listing'}
+          </button>
+        </div>
       </div>
 
       {/* Filter chips */}
@@ -225,55 +254,73 @@ export default function ListingsPage() {
         </form>
       )}
 
-      {/* Listing Cards */}
-      {loading ? (
-        <div className="flex justify-center py-8"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>
-      ) : filtered.length === 0 ? (
-        <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-          {search ? 'No listings match your search.' : 'No listings yet.'}
-        </div>
+      {/* Map View */}
+      {viewMode === 'map' ? (
+        loading ? (
+          <div className="flex justify-center py-8"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>
+        ) : filtered.length === 0 ? (
+          <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+            {search ? 'No listings match your search.' : 'No listings to display on map.'}
+          </div>
+        ) : (
+          <PropertyMap
+            listings={filtered as Listing[]}
+            height="600px"
+            showFilters={true}
+            showPOIs={true}
+          />
+        )
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((l) => {
-            const listing = l as Listing;
-            return (
-              <div key={listing.id} className="rounded-lg border bg-card overflow-hidden hover:shadow-sm transition-shadow cursor-pointer" onClick={() => navigate(`/listings/${listing.id}`)}>
-                {/* Image Placeholder */}
-                <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                  {listing.media && listing.media.length > 0 ? (
-                    <img src={listing.media[0]} alt={listing.title} className="h-full w-full object-cover" />
-                  ) : (
-                    <span className="text-4xl text-muted-foreground/30">🏠</span>
-                  )}
-                </div>
-                <div className="p-4 space-y-2">
-                  <div className="flex items-start justify-between">
-                    <h3 className="font-medium text-sm line-clamp-1">{listing.title}</h3>
-                    <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', getListingStatusColor(listing.status))}>
-                      {listing.status}
-                    </span>
-                  </div>
-                  <p className="text-lg font-bold">{formatCurrency(listing.price)}</p>
-                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    {listing.location?.city && <span>📍 {listing.location.city}</span>}
-                    {listing.propertyDetails?.bedrooms && <span>🛏️ {listing.propertyDetails.bedrooms} BR</span>}
-                    {listing.propertyDetails?.bathrooms && <span>🚿 {listing.propertyDetails.bathrooms} BR</span>}
-                    {listing.propertyDetails?.lotArea && <span>📐 {listing.propertyDetails.lotArea} sqm</span>}
-                    <span className="capitalize">{listing.propertyType}</span>
-                    {listing.floodRisk && listing.floodRisk !== 'unknown' && (
-                      <span>🌊 {listing.floodRisk}</span>
+        /* Grid View */
+        loading ? (
+          <div className="flex justify-center py-8"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>
+        ) : filtered.length === 0 ? (
+          <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+            {search ? 'No listings match your search.' : 'No listings yet.'}
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((l) => {
+              const listing = l as Listing;
+              return (
+                <div key={listing.id} className="rounded-lg border bg-card overflow-hidden hover:shadow-sm transition-shadow cursor-pointer" onClick={() => navigate(`/listings/${listing.id}`)}>
+                  {/* Image Placeholder */}
+                  <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    {listing.media && listing.media.length > 0 ? (
+                      <img src={listing.media[0]} alt={listing.title} className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-4xl text-muted-foreground/30">🏠</span>
                     )}
                   </div>
-                  <div className="flex justify-between text-xs text-muted-foreground pt-2 border-t">
-                    <span>👁️ {listing.views || 0}</span>
-                    <button onClick={(e) => { e.stopPropagation(); editListing(listing); }} className="hover:text-foreground">✏️</button>
-                    <button onClick={(e) => { e.stopPropagation(); handleDelete(listing.id); }} className="text-red-500 hover:text-red-700">🗑️</button>
+                  <div className="p-4 space-y-2">
+                    <div className="flex items-start justify-between">
+                      <h3 className="font-medium text-sm line-clamp-1">{listing.title}</h3>
+                      <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', getListingStatusColor(listing.status))}>
+                        {listing.status}
+                      </span>
+                    </div>
+                    <p className="text-lg font-bold">{formatCurrency(listing.price)}</p>
+                    <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                      {listing.location?.city && <span>📍 {listing.location.city}</span>}
+                      {listing.propertyDetails?.bedrooms && <span>🛏️ {listing.propertyDetails.bedrooms} BR</span>}
+                      {listing.propertyDetails?.bathrooms && <span>🚿 {listing.propertyDetails.bathrooms} BR</span>}
+                      {listing.propertyDetails?.lotArea && <span>📐 {listing.propertyDetails.lotArea} sqm</span>}
+                      <span className="capitalize">{listing.propertyType}</span>
+                      {listing.floodRisk && listing.floodRisk !== 'unknown' && (
+                        <span>🌊 {listing.floodRisk}</span>
+                      )}
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground pt-2 border-t">
+                      <span>👁️ {listing.views || 0}</span>
+                      <button onClick={(e) => { e.stopPropagation(); editListing(listing); }} className="hover:text-foreground">✏️</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleDelete(listing.id); }} className="text-red-500 hover:text-red-700">🗑️</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )
       )}
     </div>
   );

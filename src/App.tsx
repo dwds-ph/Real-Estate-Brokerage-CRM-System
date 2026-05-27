@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { useFcmService } from '@/services/fcm';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import ShortcutsHelpModal from '@/components/ShortcutsHelpModal';
 import LoginPage from '@/pages/LoginPage';
 import DashboardPage from '@/pages/DashboardPage';
 import LeadsPage from '@/pages/LeadsPage';
@@ -14,6 +16,10 @@ import CommissionsPage from '@/pages/CommissionsPage';
 import TasksPage from '@/pages/TasksPage';
 import AgentsPage from '@/pages/AgentsPage';
 import SettingsPage from '@/pages/SettingsPage';
+import OfficesPage from '@/pages/OfficesPage';
+import NotificationPreferencesPage from '@/pages/NotificationPreferencesPage';
+import CalendarPage from '@/pages/CalendarPage';
+import RemindersPage from '@/pages/RemindersPage';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import OnboardingPage from '@/pages/OnboardingPage';
 import AppLayout from '@/components/layout/AppLayout';
@@ -22,10 +28,18 @@ import ClientPortalPage from '@/pages/ClientPortalPage';
 import ExpensesPage from '@/pages/ExpensesPage';
 import PhToolsPage from '@/pages/PhToolsPage';
 import NotificationsPage from '@/pages/NotificationsPage';
+import VaultPage from '@/pages/VaultPage';
+import MortgagePage from '@/pages/MortgagePage';
+import AnalyticsPage from '@/pages/AnalyticsPage';
 
 function AppContent() {
   useFcmService();
   return null;
+}
+
+function AppKeyboardShortcuts() {
+  const { helpOpen, setHelpOpen, shortcuts } = useKeyboardShortcuts();
+  return <ShortcutsHelpModal open={helpOpen} onClose={() => setHelpOpen(false)} shortcuts={shortcuts} />;
 }
 
 function App() {
@@ -33,6 +47,7 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <AppContent />
+        <AppKeyboardShortcuts />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
@@ -54,7 +69,14 @@ function App() {
               <Route path="/expenses" element={<ExpensesPage />} />
               <Route path="/ph-tools" element={<PhToolsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/offices" element={<OfficesPage />} />
+              <Route path="/vault" element={<VaultPage />} />
+              <Route path="/mortgages" element={<MortgagePage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/reminders" element={<RemindersPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/settings/notifications" element={<NotificationPreferencesPage />} />
             </Route>
           </Route>
         </Routes>

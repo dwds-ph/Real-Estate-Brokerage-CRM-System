@@ -14,10 +14,14 @@ const navItems = [
   { to: '/commissions', label: 'Commissions', icon: '💰' },
   { to: '/tasks', label: 'Tasks', icon: '✅' },
   { to: '/agents', label: 'Agents', icon: '👤' },
+  { to: '/offices', label: 'Offices', icon: '🏢' },
   { to: '/expenses', label: 'Expenses', icon: '💳' },
   { to: '/ph-tools', label: 'PH Tools', icon: '🇵🇭' },
+  { to: '/vault', label: 'Vault', icon: '📁' },
+  { to: '/mortgages', label: 'Mortgages', icon: '🏦' },
+  { to: '/analytics', label: 'Analytics', icon: '📈' },
+  { to: '/calendar', label: 'Calendar', icon: '📅' },
 ];
-
 export default function AppLayout() {
   const { userProfile, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
