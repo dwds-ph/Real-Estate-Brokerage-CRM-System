@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   collection,
   query,
@@ -13,15 +13,15 @@ import {
   doc,
   DocumentData,
   QueryConstraint,
-} from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase';
-import { useAuth } from '@/context/AuthContext';
+} from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 
 // ─── Generic Firestore Hook ─────────────────────────────────────────
 export function useCollection<T extends DocumentData>(
   collectionName: string,
-  constraints: QueryConstraint[] = []
+  constraints: QueryConstraint[] = [],
 ) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,22 +42,25 @@ export function useCollection<T extends DocumentData>(
       (err) => {
         setError(err.message);
         setLoading(false);
-      }
+      },
     );
     return unsubscribe;
-  }, [collectionName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionName, JSON.stringify(constraints)]);
 
   return { data, loading, error };
 }
 
-export function useDoc<T extends DocumentData>(collectionName: string, docId: string | undefined) {
+export function useDoc<T extends DocumentData>(
+  collectionName: string,
+  docId: string | undefined,
+) {
   const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!docId);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!docId) {
-      setLoading(false);
       return;
     }
     const unsub = onSnapshot(
@@ -73,7 +76,7 @@ export function useDoc<T extends DocumentData>(collectionName: string, docId: st
       (err) => {
         setError(err.message);
         setLoading(false);
-      }
+      },
     );
     return unsub;
   }, [collectionName, docId]);
@@ -83,7 +86,10 @@ export function useDoc<T extends DocumentData>(collectionName: string, docId: st
 
 // ─── CRUD Helpers ──────────────────────────────────────────────────
 
-export async function createDoc(collectionName: string, data: Record<string, unknown>) {
+export async function createDoc(
+  collectionName: string,
+  data: Record<string, unknown>,
+) {
   const docRef = await addDoc(collection(db, collectionName), {
     ...data,
     createdAt: Date.now(),
@@ -92,7 +98,11 @@ export async function createDoc(collectionName: string, data: Record<string, unk
   return docRef.id;
 }
 
-export async function updateDocById(collectionName: string, docId: string, data: Record<string, unknown>) {
+export async function updateDocById(
+  collectionName: string,
+  docId: string,
+  data: Record<string, unknown>,
+) {
   await updateDoc(doc(db, collectionName, docId), {
     ...data,
     updatedAt: Date.now(),
@@ -103,18 +113,20 @@ export async function deleteDocById(collectionName: string, docId: string) {
   await deleteDoc(doc(db, collectionName, docId));
 }
 
-export async function getDocById<T extends DocumentData>(collectionName: string, docId: string): Promise<T | null> {
-  const snap = await getDocs(query(collection(db, collectionName), where('__name__', '==', docId)));
+export async function getDocById<T extends DocumentData>(
+  collectionName: string,
+  docId: string,
+): Promise<T | null> {
+  const snap = await getDocs(
+    query(collection(db, collectionName), where("__name__", "==", docId)),
+  );
   if (snap.empty) return null;
   return { id: snap.docs[0].id, ...snap.docs[0].data() } as unknown as T;
 }
 
 // ─── File Upload ─────────────────────────────────────────────────────
 
-export async function uploadFile(
-  path: string,
-  file: File
-): Promise<string> {
+export async function uploadFile(path: string, file: File): Promise<string> {
   const storageRef = ref(storage, path);
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
@@ -124,65 +136,85 @@ export async function uploadFile(
 
 export function useLeads(agentId?: string) {
   const { userProfile } = useAuth();
-  const isBroker = userProfile?.role === 'broker';
-  const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(100)];
+  const isBroker = userProfile?.role === "broker";
+  const constraints: QueryConstraint[] = [
+    orderBy("createdAt", "desc"),
+    limit(100),
+  ];
 
   if (!isBroker && agentId) {
-    constraints.unshift(where('assignedTo', '==', agentId));
+    constraints.unshift(where("assignedTo", "==", agentId));
   }
 
-  return useCollection('leads', constraints);
+  return useCollection("leads", constraints);
 }
 
 export function useListings(agentId?: string) {
   const { userProfile } = useAuth();
-  const isBroker = userProfile?.role === 'broker';
-  const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(100)];
+  const isBroker = userProfile?.role === "broker";
+  const constraints: QueryConstraint[] = [
+    orderBy("createdAt", "desc"),
+    limit(100),
+  ];
 
   if (!isBroker && agentId) {
-    constraints.unshift(where('assignedTo', '==', agentId));
+    constraints.unshift(where("assignedTo", "==", agentId));
   }
 
-  return useCollection('listings', constraints);
+  return useCollection("listings", constraints);
 }
 
 export function useViewings(agentId?: string) {
-  const constraints: QueryConstraint[] = [orderBy('scheduledAt', 'desc'), limit(100)];
+  const constraints: QueryConstraint[] = [
+    orderBy("scheduledAt", "desc"),
+    limit(100),
+  ];
   if (agentId) {
-    constraints.unshift(where('agentId', '==', agentId));
+    constraints.unshift(where("agentId", "==", agentId));
   }
-  return useCollection('viewings', constraints);
+  return useCollection("viewings", constraints);
 }
 
 export function useDeals() {
   const { userProfile } = useAuth();
-  const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(100)];
-  if (userProfile?.role !== 'broker') {
-    constraints.unshift(where('createdBy', '==', userProfile?.id));
+  const constraints: QueryConstraint[] = [
+    orderBy("createdAt", "desc"),
+    limit(100),
+  ];
+  if (userProfile?.role !== "broker") {
+    constraints.unshift(where("createdBy", "==", userProfile?.id));
   }
-  return useCollection('deals', constraints);
+  return useCollection("deals", constraints);
 }
 
 export function useTasks(agentId?: string) {
-  const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(100)];
+  const constraints: QueryConstraint[] = [
+    orderBy("createdAt", "desc"),
+    limit(100),
+  ];
   if (agentId) {
-    constraints.unshift(where('agentId', '==', agentId));
+    constraints.unshift(where("agentId", "==", agentId));
   }
-  return useCollection('tasks', constraints);
+  return useCollection("tasks", constraints);
 }
 
 export function useNotifications(userId: string | undefined) {
   const constraints: QueryConstraint[] = [
-    where('userId', '==', userId || ''),
-    orderBy('createdAt', 'desc'),
+    where("userId", "==", userId || ""),
+    orderBy("createdAt", "desc"),
     limit(50),
   ];
-  return useCollection('notifications', userId ? constraints : []);
+  return useCollection("notifications", userId ? constraints : []);
 }
 
 export function useAgents(brokerId: string | undefined) {
   return useCollection(
-    'users',
-    brokerId ? [where('brokerId', '==', brokerId), where('role', 'in', ['agent', 'sub-agent'])] : []
+    "users",
+    brokerId
+      ? [
+          where("brokerId", "==", brokerId),
+          where("role", "in", ["agent", "sub-agent"]),
+        ]
+      : [],
   );
 }
