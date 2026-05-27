@@ -1,10 +1,12 @@
 import { useAuth } from "@/context/AuthContext";
 import { useCollection } from "@/hooks/useFirestore";
-import { Lead, Listing, Viewing, Deal, TaskItem, Payout } from "@/types";
+import { Lead, Listing, Viewing, Deal, TaskItem, Payout, License, Payment, Tour } from "@/types";
 import { formatCurrency, timeAgo, getLeadStatusColor, cn } from "@/lib/utils";
 import ActivityFeed from "@/components/automation/ActivityFeed";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const { userProfile } = useAuth();
   const { data: leads } = useCollection<Lead>("leads", []);
   const { data: listings } = useCollection<Listing>("listings", []);
@@ -12,6 +14,9 @@ export default function DashboardPage() {
   const { data: deals } = useCollection<Deal>("deals", []);
   const { data: tasks } = useCollection<TaskItem>("tasks", []);
   const { data: payouts } = useCollection<Payout>("payouts", []);
+  const { data: licenses } = useCollection<License>("licenses", []);
+  const { data: payments } = useCollection<Payment>("payments", []);
+  const { data: tours } = useCollection<Tour>("tours", []);
 
   const isBroker = userProfile?.role === "broker";
   const myLeads = isBroker
@@ -28,6 +33,68 @@ export default function DashboardPage() {
   const totalCommission = payouts
     .filter((p) => p.status === "paid")
     .reduce((s, p) => s + p.amount, 0);
+
+  // ─── Smart Reminders ──────────────────────────────────────────
+  const now = Date.now();
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+
+  const expiringLicenses = licenses.filter(
+    (l) =>
+      (l as License).status === "active" &&
+      (l as License).expiryDate > now &&
+      (l as License).expiryDate < now + THIRTY_DAYS,
+  );
+
+  const overduePayments = payments.filter(
+    (p) => (p as Payment).status === "overdue",
+  );
+
+  const todayTours = tours.filter(
+    (t) =>
+      (t as Tour).status === "confirmed" &&
+      new Date((t as Tour).scheduledDate).toDateString() === new Date().toDateString(),
+  );
+
+  const staleDeals = deals.filter(
+    (d) =>
+      d.status === "pending" &&
+      d.createdAt < now - SEVEN_DAYS &&
+      d.createdAt > 0,
+  );
+
+  const urgentItems = [
+    ...expiringLicenses.slice(0, 3).map((l) => ({
+      icon: "🆔",
+      label: `License expiring: ${(l as License).licenseNumber}`,
+      days: Math.ceil(((l as License).expiryDate - now) / 86400000).toString(),
+      href: "/licenses",
+    })),
+    ...overduePayments.slice(0, 3).map((p) => ({
+      icon: "💵",
+      label: `Overdue payment: ${(p as Payment).label}`,
+      days: `₱${(p as Payment).amount.toLocaleString()}`,
+      href: "/deals",
+    })),
+    ...todayTours.slice(0, 3).map((t) => ({
+      icon: "📍",
+      label: `Tour today: ${(t as Tour).title}`,
+      days: "Today",
+      href: "/tours",
+    })),
+    ...staleDeals.slice(0, 3).map((d) => ({
+      icon: "🏆",
+      label: `Stale deal: ${d.clientName}`,
+      days: `${Math.ceil((now - d.createdAt) / 86400000)}d`,
+      href: "/deals",
+    })),
+  ];
+
+  const totalUrgent =
+    expiringLicenses.length +
+    overduePayments.length +
+    todayTours.length +
+    staleDeals.length;
 
   const leadsByStatus = [
     "new",
@@ -139,6 +206,34 @@ export default function DashboardPage() {
                   .reduce((s, d) => s + d.dealPrice * 0.03, 0),
               )}
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* ⚠️ Needs Attention */}
+      {totalUrgent > 0 && (
+        <div className="rounded-lg border border-red-200 bg-card p-6 dark:border-red-900">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg">⚠️</span>
+            <h2 className="text-lg font-semibold">Needs Attention</h2>
+            <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900 dark:text-red-300">
+              {totalUrgent} items
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+            {urgentItems.map((item, i) => (
+              <button
+                key={i}
+                onClick={() => navigate(item.href)}
+                className="flex items-center gap-2 rounded-lg border bg-muted/30 p-3 text-left text-sm hover:bg-muted/50 transition-colors"
+              >
+                <span className="text-lg shrink-0">{item.icon}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium">{item.label}</p>
+                  <p className="text-xs text-muted-foreground">{item.days}</p>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       )}

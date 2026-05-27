@@ -364,6 +364,22 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 
 ---
 
-## 🏁 All 13 Phases Complete ✅
+## ✅ Phase 14: ⚠️ Smart Reminders Dashboard — COMPLETE
 
-The CRM now includes **30 modules**, **170+ components**, **30+ services**, and a client-facing portal for buyer/seller self-service.
+**Goal:** Surface urgent items from across all modules in one "Needs Attention" section on the dashboard — expiring licenses, overdue payments, today's tours, and stale deals.
+
+### Tasks
+
+- [x] **14.1** Add data fetching for License, Payment, and Tour collections to DashboardPage
+- [x] **14.2** Compute urgent items: expiring licenses (30 days), overdue payments, today's tours, stale pending deals (7+ days)
+- [x] **14.3** Add "Needs Attention" section with red border, total count badge, clickable cards linking to relevant pages
+- [x] **Validation:** typecheck ✓ build ✓
+
+**Files modified:**
+- `src/pages/DashboardPage.tsx` — added Smart Reminders section + data fetching
+
+---
+
+## 🏁 All 14 Phases Complete ✅
+
+The CRM now includes **30 modules**, **170+ components**, **30+ services**, and a comprehensive dashboard that proactively surfaces items needing attention.
