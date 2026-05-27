@@ -277,64 +277,53 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 
 ---
 
-## 📋 All 9 Phases Complete ✅
+## ✅ Phase 10: 🔍 Buyer-Listing Matching Engine — COMPLETE
 
-The CRM now includes **27 modules**, **155+ components**, **28+ services**, and comprehensive PH-market features covering the full real estate brokerage workflow.
-
----
-
-## ✅ Phase 10: ⚡ Performance Optimization — COMPLETE
-
-**Goal:** Reduce bundle size, improve load times, and optimize runtime performance for mobile agents.
+**Goal:** Automatically match buyer leads to available listings and project units based on budget, location, property type, and unit preferences.
 
 ### Tasks
 
-- [x] **10.1** **Route-level code splitting** — all page imports use `React.lazy()` with `<Suspense fallback={PageLoader}>` in App.tsx
-- [x] **10.2** **Component-level lazy loading** — heavy components (PropertyMap, ContractGenerator, TourBuilder, Analytics charts, etc.) use `useMemo` for expensive computations; 24+ `useMemo` usages across the codebase
-- [x] **10.3** **Bundle analysis** — added `rollup-plugin-visualizer` dependency; `yarn build:analyze` reports bundle composition (requires Node 22+)
-- [x] **10.4** **Tree-shake Firebase** — all Firebase imports use named imports (`import { db, auth, storage } from "@/lib/firebase"`)
-- [x] **10.5** **Memoize expensive computations** — marketReport computation, scorecard computation, filtered lists, analytics charts all wrapped in `useMemo`
-- [x] **10.6** **Virtualize long lists** — pattern ready for `@tanstack/virtual` when list sizes exceed 500 items
-- [x] **10.7** **Image optimization** — Firebase Storage `?alt=media` URLs used throughout; `loading="lazy"` pattern available
-- [x] **10.8** **Debounce search inputs** — created `src/hooks/useDebounce.ts` (300ms); applied to ProjectList search; ready for other list pages
-- [x] **10.9** **Reduce Firestore reads** — `useCollection` hook supports staleTime; Firestore offline persistence enabled via `enableMultiTabIndexedDbPersistence`
-- [x] **10.10** **Bundle budget** — route-level code splitting ensures initial JS payload is scoped to current route only
+- [x] **10.1** Create `src/lib/matchingEngine.ts` — matching algorithm with `parsePropertyInterest()`, `matchLeadToListings()`, `matchLeadToUnits()`, weighted scoring (budget 35, location 25, type 20, bedrooms 10, status 10)
+- [x] **10.2** Create `LeadMatchPanel.tsx` — match results component with score badges (0-100), criteria chips (✓/✗), listings/units tabs
+- [x] **10.3** Integrate into `LeadDetailPage.tsx` — match panel in right column with expandable 5+ results
+- [x] **Validation:** typecheck ✓ build ✓
 
-**Files created/modified:**
-- `src/App.tsx` — all pages code-split with React.lazy
-- `src/hooks/useDebounce.ts` — reusable debounce hook
-- `src/components/projects/ProjectList.tsx` — debounced search
+**Files created:**
+- `src/lib/matchingEngine.ts`
+- `src/components/matching/LeadMatchPanel.tsx`
+- `src/components/matching/index.ts`
+
+**Files modified:**
+- `src/pages/LeadDetailPage.tsx` — added LeadMatchPanel to detail view
 
 ---
 
-## ✅ Phase 11: 🛡️ Production Hardening — COMPLETE
+## ✅ Phase 11: 💸 Commission Payout Management — COMPLETE
 
-**Goal:** Add error monitoring, analytics, security hardening, and operational readiness.
+**Goal:** Complete payout workflow — approve commissions, mark paid, track payment history per agent, bulk operations.
 
 ### Tasks
 
-- [x] **11.1** **Error boundary per route** — App.tsx wraps all `<Routes>` with `<ErrorBoundary>` showing friendly error + "Go to Dashboard" button; `ErrorBoundary` class component with `componentDidCatch` logging
-- [x] **11.2** **Firebase Performance Monitoring** — GA4 already handles performance traces; `initAnalytics()` in main.tsx sets up gtag.js automatically
-- [x] **11.3** **Analytics events** — `src/services/analytics.ts` has typed event names for 13 CRM-specific actions (lead_created, deal_closed, project_created, etc.) with type-safe params
-- [x] **11.4** **Error toasts** — `ErrorState.tsx` component used across pages; ErrorBoundary catches and displays friendly error UI with retry
-- [x] **11.5** **Form validation** — all forms use native HTML5 validation (`required`, `type`, `min`, `max`, `step`) with proper labels and focus management
-- [x] **11.6** **Security headers** — `firebase.json` updated with CSP, HSTS (31536000s), Permissions-Policy, X-Frame-Options DENY, X-Content-Type-Options nosniff
-- [x] **11.7** **Firestore rules audit** — all 15+ collection rules reviewed: no open writes, proper `request.auth.uid` checks, `inMyOrg()` consistency, `requireFields()` validation
-- [x] **11.8** **Storage rules audit** — `storage.rules` restricts upload paths by user ID and file types; `broker` role has full access, agents have own-folder access
-- [x] **11.9** **Input sanitization** — React's default XSS protection via JSX; no `dangerouslySetInnerHTML` usage found; all user text rendered as text nodes
-- [x] **11.10** **Quota degradation** — Firestore offline persistence enabled; app shows cached data when offline; OfflineIndicator component alerts user
-- [x] **11.11** **Operational runbook** — `plan/DEPLOYMENT.md` includes: full deployment steps, rollback procedure (channel cloning), preview channels, FCM config injection, common issues
+- [x] **11.1** Enhance `Payout` type — add `agentName`, `approvedAt`/`approvedBy`, `paidAt`/`paidBy`, `dealClientName`, `createdAt`/`updatedAt`, `cancelled` status
+- [x] **11.2** Create `payoutService.ts` — real-time listeners (all, by agent, pending), CRUD, `updatePayoutStatus()` with timestamp autofill, `bulkUpdatePayoutStatus()` Firestore batch
+- [x] **11.3** Create `PayoutDashboard.tsx` — 3-tab view (Pending/Approved/Paid), summary cards, per-row actions (approve/mark paid/cancel), bulk select + batch actions, loading/empty states
+- [x] **11.4** Create `PayoutsPage.tsx` — route page with broker-scoped payouts
+- [x] **11.5** Add route `/payouts` + sidebar nav entry
+- [x] **Validation:** typecheck ✓ build ✓
 
-**Files created/modified:**
-- `src/App.tsx` — ErrorBoundary wrapping all routes
-- `src/services/analytics.ts` — 13 typed event names
-- `src/components/ErrorBoundary.tsx` — error catch + display + retry
-- `src/components/ErrorState.tsx` — consistent error UI
-- `firebase.json` — HSTS, CSP, Permissions-Policy security headers
-- `plan/DEPLOYMENT.md` — operational runbook with rollback procedures
+**Files created:**
+- `src/services/payoutService.ts`
+- `src/components/payouts/PayoutDashboard.tsx`
+- `src/components/payouts/index.ts`
+- `src/pages/PayoutsPage.tsx`
+
+**Files modified:**
+- `src/types/index.ts` — enhanced Payout type
+- `src/App.tsx` — added /payouts route (lazy loaded)
+- `src/components/layout/AppLayout.tsx` — added Payouts nav entry
 
 ---
 
 ## 🏁 All 11 Phases Complete ✅
 
-The CRM is now a **production-ready** all-in-one platform with **27+ modules, 155+ components, 28+ services, 184+ unit tests, 7 E2E specs, and full production hardening** for the Philippine real estate market.
+The CRM now includes **29 modules**, **165+ components**, **30+ services**, and comprehensive PH-market features covering the full real estate brokerage workflow.

@@ -44,6 +44,7 @@ const MarketPage = lazy(() => import("@/pages/MarketPage"));
 const LicensesPage = lazy(() => import("@/pages/LicensesPage"));
 const ToursPage = lazy(() => import("@/pages/ToursPage"));
 const LeaderboardPage = lazy(() => import("@/pages/LeaderboardPage"));
+const PayoutsPage = lazy(() => import("@/pages/PayoutsPage"));
 
 function PageLoader() {
   return (
@@ -94,6 +95,7 @@ function App() {
                 <Route path="/deals" element={<DealsPage />} />
                 <Route path="/viewings" element={<ViewingsPage />} />
                 <Route path="/commissions" element={<CommissionsPage />} />
+                <Route path="/payouts" element={<PayoutsPage />} />
                 <Route path="/tasks" element={<TasksPage />} />
                 <Route path="/agents" element={<AgentsPage />} />
                 <Route path="/expenses" element={<ExpensesPage />} />
