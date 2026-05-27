@@ -602,5 +602,44 @@ service cloud.firestore {
       allow delete: if isBroker();
     }
 
+    // -----------------------------------------------------------------------
+    // vaultDocuments — document vault per property
+    //   read:   authenticated + in org
+    //   create: authenticated
+    //   update: broker or creator
+    //   delete: broker only
+    // -----------------------------------------------------------------------
+    match /vaultDocuments/{docId} {
+      allow read: if isAuthenticated() && inMyOrg(resource);
+      allow create: if isAuthenticated();
+      allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // vaultDocumentVersions — version history of vault documents
+    //   read:   authenticated + in org
+    //   create: authenticated
+    //   update: broker or creator
+    //   delete: broker only
+    // -----------------------------------------------------------------------
+    match /vaultDocumentVersions/{docId} {
+      allow read: if isAuthenticated() && inMyOrg(resource);
+      allow create: if isAuthenticated();
+      allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // invitations — agent/broker invites
+    //   read:   broker only
+    //   create: broker only
+    //   update: broker only
+    //   delete: broker only
+    // -----------------------------------------------------------------------
+    match /invitations/{inviteId} {
+      allow read, write: if isBroker();
+    }
+
   }
 }
