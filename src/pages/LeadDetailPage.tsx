@@ -6,6 +6,7 @@ import { Lead, CommLogEntry } from "@/types";
 import { timeAgo, getLeadStatusColor, getScoreColor, cn } from "@/lib/utils";
 import QuickLog from "@/components/automation/QuickLog";
 import ChecklistWidget from "@/components/automation/ChecklistWidget";
+import LeadMatchPanel from "@/components/matching/LeadMatchPanel";
 
 const STATUS_OPTIONS = [
   "new",
@@ -273,6 +274,13 @@ export default function LeadDetailPage() {
 
           {/* Checklist Widget */}
           {id && <ChecklistWidget scopeType="lead" scopeId={id} />}
+
+          {/* Property Match Panel */}
+          {id && (
+            <div className="rounded-lg border bg-card p-4">
+              <LeadMatchPanel lead={lead} />
+            </div>
+          )}
         </div>
       </div>
     </div>
