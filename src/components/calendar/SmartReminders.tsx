@@ -37,12 +37,12 @@ export default function SmartReminders() {
   const { data: documents } = useCollection<VaultDocument>('vaultDocuments', []);
 
   const [dismissed, setDismissed] = useState<Set<string>>(getDismissed);
+  const [now] = useState(() => Date.now());
 
   const reminders = useMemo<SmartReminder[]>(() => {
     const list: SmartReminder[] = [];
 
     // Leads inactive > 3 days
-    const now = Date.now();
     const threeDays = 3 * 24 * 60 * 60 * 1000;
     for (const lead of leads as (Lead & { id: string })[]) {
       if (!lead.assignedTo || lead.assignedTo !== userProfile?.id) continue;
@@ -93,7 +93,7 @@ export default function SmartReminders() {
 
     // Filter dismissed
     return list.filter((r) => !dismissed.has(r.id));
-  }, [leads, viewings, documents, userProfile?.id, dismissed]);
+  }, [leads, viewings, documents, userProfile?.id, dismissed, now]);
 
   const handleDismiss = (id: string) => {
     const next = new Set(dismissed);

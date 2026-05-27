@@ -24,11 +24,6 @@ export default function CommTemplateManager({ open, onClose, onSelect }: Props) 
   const [form, setForm] = useState({ name: '', type: 'call' as CommTemplate['type'], body: '' });
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!open) return;
-    loadTemplates();
-  }, [open]);
-
   const loadTemplates = async () => {
     setLoading(true);
     setError(null);
@@ -42,6 +37,11 @@ export default function CommTemplateManager({ open, onClose, onSelect }: Props) 
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!open) return;
+    setTimeout(() => loadTemplates(), 0);
+  }, [open]);
 
   const resetForm = () => {
     setForm({ name: '', type: 'call', body: '' });

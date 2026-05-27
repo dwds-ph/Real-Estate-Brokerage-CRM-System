@@ -29,6 +29,7 @@ export default function VaultPage() {
   const [selectedDoc, setSelectedDoc] = useState<VaultDocument | null>(null);
   const [versionHistory, setVersionHistory] = useState<Record<string, unknown>[]>([]);
   const [versionLoading, setVersionLoading] = useState(false);
+  const [now] = useState(() => Date.now());
 
   // Filters
   const [categoryFilter, setCategoryFilter] = useState<DocumentCategory | 'all'>('all');
@@ -97,7 +98,6 @@ export default function VaultPage() {
 
   // Expiring documents (within 7 days)
   const expiringDocs = useMemo(() => {
-    const now = Date.now();
     const threshold = getExpiryThreshold();
     return allDocuments.filter(
       (doc) =>
@@ -105,7 +105,7 @@ export default function VaultPage() {
         doc.expiryDate > now &&
         doc.expiryDate <= threshold,
     );
-  }, [allDocuments]);
+  }, [allDocuments, now]);
 
   // User's incoming requests
   const myRequests = useMemo(() => {
@@ -456,7 +456,7 @@ export default function VaultPage() {
                   <div>
                     <p className="text-xs text-muted-foreground">Expires</p>
                     <p className={cn(
-                      selectedDoc.expiryDate <= Date.now() && 'text-red-500 font-medium',
+                      selectedDoc.expiryDate <= now && 'text-red-500 font-medium',
                     )}>
                       {formatDate(selectedDoc.expiryDate)}
                     </p>

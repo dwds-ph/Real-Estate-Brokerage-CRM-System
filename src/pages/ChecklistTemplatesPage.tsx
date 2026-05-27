@@ -39,7 +39,7 @@ export default function ChecklistTemplatesPage() {
   }, []);
 
   useEffect(() => {
-    loadTemplates();
+    setTimeout(() => loadTemplates(), 0);
   }, [loadTemplates]);
 
   const resetForm = () => {

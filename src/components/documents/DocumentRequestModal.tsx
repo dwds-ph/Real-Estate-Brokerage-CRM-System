@@ -33,11 +33,13 @@ export default function DocumentRequestModal({
 
   useEffect(() => {
     if (open) {
-      setToUserId('');
-      setDealId(prefillDealId || '');
-      setDescription('');
-      setError(null);
-      setSubmitting(false);
+      setTimeout(() => {
+        setToUserId('');
+        setDealId(prefillDealId || '');
+        setDescription('');
+        setError(null);
+        setSubmitting(false);
+      }, 0);
     }
   }, [open, prefillDealId]);
 

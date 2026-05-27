@@ -38,7 +38,7 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
   }, []);
 
   useEffect(() => {
-    if (open) loadConfig();
+    if (open) setTimeout(() => loadConfig(), 0);
   }, [open, loadConfig]);
 
   const addRule = (type: LeadRoutingRule['type']) => {

@@ -37,17 +37,19 @@ export default function DocumentUpload({
 
   useEffect(() => {
     if (open) {
-      setName('');
-      setCategory('miscellaneous');
-      setDealId(prefillDealId || '');
-      setListingId(prefillListingId || '');
-      setStage(prefillStage || '');
-      setExpiryDate('');
-      setNotes('');
-      setFile(null);
-      setUploading(false);
-      setUploadProgress(null);
-      setError(null);
+      setTimeout(() => {
+        setName('');
+        setCategory('miscellaneous');
+        setDealId(prefillDealId || '');
+        setListingId(prefillListingId || '');
+        setStage(prefillStage || '');
+        setExpiryDate('');
+        setNotes('');
+        setFile(null);
+        setUploading(false);
+        setUploadProgress(null);
+        setError(null);
+      }, 0);
     }
   }, [open, prefillDealId, prefillListingId, prefillStage]);
 

@@ -46,7 +46,7 @@ export default function DocumentList({
     return sortDir === 'asc' ? cmp : -cmp;
   });
 
-  const now = Date.now();
+  const [now] = useState(() => Date.now());
   const sevenDaysFromNow = now + 7 * 24 * 60 * 60 * 1000;
 
   if (loading) {

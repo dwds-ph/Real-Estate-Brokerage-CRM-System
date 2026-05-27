@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -19,7 +19,7 @@ interface ListingPerformanceProps {
 }
 
 export default function ListingPerformance({ listings, viewings, deals, loading }: ListingPerformanceProps) {
-  const nowRef = useRef(Date.now());
+  const [now] = useState(() => Date.now());
   const data = useMemo(() => {
     return listings.map((listing) => {
       const listingViewings = viewings.filter((v) => v.listingId === listing.id);
@@ -30,7 +30,7 @@ export default function ListingPerformance({ listings, viewings, deals, loading 
       const convertedDeal = listingDeals.find((d) => d.status === 'closed');
 
       const daysOnMarket = Math.floor(
-        (nowRef.current - listing.createdAt) / (24 * 60 * 60 * 1000)
+        (now - listing.createdAt) / (24 * 60 * 60 * 1000)
       );
 
       return {
@@ -45,7 +45,7 @@ export default function ListingPerformance({ listings, viewings, deals, loading 
         Converted: convertedDeal ? 1 : 0,
       };
     }).sort((a, b) => b.Views - a.Views);
-  }, [listings, viewings, deals]);
+  }, [listings, viewings, deals, now]);
 
   if (loading) {
     return (

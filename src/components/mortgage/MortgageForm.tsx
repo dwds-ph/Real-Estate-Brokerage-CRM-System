@@ -27,19 +27,21 @@ export default function MortgageForm({
 
   useEffect(() => {
     if (open) {
-      if (existingMortgage) {
-        setBankId(existingMortgage.bankId);
-        setBankName(existingMortgage.bankName);
-        setLoanAmount(existingMortgage.loanAmount.toString());
-        setNotes('');
-      } else {
-        setBankId('bpi');
-        setBankName('BPI');
-        setLoanAmount('');
-        setNotes('');
-      }
-      setError(null);
-      setSaving(false);
+      setTimeout(() => {
+        if (existingMortgage) {
+          setBankId(existingMortgage.bankId);
+          setBankName(existingMortgage.bankName);
+          setLoanAmount(existingMortgage.loanAmount.toString());
+          setNotes('');
+        } else {
+          setBankId('bpi');
+          setBankName('BPI');
+          setLoanAmount('');
+          setNotes('');
+        }
+        setError(null);
+        setSaving(false);
+      }, 0);
     }
   }, [open, existingMortgage]);
 

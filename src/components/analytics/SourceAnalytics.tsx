@@ -119,7 +119,7 @@ export default function SourceAnalytics({ leads, loading }: SourceAnalyticsProps
                   border: '1px solid hsl(var(--border))',
                   background: 'hsl(var(--card))',
                 }}
-                formatter={(value: any) => [`${value}%`, 'Conversion Rate']}
+                formatter={(value: unknown) => [`${value}%`, 'Conversion Rate']}
               />
               <Bar dataKey="conversionRate" name="Conversion Rate" radius={[4, 4, 0, 0]} maxBarSize={50}>
                 {sourceData.map((entry) => (

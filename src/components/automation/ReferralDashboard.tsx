@@ -5,6 +5,8 @@ import { fetchReferrals, updateReferral } from '@/services/referralService';
 import { useCollection } from '@/hooks/useFirestore';
 import { formatCurrency } from '@/lib/utils';
 
+const getTimestamp = () => Date.now();
+
 export default function ReferralDashboard() {
   const { userProfile } = useAuth();
   const { data: allDeals } = useCollection<Deal>('deals');
@@ -27,7 +29,7 @@ export default function ReferralDashboard() {
   }, []);
 
   useEffect(() => {
-    loadReferrals();
+    setTimeout(() => loadReferrals(), 0);
   }, [loadReferrals]);
 
   const totalPending = referrals.filter((r) => r.status === 'pending').reduce((sum, r) => sum + r.referralFee, 0);
@@ -35,7 +37,7 @@ export default function ReferralDashboard() {
 
   const handleMarkPaid = async (id: string) => {
     try {
-      await updateReferral(id, { status: 'paid', paidAt: Date.now() });
+      await updateReferral(id, { status: 'paid', paidAt: getTimestamp() });
       await loadReferrals();
     } catch (err) {
       console.error(err);

@@ -43,7 +43,7 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
   }, [scopeType, scopeId]);
 
   useEffect(() => {
-    loadData();
+    setTimeout(() => loadData(), 0);
   }, [loadData]);
 
   const handleAddChecklist = async () => {

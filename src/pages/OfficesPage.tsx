@@ -37,7 +37,7 @@ export default function OfficesPage() {
   };
 
   useEffect(() => {
-    loadOffices();
+    setTimeout(() => loadOffices(), 0);
   }, [userProfile?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
