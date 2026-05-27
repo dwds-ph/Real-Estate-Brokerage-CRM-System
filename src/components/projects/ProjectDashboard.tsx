@@ -4,9 +4,7 @@ interface ProjectDashboardProps {
   projects: Project[];
 }
 
-export default function ProjectDashboard({
-  projects,
-}: ProjectDashboardProps) {
+export default function ProjectDashboard({ projects }: ProjectDashboardProps) {
   const preSelling = projects.filter((p) => p.status === "pre-selling").length;
   const ongoing = projects.filter((p) => p.status === "ongoing").length;
   const completed = projects.filter((p) => p.status === "completed").length;
@@ -15,10 +13,14 @@ export default function ProjectDashboard({
   const totalUnits = projects.reduce((s, p) => s + p.totalUnits, 0);
   const availableUnits = projects.reduce((s, p) => s + p.availableUnits, 0);
   const soldUnits = totalUnits - availableUnits;
-  const soldPct = totalUnits > 0 ? Math.round((soldUnits / totalUnits) * 100) : 0;
+  const soldPct =
+    totalUnits > 0 ? Math.round((soldUnits / totalUnits) * 100) : 0;
 
   const totalVolume = projects.reduce(
-    (s, p) => s + (p.priceRange.min + p.priceRange.max) / 2 * (p.totalUnits - p.availableUnits),
+    (s, p) =>
+      s +
+      ((p.priceRange.min + p.priceRange.max) / 2) *
+        (p.totalUnits - p.availableUnits),
     0,
   );
   const totalPhases = projects.reduce((s, p) => s + p.phases.length, 0);
@@ -91,8 +93,8 @@ export default function ProjectDashboard({
           />
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          {soldUnits} units sold out of {totalUnits} across {projects.length} projects
-          · Est. volume: ₱{(totalVolume / 1_000_000).toFixed(0)}M
+          {soldUnits} units sold out of {totalUnits} across {projects.length}{" "}
+          projects · Est. volume: ₱{(totalVolume / 1_000_000).toFixed(0)}M
         </p>
       </div>
 

@@ -7,10 +7,16 @@ interface PhaseFormProps {
   onClose: () => void;
 }
 
-export default function PhaseForm({ phase, onSubmit, onClose }: PhaseFormProps) {
+export default function PhaseForm({
+  phase,
+  onSubmit,
+  onClose,
+}: PhaseFormProps) {
   const [name, setName] = useState(phase?.name ?? "");
   const [totalUnits, setTotalUnits] = useState(phase?.totalUnits ?? 0);
-  const [availableUnits, setAvailableUnits] = useState(phase?.availableUnits ?? 0);
+  const [availableUnits, setAvailableUnits] = useState(
+    phase?.availableUnits ?? 0,
+  );
   const [priceMin, setPriceMin] = useState(phase?.priceRange.min ?? 0);
   const [priceMax, setPriceMax] = useState(phase?.priceRange.max ?? 0);
 
@@ -30,10 +36,14 @@ export default function PhaseForm({ phase, onSubmit, onClose }: PhaseFormProps) 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
       <div className="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
-        <h3 className="text-base font-semibold mb-4">{phase ? "Edit Phase" : "Add Phase"}</h3>
+        <h3 className="text-base font-semibold mb-4">
+          {phase ? "Edit Phase" : "Add Phase"}
+        </h3>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-xs font-medium mb-1">Phase Name *</label>
+            <label className="block text-xs font-medium mb-1">
+              Phase Name *
+            </label>
             <input
               required
               value={name}
@@ -43,7 +53,9 @@ export default function PhaseForm({ phase, onSubmit, onClose }: PhaseFormProps) 
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium mb-1">Total Units *</label>
+              <label className="block text-xs font-medium mb-1">
+                Total Units *
+              </label>
               <input
                 type="number"
                 min="0"
@@ -54,7 +66,9 @@ export default function PhaseForm({ phase, onSubmit, onClose }: PhaseFormProps) 
               />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1">Available *</label>
+              <label className="block text-xs font-medium mb-1">
+                Available *
+              </label>
               <input
                 type="number"
                 min="0"
@@ -67,7 +81,9 @@ export default function PhaseForm({ phase, onSubmit, onClose }: PhaseFormProps) 
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium mb-1">Price Min (₱)</label>
+              <label className="block text-xs font-medium mb-1">
+                Price Min (₱)
+              </label>
               <input
                 type="number"
                 min="0"
@@ -77,7 +93,9 @@ export default function PhaseForm({ phase, onSubmit, onClose }: PhaseFormProps) 
               />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1">Price Max (₱)</label>
+              <label className="block text-xs font-medium mb-1">
+                Price Max (₱)
+              </label>
               <input
                 type="number"
                 min="0"
@@ -88,8 +106,19 @@ export default function PhaseForm({ phase, onSubmit, onClose }: PhaseFormProps) 
             </div>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="rounded-md border px-3 py-1.5 text-xs hover:bg-muted">Cancel</button>
-            <button type="submit" className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90">Save</button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-md border px-3 py-1.5 text-xs hover:bg-muted"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              Save
+            </button>
           </div>
         </form>
       </div>

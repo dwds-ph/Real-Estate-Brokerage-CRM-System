@@ -596,7 +596,12 @@ export interface Project {
   updatedAt: number;
 }
 
-export type UnitStatus = "available" | "reserved" | "sold" | "under-contract" | "blocked";
+export type UnitStatus =
+  | "available"
+  | "reserved"
+  | "sold"
+  | "under-contract"
+  | "blocked";
 
 export interface Unit {
   id: string;

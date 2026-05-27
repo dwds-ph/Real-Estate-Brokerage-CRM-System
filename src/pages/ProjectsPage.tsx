@@ -12,11 +12,13 @@ export default function ProjectsPage() {
   const { data: projects, loading } = useCollection<Project>("projects", []);
   const [viewMode, setViewMode] = useState<"list" | "dashboard">("list");
 
-  const handleCreate = async (data: Record<string, unknown>) => {
+  const handleCreate = async (
+    data: Omit<Project, "id" | "createdAt" | "updatedAt">,
+  ) => {
     await createProject(data);
   };
 
-  const handleUpdate = async (id: string, data: Record<string, unknown>) => {
+  const handleUpdate = async (id: string, data: Partial<Project>) => {
     await updateProject(id, data);
   };
 
@@ -37,7 +39,9 @@ export default function ProjectsPage() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setViewMode(viewMode === "list" ? "dashboard" : "list")}
+            onClick={() =>
+              setViewMode(viewMode === "list" ? "dashboard" : "list")
+            }
             className="rounded-md border px-3 py-1.5 text-xs hover:bg-muted"
           >
             {viewMode === "list" ? "Developer View" : "List View"}

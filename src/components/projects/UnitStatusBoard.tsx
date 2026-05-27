@@ -15,7 +15,10 @@ const COLUMNS = [
   { key: "blocked" as const, label: "Blocked" },
 ];
 
-export default function UnitStatusBoard({ units, onUnitClick }: UnitStatusBoardProps) {
+export default function UnitStatusBoard({
+  units,
+  onUnitClick,
+}: UnitStatusBoardProps) {
   const [expandedColumn, setExpandedColumn] = useState<string | null>(null);
 
   const grouped = COLUMNS.map((col) => ({
@@ -26,14 +29,13 @@ export default function UnitStatusBoard({ units, onUnitClick }: UnitStatusBoardP
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
       {grouped.map((col) => (
-        <div
-          key={col.key}
-          className="rounded-lg border bg-card"
-        >
+        <div key={col.key} className="rounded-lg border bg-card">
           {/* Column header */}
           <div
             className="flex items-center justify-between px-3 py-2 border-b cursor-pointer md:cursor-default"
-            onClick={() => setExpandedColumn(expandedColumn === col.key ? null : col.key)}
+            onClick={() =>
+              setExpandedColumn(expandedColumn === col.key ? null : col.key)
+            }
           >
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold">{col.label}</span>
@@ -47,9 +49,13 @@ export default function UnitStatusBoard({ units, onUnitClick }: UnitStatusBoardP
           </div>
 
           {/* Items - responsive: on mobile only show expanded column, on desktop show all */}
-          <div className={`p-2 space-y-2 ${expandedColumn && expandedColumn !== col.key ? "hidden md:block" : ""}`}>
+          <div
+            className={`p-2 space-y-2 ${expandedColumn && expandedColumn !== col.key ? "hidden md:block" : ""}`}
+          >
             {col.items.length === 0 ? (
-              <p className="text-[10px] text-muted-foreground text-center py-4">No units</p>
+              <p className="text-[10px] text-muted-foreground text-center py-4">
+                No units
+              </p>
             ) : (
               col.items.map((unit) => (
                 <UnitCard

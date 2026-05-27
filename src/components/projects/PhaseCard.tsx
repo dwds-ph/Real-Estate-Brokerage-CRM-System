@@ -1,5 +1,8 @@
 import { ProjectPhase } from "@/types";
-import { getProjectStatusColor, getProjectStatusLabel } from "@/services/projectService";
+import {
+  getProjectStatusColor,
+  getProjectStatusLabel,
+} from "@/services/projectService";
 import { formatCurrency } from "@/lib/utils";
 
 interface PhaseCardProps {
@@ -7,9 +10,12 @@ interface PhaseCardProps {
 }
 
 export default function PhaseCard({ phase }: PhaseCardProps) {
-  const sellThrough = phase.totalUnits > 0
-    ? Math.round(((phase.totalUnits - phase.availableUnits) / phase.totalUnits) * 100)
-    : 0;
+  const sellThrough =
+    phase.totalUnits > 0
+      ? Math.round(
+          ((phase.totalUnits - phase.availableUnits) / phase.totalUnits) * 100,
+        )
+      : 0;
 
   return (
     <div className="rounded-lg border bg-card p-4">
@@ -22,7 +28,9 @@ export default function PhaseCard({ phase }: PhaseCardProps) {
             </p>
           )}
         </div>
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${getProjectStatusColor(phase.status)}`}>
+        <span
+          className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${getProjectStatusColor(phase.status)}`}
+        >
           {getProjectStatusLabel(phase.status)}
         </span>
       </div>
@@ -38,13 +46,17 @@ export default function PhaseCard({ phase }: PhaseCardProps) {
         </div>
         <div>
           <span className="block font-medium">
-            {phase.priceRange.min > 0 ? formatCurrency(phase.priceRange.min) : "—"}
+            {phase.priceRange.min > 0
+              ? formatCurrency(phase.priceRange.min)
+              : "—"}
           </span>
           <span className="text-muted-foreground">Min Price</span>
         </div>
         <div>
           <span className="block font-medium">
-            {phase.priceRange.max > 0 ? formatCurrency(phase.priceRange.max) : "—"}
+            {phase.priceRange.max > 0
+              ? formatCurrency(phase.priceRange.max)
+              : "—"}
           </span>
           <span className="text-muted-foreground">Max Price</span>
         </div>
@@ -66,7 +78,8 @@ export default function PhaseCard({ phase }: PhaseCardProps) {
 
       {phase.targetCompletion && (
         <p className="mt-2 text-[10px] text-muted-foreground">
-          Target completion: {new Date(phase.targetCompletion).toLocaleDateString()}
+          Target completion:{" "}
+          {new Date(phase.targetCompletion).toLocaleDateString()}
         </p>
       )}
     </div>

@@ -1,5 +1,8 @@
 import { Project } from "@/types";
-import { getProjectStatusColor, getProjectStatusLabel } from "@/services/projectService";
+import {
+  getProjectStatusColor,
+  getProjectStatusLabel,
+} from "@/services/projectService";
 import { formatCurrency } from "@/lib/utils";
 
 interface ProjectCardProps {
@@ -9,10 +12,19 @@ interface ProjectCardProps {
   onDelete: () => void;
 }
 
-export default function ProjectCard({ project, onClick, onEdit, onDelete }: ProjectCardProps) {
-  const sellThrough = project.totalUnits > 0
-    ? Math.round(((project.totalUnits - project.availableUnits) / project.totalUnits) * 100)
-    : 0;
+export default function ProjectCard({
+  project,
+  onClick,
+  onEdit,
+  onDelete,
+}: ProjectCardProps) {
+  const sellThrough =
+    project.totalUnits > 0
+      ? Math.round(
+          ((project.totalUnits - project.availableUnits) / project.totalUnits) *
+            100,
+        )
+      : 0;
 
   return (
     <div
@@ -23,30 +35,41 @@ export default function ProjectCard({ project, onClick, onEdit, onDelete }: Proj
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold truncate">{project.name}</h3>
           <p className="text-xs text-muted-foreground truncate">
-            {project.developer} · {project.location.city}, {project.location.province}
+            {project.developer} · {project.location.city},{" "}
+            {project.location.province}
           </p>
         </div>
-        <span className={`ml-2 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${getProjectStatusColor(project.status)}`}>
+        <span
+          className={`ml-2 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${getProjectStatusColor(project.status)}`}
+        >
           {getProjectStatusLabel(project.status)}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mb-3">
         <div>
-          <span className="block font-medium text-foreground">{project.totalUnits}</span>
+          <span className="block font-medium text-foreground">
+            {project.totalUnits}
+          </span>
           <span>Total Units</span>
         </div>
         <div>
-          <span className="block font-medium text-foreground">{project.availableUnits}</span>
+          <span className="block font-medium text-foreground">
+            {project.availableUnits}
+          </span>
           <span>Available</span>
         </div>
         <div>
-          <span className="block font-medium text-foreground">{project.phases.length}</span>
+          <span className="block font-medium text-foreground">
+            {project.phases.length}
+          </span>
           <span>Phases</span>
         </div>
         <div>
           <span className="block font-medium text-foreground">
-            {project.priceRange.min > 0 ? formatCurrency(project.priceRange.min) : "—"}
+            {project.priceRange.min > 0
+              ? formatCurrency(project.priceRange.min)
+              : "—"}
           </span>
           <span>Starting Price</span>
         </div>
@@ -69,13 +92,19 @@ export default function ProjectCard({ project, onClick, onEdit, onDelete }: Proj
       {/* Actions (visible on hover) */}
       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
-          onClick={(e) => { e.stopPropagation(); onEdit(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
           className="rounded px-2 py-1 text-xs text-muted-foreground hover:bg-muted"
         >
           Edit
         </button>
         <button
-          onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
           className="rounded px-2 py-1 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
         >
           Delete

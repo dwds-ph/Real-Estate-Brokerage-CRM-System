@@ -10,17 +10,17 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { type Project, type Unit, type PaymentMilestone } from "@/types";
+import {
+  type Project,
+  type Unit,
+  type PaymentMilestone,
+  type ProjectStatus,
+} from "@/types";
 
 // ─── Projects: Real-time listeners ──────────────────────────────────
 
-export function subscribeProjects(
-  callback: (projects: Project[]) => void,
-) {
-  const q = query(
-    collection(db, "projects"),
-    orderBy("createdAt", "desc"),
-  );
+export function subscribeProjects(callback: (projects: Project[]) => void) {
+  const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
   return onSnapshot(q, (snapshot) => {
     const projects = snapshot.docs.map(
       (d) => ({ id: d.id, ...d.data() }) as Project,
@@ -83,9 +83,7 @@ export function subscribeUnits(
     orderBy("block", "asc"),
   );
   return onSnapshot(q, (snapshot) => {
-    const units = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Unit,
-    );
+    const units = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Unit);
     callback(units);
   });
 }
@@ -102,9 +100,7 @@ export function subscribeUnitsByStatus(
     orderBy("createdAt", "desc"),
   );
   return onSnapshot(q, (snapshot) => {
-    const units = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Unit,
-    );
+    const units = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Unit);
     callback(units);
   });
 }
@@ -205,21 +201,24 @@ export function computeProjectStatus(project: Project): string {
   if (project.status === "on-hold") return "on-hold";
 
   const soldUnits = project.totalUnits - project.availableUnits;
-  const sellThroughRate = project.totalUnits > 0
-    ? soldUnits / project.totalUnits
-    : 0;
+  const sellThroughRate =
+    project.totalUnits > 0 ? soldUnits / project.totalUnits : 0;
 
-  if (project.status === "pre-selling" && sellThroughRate > 0.7) return "pre-selling-high-demand";
+  if (project.status === "pre-selling" && sellThroughRate > 0.7)
+    return "pre-selling-high-demand";
   if (sellThroughRate >= 1) return "fully-sold";
   return project.status;
 }
 
 export function getUnitStatusColor(status: Unit["status"]): string {
   const colors: Record<string, string> = {
-    available: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-    reserved: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+    available:
+      "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+    reserved:
+      "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
     sold: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-    "under-contract": "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+    "under-contract":
+      "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
     blocked: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
   };
   return colors[status] || colors.available;
@@ -236,12 +235,26 @@ export function getUnitStatusLabel(status: Unit["status"]): string {
   return labels[status] || status;
 }
 
+export function computePhaseSoldPercentage(phase: {
+  totalUnits: number;
+  availableUnits: number;
+}): number {
+  if (phase.totalUnits <= 0) return 0;
+  return Math.round(
+    ((phase.totalUnits - phase.availableUnits) / phase.totalUnits) * 100,
+  );
+}
+
 export function getProjectStatusColor(status: ProjectStatus): string {
   const colors: Record<string, string> = {
-    "pre-selling": "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-    ongoing: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-    completed: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-    "on-hold": "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+    "pre-selling":
+      "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+    ongoing:
+      "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+    completed:
+      "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+    "on-hold":
+      "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
   };
   return colors[status] || colors.ongoing;
 }
@@ -256,17 +269,22 @@ export function getProjectStatusLabel(status: ProjectStatus): string {
   return labels[status] || status;
 }
 
-export function getMilestoneStatusColor(status: PaymentMilestone["status"]): string {
+export function getMilestoneStatusColor(
+  status: PaymentMilestone["status"],
+): string {
   const colors: Record<string, string> = {
     pending: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
     paid: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
     overdue: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
-    waived: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+    waived:
+      "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
   };
   return colors[status] || colors.pending;
 }
 
-export function getMilestoneStatusLabel(status: PaymentMilestone["status"]): string {
+export function getMilestoneStatusLabel(
+  status: PaymentMilestone["status"],
+): string {
   const labels: Record<string, string> = {
     pending: "Pending",
     paid: "Paid",

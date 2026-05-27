@@ -1,5 +1,8 @@
 import { Unit } from "@/types";
-import { getUnitStatusColor, getUnitStatusLabel } from "@/services/projectService";
+import {
+  getUnitStatusColor,
+  getUnitStatusLabel,
+} from "@/services/projectService";
 import { formatCurrency } from "@/lib/utils";
 
 interface UnitCardProps {
@@ -22,10 +25,14 @@ export default function UnitCard({ unit, onClick }: UnitCardProps) {
             <p className="text-xs text-muted-foreground">{unit.model}</p>
           )}
           {unit.phaseName && (
-            <p className="text-[10px] text-muted-foreground">Phase: {unit.phaseName}</p>
+            <p className="text-[10px] text-muted-foreground">
+              Phase: {unit.phaseName}
+            </p>
           )}
         </div>
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${getUnitStatusColor(unit.status)}`}>
+        <span
+          className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${getUnitStatusColor(unit.status)}`}
+        >
           {getUnitStatusLabel(unit.status)}
         </span>
       </div>

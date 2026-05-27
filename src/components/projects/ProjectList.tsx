@@ -15,8 +15,8 @@ const STATUS_FILTERS: Array<{ label: string; value: ProjectStatus | "all" }> = [
 interface ProjectListProps {
   projects: Project[];
   loading?: boolean;
-  onCreateProject: (data: Record<string, unknown>) => Promise<void>;
-  onUpdateProject: (id: string, data: Record<string, unknown>) => Promise<void>;
+  onCreateProject: (data: Omit<Project, "id" | "createdAt" | "updatedAt">) => Promise<void>;
+  onUpdateProject: (id: string, data: Partial<Project>) => Promise<void>;
   onDeleteProject: (id: string) => Promise<void>;
 }
 
@@ -28,7 +28,9 @@ export default function ProjectList({
   onDeleteProject,
 }: ProjectListProps) {
   const navigate = useNavigate();
-  const [statusFilter, setStatusFilter] = useState<ProjectStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<ProjectStatus | "all">(
+    "all",
+  );
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -41,7 +43,8 @@ export default function ProjectList({
         !p.name.toLowerCase().includes(q) &&
         !p.developer.toLowerCase().includes(q) &&
         !p.location.city.toLowerCase().includes(q)
-      ) return false;
+      )
+        return false;
     }
     return true;
   });
@@ -51,11 +54,11 @@ export default function ProjectList({
     setShowForm(true);
   };
 
-  const handleFormSubmit = async (data: Record<string, unknown>) => {
+  const handleFormSubmit = async (data: Omit<Project, "id" | "createdAt" | "updatedAt"> | Partial<Project>) => {
     if (editingProject) {
-      await onUpdateProject(editingProject.id, data);
+      await onUpdateProject(editingProject.id, data as Partial<Project>);
     } else {
-      await onCreateProject(data);
+      await onCreateProject(data as Omit<Project, "id" | "createdAt" | "updatedAt">);
     }
     setShowForm(false);
     setEditingProject(null);

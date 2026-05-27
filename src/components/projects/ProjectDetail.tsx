@@ -37,9 +37,13 @@ export default function ProjectDetail() {
     );
   }
 
-  const sellThrough = project.totalUnits > 0
-    ? Math.round(((project.totalUnits - project.availableUnits) / project.totalUnits) * 100)
-    : 0;
+  const sellThrough =
+    project.totalUnits > 0
+      ? Math.round(
+          ((project.totalUnits - project.availableUnits) / project.totalUnits) *
+            100,
+        )
+      : 0;
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "phases", label: "Phases" },
@@ -63,19 +67,24 @@ export default function ProjectDetail() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <h1 className="text-2xl font-bold">{project.name}</h1>
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${getProjectStatusColor(project.status)}`}>
+              <span
+                className={`rounded-full px-2 py-0.5 text-xs font-medium ${getProjectStatusColor(project.status)}`}
+              >
                 {getProjectStatusLabel(project.status)}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
-              {project.developer} · {project.location.city}, {project.location.province}
+              {project.developer} · {project.location.city},{" "}
+              {project.location.province}
               {project.developerContact && ` · ${project.developerContact}`}
             </p>
           </div>
         </div>
 
         {project.description && (
-          <p className="text-sm text-muted-foreground mb-4">{project.description}</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            {project.description}
+          </p>
         )}
 
         {/* Stats grid */}
@@ -85,7 +94,9 @@ export default function ProjectDetail() {
             <p className="text-xs text-muted-foreground">Total Units</p>
           </div>
           <div className="rounded-md bg-muted/50 p-3">
-            <p className="text-2xl font-bold text-green-600">{project.availableUnits}</p>
+            <p className="text-2xl font-bold text-green-600">
+              {project.availableUnits}
+            </p>
             <p className="text-xs text-muted-foreground">Available</p>
           </div>
           <div className="rounded-md bg-muted/50 p-3">
@@ -98,7 +109,9 @@ export default function ProjectDetail() {
           </div>
           <div className="rounded-md bg-muted/50 p-3">
             <p className="text-2xl font-bold">
-              {project.priceRange.min > 0 ? formatCurrency(project.priceRange.min) : "—"}
+              {project.priceRange.min > 0
+                ? formatCurrency(project.priceRange.min)
+                : "—"}
             </p>
             <p className="text-xs text-muted-foreground">Starting Price</p>
           </div>
@@ -153,7 +166,10 @@ export default function ProjectDetail() {
               <h3 className="text-sm font-semibold mb-2">Amenities</h3>
               <div className="flex flex-wrap gap-1">
                 {project.amenities.map((a) => (
-                  <span key={a} className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                  <span
+                    key={a}
+                    className="rounded-full bg-muted px-2 py-0.5 text-xs"
+                  >
                     {a}
                   </span>
                 ))}
@@ -166,7 +182,9 @@ export default function ProjectDetail() {
       {activeTab === "units" && (
         <div className="space-y-3">
           {units.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No units registered yet.</p>
+            <p className="text-sm text-muted-foreground">
+              No units registered yet.
+            </p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {units.map((unit) => (
@@ -180,16 +198,20 @@ export default function ProjectDetail() {
       {activeTab === "milestones" && (
         <div className="space-y-3">
           {units.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No units with milestones.</p>
+            <p className="text-sm text-muted-foreground">
+              No units with milestones.
+            </p>
           ) : (
-            units.filter((u) => u.status !== "available").map((unit) => (
-              <div key={unit.id} className="rounded-lg border bg-card p-4">
-                <h3 className="text-sm font-semibold mb-2">
-                  {unit.block}-{unit.lot} — {unit.buyerName || "No buyer"}
-                </h3>
-                <PaymentMilestoneTracker unitId={unit.id} compact />
-              </div>
-            ))
+            units
+              .filter((u) => u.status !== "available")
+              .map((unit) => (
+                <div key={unit.id} className="rounded-lg border bg-card p-4">
+                  <h3 className="text-sm font-semibold mb-2">
+                    {unit.block}-{unit.lot} — {unit.buyerName || "No buyer"}
+                  </h3>
+                  <PaymentMilestoneTracker unitId={unit.id} compact />
+                </div>
+              ))
           )}
         </div>
       )}
