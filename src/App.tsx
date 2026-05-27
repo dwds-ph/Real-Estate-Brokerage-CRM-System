@@ -33,6 +33,8 @@ import MortgagePage from "@/pages/MortgagePage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import ChecklistTemplatesPage from "@/pages/ChecklistTemplatesPage";
 import ActivityPage from "@/pages/ActivityPage";
+import ProjectsPage from "@/pages/ProjectsPage";
+import ProjectDetailPage from "@/components/projects/ProjectDetail";
 import MarketPage from "@/pages/MarketPage";
 import LicensesPage from "@/pages/LicensesPage";
 import ToursPage from "@/pages/ToursPage";
@@ -95,6 +97,8 @@ function App() {
                 element={<ChecklistTemplatesPage />}
               />
               <Route path="/activity" element={<ActivityPage />} />
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/projects/:id" element={<ProjectDetailPage />} />
               <Route path="/market" element={<MarketPage />} />
               <Route path="/licenses" element={<LicensesPage />} />
               <Route path="/tours" element={<ToursPage />} />

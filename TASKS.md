@@ -210,6 +210,49 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 
 ---
 
-## Remaining Phases (not yet implemented)
+## ✅ Phase 8: 🏗️ Project / Subdivision Management — COMPLETE
 
-- **Phase 8:** 🏗️ Project / Subdivision Management
+**Goal:** Manage subdivisions, condos, and mixed-use developments — project profiles, phase tracking, unit inventory, status board, payment milestones, and developer dashboard.
+
+### Tasks
+
+- [x] **8.1** Add `Unit`, `UnitStatus`, `PaymentMilestone` types in `src/types/index.ts`
+- [x] **8.2** Create `src/services/projectService.ts` — CRUD + real-time listeners for projects, units, payment milestones + helper functions (status colors, labels, computed status)
+- [x] **8.3** Create `ProjectList.tsx` — filtered list with search, status tabs, loading skeletons, empty state, new project button
+- [x] **8.4** Create `ProjectCard.tsx` — project card with sell-through bar, unit counts, price range, status badge, edit/delete actions
+- [x] **8.5** Create `ProjectForm.tsx` — full create/edit dialog with fields for name, developer, location, status, type, units, pricing, phases (dynamic list), amenities
+- [x] **8.6** Create `ProjectDetail.tsx` — full detail page with header, stats grid, sell-through progress bar, tabs for phases/units/milestones
+- [x] **8.7** Create `PhaseCard.tsx` — phase card showing name, units, sell-through, price range, target completion
+- [x] **8.8** Create `PhaseForm.tsx` — add/edit phase dialog
+- [x] **8.9** Create `UnitCard.tsx` — unit card showing block/lot, model, area, floor, price, status badge, buyer info
+- [x] **8.10** Create `UnitStatusBoard.tsx` — kanban-style board grouping units by status (Available, Reserved, Under Contract, Sold, Blocked)
+- [x] **8.11** Create `PaymentMilestoneTracker.tsx` — payment timeline with progress bar, milestone list with status badges, compact and full modes
+- [x] **8.12** Create `DeveloperDashboard.tsx` — KPI cards (active projects, units sold, revenue, sell-through), revenue-by-project bars, overdue/pending alerts
+- [x] **8.13** Create `ProjectsPage.tsx` — main page with list view toggle
+- [x] **8.14** Add routes `/projects` + `/projects/:id` + sidebar nav entry
+- [x] **8.15** Firestore rules for `projects`, `units`, `paymentMilestones` collections
+- [x] **Validation:** typecheck ✓
+
+**Files created:**
+- `src/types/index.ts` — Unit, UnitStatus, PaymentMilestone types
+- `src/services/projectService.ts`
+- `src/components/projects/ProjectList.tsx`
+- `src/components/projects/ProjectCard.tsx`
+- `src/components/projects/ProjectForm.tsx`
+- `src/components/projects/ProjectDetail.tsx`
+- `src/components/projects/PhaseCard.tsx`
+- `src/components/projects/PhaseForm.tsx`
+- `src/components/projects/UnitCard.tsx`
+- `src/components/projects/UnitStatusBoard.tsx`
+- `src/components/projects/PaymentMilestoneTracker.tsx`
+- `src/components/projects/DeveloperDashboard.tsx`
+- `src/components/projects/index.ts`
+- `src/pages/ProjectsPage.tsx`
+- `src/App.tsx` / `src/components/layout/AppLayout.tsx` — routing + nav
+- `firestore.rules` — projects, units, paymentMilestones rules
+
+---
+
+## 📋 All 8 Phases Complete ✅
+
+The CRM now includes **26 modules**, **150+ components**, **25+ services**, and **184+ tests** covering the full real estate brokerage workflow for the Philippine market.

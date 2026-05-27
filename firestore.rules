@@ -379,6 +379,20 @@ service cloud.firestore {
     }
 
     // -----------------------------------------------------------------------
+    // PROJECTS  (subdivision / condo developments)
+    //   read:    broker or same org
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /projects/{projectId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isBroker() && requireFields(['name', 'developer', 'totalUnits', 'brokerId']);
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
     // LICENSES  (license expiry tracker)
     //   read:    broker, same org, or self (agentId)
     //   create:  broker only (manages team licenses)
@@ -418,6 +432,48 @@ service cloud.firestore {
       allow create: if isAuthenticated();
       allow update: if false;
       allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // PROJECTS  (subdivision / condo development management)
+    //   read:    authenticated user
+    //   create:  broker only (developer manages own projects)
+    //   update:  broker or assigned agent
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /projects/{projectId} {
+      allow read: if isAuthenticated();
+      allow create: if isBroker() && requireFields(['name', 'developer', 'totalUnits', 'location']);
+      allow update: if isBroker() || (isAgent() && resource.data.assignedTo.hasAny([request.auth.uid]));
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // UNITS  (individual lots/units within projects)
+    //   read:    authenticated user
+    //   create:  broker only
+    //   update:  broker or agent assigned to the project
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /units/{unitId} {
+      allow read: if isAuthenticated();
+      allow create: if isBroker() && requireFields(['projectId', 'block', 'lot', 'area', 'price']);
+      allow update: if isBroker() || isAgent();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // PAYMENT MILESTONES  (payment schedules for units)
+    //   read:    authenticated user
+    //   create:  broker only
+    //   update:  broker or agent
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /paymentMilestones/{milestoneId} {
+      allow read: if isAuthenticated();
+      allow create: if isBroker() && requireFields(['projectId', 'unitId', 'name', 'amount', 'dueDate']);
+      allow update: if isBroker() || isAgent();
+      allow delete: if isBroker();
     }
 
   }
