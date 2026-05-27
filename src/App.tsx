@@ -33,6 +33,7 @@ import MortgagePage from "@/pages/MortgagePage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import ChecklistTemplatesPage from "@/pages/ChecklistTemplatesPage";
 import ActivityPage from "@/pages/ActivityPage";
+import LeaderboardPage from "@/pages/LeaderboardPage";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 
 function AppContent() {
@@ -91,6 +92,7 @@ function App() {
                 element={<ChecklistTemplatesPage />}
               />
               <Route path="/activity" element={<ActivityPage />} />
+              <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route
                 path="/settings/notifications"
                 element={<NotificationPreferencesPage />}

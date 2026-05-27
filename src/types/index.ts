@@ -437,3 +437,41 @@ export interface Payment {
   createdAt: number;
   updatedAt: number;
 }
+
+// ─── Phase 2: Agent Scorecard & Leaderboard ─────────────────────────
+
+export interface AgentScore {
+  agentId: string;
+  displayName: string;
+  role: string;
+  photoURL?: string;
+  dealsClosed: number;
+  totalCommission: number;
+  leadConversionRate: number;
+  averageDealSize: number;
+  viewingToDealRatio: number;
+  totalViewings: number;
+  totalLeadsAssigned: number;
+  dealsTrend: "up" | "down" | "stable";
+  commissionTrend: "up" | "down" | "stable";
+  score: number;
+  badges: AchievementBadge[];
+}
+
+export type AchievementBadgeId =
+  | "first-deal"
+  | "million-club"
+  | "perfect-month"
+  | "high-converter"
+  | "top-viewer"
+  | "veteran"
+  | "riser"
+  | "team-player";
+
+export interface AchievementBadge {
+  id: AchievementBadgeId;
+  name: string;
+  description: string;
+  icon: string;
+  earnedAt?: number;
+}
