@@ -183,8 +183,33 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 
 ---
 
+## ✅ Phase 7: 📊 Market Report Generator — COMPLETE
+
+**Goal:** Client-side market analysis report computed from existing listings/deals — price trends, property distribution, location analysis, and KPI overview.
+
+### Tasks
+
+- [x] **7.1** Create `src/lib/marketReport.ts` — computation engine (overview, property type/status breakdown, location analysis, monthly price trends, days on market)
+- [x] **7.2** Create `MarketOverview.tsx` — 6 KPI cards (total listings, volume, avg/median price, price range, price/sqm, days on market)
+- [x] **7.3** Create `PriceTrends.tsx` — CSS bar charts for average price trend + monthly volume, summary table with median/volume/count
+- [x] **7.4** Create `PropertyBreakdown.tsx` — distribution by property type (condo, house-lot, lot-only, commercial, foreclosed) and status (available, under-option, sold, rented, off-market)
+- [x] **7.5** Create `LocationAnalysis.tsx` — province summary cards, city breakdown table with listing count / avg price / volume / bar indicator
+- [x] **7.6** Create `MarketPage.tsx` — 4-tab layout (Overview, Price Trends, Breakdown, Locations) with auto-generated report from Firestore data
+- [x] **7.7** Add route `/market` + sidebar nav entry
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/lib/marketReport.ts`
+- `src/components/market/MarketOverview.tsx`
+- `src/components/market/PriceTrends.tsx`
+- `src/components/market/PropertyBreakdown.tsx`
+- `src/components/market/LocationAnalysis.tsx`
+- `src/components/market/index.ts`
+- `src/pages/MarketPage.tsx`
+- `src/App.tsx` / `src/components/layout/AppLayout.tsx` — routing + nav
+
+---
+
 ## Remaining Phases (not yet implemented)
 
-- **Phase 6:** 🆔 License Expiry Tracker
-- **Phase 7:** 📊 Market Report Generator
 - **Phase 8:** 🏗️ Project / Subdivision Management
