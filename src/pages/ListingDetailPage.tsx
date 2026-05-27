@@ -3,6 +3,7 @@ import { useDoc } from '@/hooks/useFirestore';
 import { Listing } from '@/types';
 import { formatCurrency, getListingStatusColor, cn } from '@/lib/utils';
 import PropertyMap from '@/components/map/PropertyMap';
+import ChecklistWidget from '@/components/automation/ChecklistWidget';
 
 export default function ListingDetailPage() {
   const { id } = useParams();
@@ -151,6 +152,9 @@ export default function ListingDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* Checklist Widget */}
+          {id && <ChecklistWidget scopeType="listing" scopeId={id} />}
         </div>
       </div>
     </div>

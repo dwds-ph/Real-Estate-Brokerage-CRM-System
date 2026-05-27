@@ -1,19 +1,23 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { useLeads } from "@/hooks/useFirestore";
+import { useLeads, useCollection } from "@/hooks/useFirestore";
 import { createDoc, updateDocById, deleteDocById } from "@/hooks/useFirestore";
-import { Lead, LeadStatus, LeadSource, LeadScore } from "@/types";
+import { Lead, LeadStatus, LeadSource, LeadScore, AppUser } from "@/types";
 import { formatDate, getLeadStatusColor, getScoreColor, cn } from "@/lib/utils";
+import { autoAssignLead } from "@/services/leadRoutingService";
+import LeadRoutingRules from "@/components/automation/LeadRoutingRules";
 
 export default function LeadsPage() {
   const navigate = useNavigate();
   const { userProfile } = useAuth();
   const { data: leads, loading } = useLeads(userProfile?.id);
+  const { data: agents } = useCollection<AppUser>('users');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<LeadStatus | "all">("all");
   const [search, setSearch] = useState("");
+  const [showRoutingRules, setShowRoutingRules] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -66,7 +70,7 @@ export default function LeadsPage() {
         const now = Date.now();
         const data = {
           ...form,
-          budget: form.budget ? Number(form.budget) : null,
+          budget: form.budget ? Number(form.budget) : undefined,
           assignedTo:
             userProfile.role === "broker" ? userProfile.id : userProfile.id,
           createdBy: userProfile.id,
@@ -83,7 +87,11 @@ export default function LeadsPage() {
         if (editingId) {
           await updateDocById("leads", editingId, data);
         } else {
-          await createDoc("leads", data);
+          const newLeadId = await createDoc("leads", data);
+          // Auto-assign based on routing rules
+          if (newLeadId) {
+            await autoAssignLead(newLeadId, data, agents);
+          }
         }
         resetForm();
       } catch (err) {
@@ -135,6 +143,14 @@ export default function LeadsPage() {
         >
           {showForm ? "Cancel" : "+ New Lead"}
         </button>
+        {userProfile?.role === "broker" && (
+          <button
+            onClick={() => setShowRoutingRules(true)}
+            className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+          >
+            🚦 Routing Rules
+          </button>
+        )}
       </div>
 
       {/* Status Filter Chips */}
@@ -407,6 +423,12 @@ export default function LeadsPage() {
           })}
         </div>
       )}
+
+      {/* Lead Routing Rules Modal */}
+      <LeadRoutingRules
+        open={showRoutingRules}
+        onClose={() => setShowRoutingRules(false)}
+      />
     </div>
   );
 }

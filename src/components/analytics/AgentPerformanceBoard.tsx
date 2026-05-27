@@ -23,6 +23,34 @@ interface AgentPerformanceBoardProps {
 
 type SortKey = keyof Pick<AgentStats, 'agentName' | 'leadsAcquired' | 'dealsClosed' | 'commissionEarned' | 'conversionRate'>;
 
+function SortHeader({
+  label,
+  sortKey: sk,
+  currentSortKey,
+  sortAsc,
+  onSort,
+}: {
+  label: string;
+  sortKey: SortKey;
+  currentSortKey: SortKey;
+  sortAsc: boolean;
+  onSort: (key: SortKey) => void;
+}) {
+  return (
+    <th
+      className="px-3 py-2 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+      onClick={() => onSort(sk)}
+    >
+      <div className="flex items-center gap-1">
+        {label}
+        {currentSortKey === sk && (
+          <span className="text-primary">{sortAsc ? '↑' : '↓'}</span>
+        )}
+      </div>
+    </th>
+  );
+}
+
 export default function AgentPerformanceBoard({
   leads,
   deals,
@@ -79,7 +107,7 @@ export default function AgentPerformanceBoard({
       s.conversionRate = s.leadsAcquired > 0
         ? Math.round((s.dealsClosed / s.leadsAcquired) * 100)
         : 0;
-      s.avgResponseTime = Math.round(Math.random() * 120 + 15); // placeholder — real data would come from communication log
+      s.avgResponseTime = 45; // placeholder — real data would come from communication log
     });
 
     return Array.from(agentStats.values());
@@ -109,20 +137,6 @@ export default function AgentPerformanceBoard({
     }
   };
 
-  const SortHeader = ({ label, sortKey: sk }: { label: string; sortKey: SortKey }) => (
-    <th
-      className="px-3 py-2 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
-      onClick={() => handleSort(sk)}
-    >
-      <div className="flex items-center gap-1">
-        {label}
-        {sortKey === sk && (
-          <span className="text-primary">{sortAsc ? '↑' : '↓'}</span>
-        )}
-      </div>
-    </th>
-  );
-
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -144,11 +158,11 @@ export default function AgentPerformanceBoard({
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b">
-            <SortHeader label="Agent" sortKey="agentName" />
-            <SortHeader label="Leads" sortKey="leadsAcquired" />
-            <SortHeader label="Deals Closed" sortKey="dealsClosed" />
-            <SortHeader label="Commission" sortKey="commissionEarned" />
-            <SortHeader label="Conversion Rate" sortKey="conversionRate" />
+            <SortHeader label="Agent" sortKey="agentName" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+            <SortHeader label="Leads" sortKey="leadsAcquired" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+            <SortHeader label="Deals Closed" sortKey="dealsClosed" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+            <SortHeader label="Commission" sortKey="commissionEarned" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+            <SortHeader label="Conversion Rate" sortKey="conversionRate" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
             <th className="px-3 py-2 text-xs font-medium text-muted-foreground text-right">
               Avg Response
             </th>

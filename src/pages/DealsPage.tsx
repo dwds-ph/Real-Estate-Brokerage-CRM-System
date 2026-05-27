@@ -6,6 +6,9 @@ import { Lead, LeadStatus, Deal, Mortgage } from '@/types';
 import { formatCurrency, timeAgo, getScoreColor, cn } from '@/lib/utils';
 import MortgageTracker from '@/components/mortgage/MortgageTracker';
 import MortgageForm from '@/components/mortgage/MortgageForm';
+import ReferralForm from '@/components/automation/ReferralForm';
+import ReferralDashboard from '@/components/automation/ReferralDashboard';
+import ChecklistWidget from '@/components/automation/ChecklistWidget';
 
 const COLUMNS: { status: LeadStatus; label: string; color: string }[] = [
   { status: 'new', label: 'New', color: 'border-t-blue-500' },
@@ -27,6 +30,11 @@ export default function DealsPage() {
   const [expandedMortgageDeal, setExpandedMortgageDeal] = useState<string | null>(null);
   const [showMortgageForm, setShowMortgageForm] = useState(false);
   const [selectedDealId, setSelectedDealId] = useState<string | undefined>(undefined);
+  const [referralExpanded, setReferralExpanded] = useState(false);
+  const [referralDealId, setReferralDealId] = useState<string | null>(null);
+  const [showReferralForm, setShowReferralForm] = useState(false);
+  const [checklistExpanded, setChecklistExpanded] = useState(false);
+  const [checklistDealId, setChecklistDealId] = useState<string | null>(null);
 
   const isBroker = userProfile?.role === 'broker';
 
@@ -362,6 +370,127 @@ export default function DealsPage() {
         }}
         dealId={selectedDealId}
       />
+
+      {/* ─── Referral Section ──────────────────────────────────────── */}
+      <div className="rounded-lg border bg-card">
+        <button
+          onClick={() => setReferralExpanded(!referralExpanded)}
+          className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-muted/50 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🤝</span>
+            <h2 className="text-lg font-semibold">Referral Tracking</h2>
+          </div>
+          <span className="text-muted-foreground text-sm">
+            {referralExpanded ? '▲' : '▼'}
+          </span>
+        </button>
+
+        {referralExpanded && (
+          <div className="border-t px-4 py-4 space-y-4">
+            {/* Dashboard */}
+            <ReferralDashboard />
+
+            {/* Quick referral form */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-muted-foreground">Add Referral to a Deal</h3>
+              {showReferralForm ? (
+                <ReferralForm
+                  dealId={referralDealId || allDeals[0]?.id || ''}
+                  onSuccess={() => setShowReferralForm(false)}
+                  onClose={() => setShowReferralForm(false)}
+                />
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {allDeals.slice(0, 5).map((deal) => (
+                    <button
+                      key={deal.id}
+                      onClick={() => {
+                        setReferralDealId(deal.id);
+                        setShowReferralForm(true);
+                      }}
+                      className="rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors"
+                    >
+                      + {deal.clientName.slice(0, 20)}
+                    </button>
+                  ))}
+                  {allDeals.length > 5 && (
+                    <span className="text-xs text-muted-foreground self-center">
+                      +{allDeals.length - 5} more
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ─── Checklist Section ──────────────────────────────────────── */}
+      <div className="rounded-lg border bg-card">
+        <button
+          onClick={() => setChecklistExpanded(!checklistExpanded)}
+          className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-muted/50 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">✅</span>
+            <h2 className="text-lg font-semibold">Deal Checklists</h2>
+          </div>
+          <span className="text-muted-foreground text-sm">
+            {checklistExpanded ? '▲' : '▼'}
+          </span>
+        </button>
+
+        {checklistExpanded && (
+          <div className="border-t px-4 py-4 space-y-4">
+            {allDeals.length === 0 ? (
+              <div className="py-8 text-center text-sm text-muted-foreground">
+                No deals yet. Close a lead to create a deal first.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {allDeals.map((deal) => (
+                  <div key={deal.id} className="rounded-lg border overflow-hidden">
+                    <button
+                      onClick={() =>
+                        setChecklistDealId(checklistDealId === deal.id ? null : deal.id)
+                      }
+                      className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span>🏆</span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{deal.clientName}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {formatCurrency(deal.dealPrice)} · {deal.status}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-muted-foreground text-sm">
+                        {checklistDealId === deal.id ? '▲' : '▼'}
+                      </span>
+                    </button>
+
+                    {checklistDealId === deal.id && (
+                      <div className="border-t px-3 py-3">
+                        <ChecklistWidget scopeType="deal" scopeId={deal.id} />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="text-center pt-2">
+              <button
+                onClick={() => navigate('/checklist-templates')}
+                className="text-sm text-primary hover:underline"
+              >
+                Manage Checklist Templates →
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

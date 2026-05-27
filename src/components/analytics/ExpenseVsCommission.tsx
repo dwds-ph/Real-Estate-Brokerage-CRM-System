@@ -141,7 +141,7 @@ export default function ExpenseVsCommission({
                 border: '1px solid hsl(var(--border))',
                 background: 'hsl(var(--card))',
               }}
-              formatter={(value: any) => [formatCurrency(value), undefined]}
+              formatter={(value) => [formatCurrency(Number(value)), undefined]}
             />
             <Legend />
             <Bar dataKey="Expenses" fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={40} />

@@ -31,6 +31,8 @@ import NotificationsPage from '@/pages/NotificationsPage';
 import VaultPage from '@/pages/VaultPage';
 import MortgagePage from '@/pages/MortgagePage';
 import AnalyticsPage from '@/pages/AnalyticsPage';
+import ChecklistTemplatesPage from '@/pages/ChecklistTemplatesPage';
+import ActivityPage from '@/pages/ActivityPage';
 
 function AppContent() {
   useFcmService();
@@ -76,6 +78,8 @@ function App() {
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/reminders" element={<RemindersPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/checklist-templates" element={<ChecklistTemplatesPage />} />
+              <Route path="/activity" element={<ActivityPage />} />
               <Route path="/settings/notifications" element={<NotificationPreferencesPage />} />
             </Route>
           </Route>

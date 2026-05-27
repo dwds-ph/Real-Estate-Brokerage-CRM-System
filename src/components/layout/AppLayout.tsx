@@ -21,6 +21,8 @@ const navItems = [
   { to: '/mortgages', label: 'Mortgages', icon: '🏦' },
   { to: '/analytics', label: 'Analytics', icon: '📈' },
   { to: '/calendar', label: 'Calendar', icon: '📅' },
+  { to: '/checklist-templates', label: 'Checklists', icon: '✅' },
+  { to: '/activity', label: 'Activity', icon: '🔄' },
 ];
 export default function AppLayout() {
   const { userProfile, logout } = useAuth();

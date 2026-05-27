@@ -96,7 +96,7 @@ export default function SourceAnalytics({ leads, loading }: SourceAnalyticsProps
                   border: '1px solid hsl(var(--border))',
                   background: 'hsl(var(--card))',
                 }}
-                formatter={(value: any, name: any) => [value, name]}
+                formatter={(value, name) => [`${value}`, name]}
               />
               <Legend />
             </PieChart>

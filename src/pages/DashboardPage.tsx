@@ -2,6 +2,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useCollection } from '@/hooks/useFirestore';
 import { Lead, Listing, Viewing, Deal, TaskItem, Payout } from '@/types';
 import { formatCurrency, timeAgo, getLeadStatusColor, cn } from '@/lib/utils';
+import ActivityFeed from '@/components/automation/ActivityFeed';
 
 export default function DashboardPage() {
   const { userProfile } = useAuth();
@@ -204,6 +205,11 @@ export default function DashboardPage() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Activity Feed */}
+      <div className="rounded-lg border bg-card p-6">
+        <ActivityFeed compact />
       </div>
 
       {/* Broker-specific: Leaderboard */}
