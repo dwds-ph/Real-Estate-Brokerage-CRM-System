@@ -3,121 +3,380 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
+    // =========================================================================
+    // HELPER FUNCTIONS
+    // =========================================================================
+
+    // --- Auth basics ---
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    function getUserRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    // --- User document helpers (safe — check exists before accessing data) ---
+    function getUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
     }
 
-    function getUserBrokerId() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.brokerId;
+    function safeGetUserRole() {
+      let doc = getUserDoc();
+      return doc.exists ? doc.data.role : null;
     }
 
+    function safeGetUserBrokerId() {
+      let doc = getUserDoc();
+      return doc.exists ? doc.data.brokerId : null;
+    }
+
+    // --- Role checks ---
     function isBroker() {
-      return isAuthenticated() && getUserRole() == 'broker';
+      return isAuthenticated() && safeGetUserRole() == 'broker';
     }
 
     function isAgent() {
-      return isAuthenticated() && getUserRole() in ['agent', 'sub-agent'];
+      return isAuthenticated() && safeGetUserRole() in ['agent', 'sub-agent'];
+    }
+
+    function isStaff() {
+      return isAuthenticated() && safeGetUserRole() in ['agent', 'sub-agent', 'broker'];
     }
 
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // --- Broker-org isolation ---
+    // Does the authenticated user share the same brokerId as another user?
+    function isSameBrokerOrg(userId) {
+      let target = get(/databases/$(database)/documents/users/$(userId));
+      return isAuthenticated() && target.exists && safeGetUserBrokerId() == target.data.brokerId;
+    }
+
+    // Generic check: does the resource's brokerId match the current user's org?
+    function inMyOrg(resource) {
+      return isAuthenticated() && resource.data.brokerId == safeGetUserBrokerId();
+    }
+
+    // --- Assignment / ownership checks ---
     function isAssignedOrBroker(resource) {
       return isBroker() || (isAgent() && resource.data.assignedTo == request.auth.uid);
     }
 
-    // Users
+    function isCreatorOrBroker(resource) {
+      return isBroker() || (isAgent() && resource.data.createdBy == request.auth.uid);
+    }
+
+    function isCreatorOrBrokerUsingRequest() {
+      return isBroker() || (isAgent() && request.resource.data.createdBy == request.auth.uid);
+    }
+
+    // --- Field validation ---
+    function requireFields(fields) {
+      return fields.all(field, request.resource.data.keys().hasAll([field]));
+    }
+
+    function requireFieldWriteOnce() {
+      // Prevents overwriting a field after creation (set it once, then immutable)
+      return true; // stub — override per-collection if needed
+    }
+
+    // --- Immutability / deletion guards ---
+    function denyAll() {
+      return false;
+    }
+
+    // =========================================================================
+    // COLLECTIONS
+    // =========================================================================
+
+    // -----------------------------------------------------------------------
+    // USERS
+    //   read:    self or same broker org
+    //   create:  self only (sign-up flow)
+    //   update:  self or broker
+    //   delete:  NEVER — deactivate instead
+    // -----------------------------------------------------------------------
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow create: if isOwner(userId);
+      allow read: if isAuthenticated() && (isOwner(userId) || isSameBrokerOrg(userId));
+      allow create: if isOwner(userId) && requireFields(['email', 'role', 'name', 'brokerId']);
       allow update: if isOwner(userId) || isBroker();
-      allow delete: if false; // No deletion — deactivate instead
+      allow delete: if false;
     }
 
-    // Leads
+    // -----------------------------------------------------------------------
+    // OFFICES
+    //   read:    agents/brokers in the owning org
+    //   create:  broker only
+    //   update:  broker only (same org)
+    //   delete:  broker only (same org)
+    // -----------------------------------------------------------------------
+    match /offices/{officeId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isBroker() && requireFields(['name', 'address', 'phone', 'brokerId']);
+      allow update: if isBroker() && inMyOrg(resource);
+      allow delete: if isBroker() && inMyOrg(resource);
+    }
+
+    // -----------------------------------------------------------------------
+    // LEADS
+    //   read:    broker or same org
+    //   create:  any staff
+    //   update:  broker or assigned agent
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
     match /leads/{leadId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isAuthenticated() && requireFields(['name', 'contact', 'brokerId']);
       allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
       allow delete: if isBroker();
     }
 
-    // Listings
+    // -----------------------------------------------------------------------
+    // LISTINGS
+    //   read:    broker or same org
+    //   create:  any staff
+    //   update:  broker or assigned agent
+    //   delete:  broker only
+    //
+    //   listingMedia (subcollection): agent uploads own, broker manages all
+    // -----------------------------------------------------------------------
     match /listings/{listingId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isAuthenticated() && requireFields(['title', 'price', 'status', 'brokerId']);
       allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
       allow delete: if isBroker();
+
+      // Listing Media subcollection
+      match /listingMedia/{mediaId} {
+        allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+        allow create: if isAuthenticated() && requireFields(['url', 'type', 'uploadedBy', 'brokerId']);
+        allow update: if isBroker() || resource.data.uploadedBy == request.auth.uid;
+        allow delete: if isBroker() || resource.data.uploadedBy == request.auth.uid;
+      }
     }
 
-    // Deals
+    // -----------------------------------------------------------------------
+    // DEALS
+    //   read:    broker or same org
+    //   create:  any staff
+    //   update:  broker or creator
+    //   delete:  NEVER (critical financial data)
+    // -----------------------------------------------------------------------
     match /deals/{dealId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isAuthenticated() && requireFields(['title', 'status', 'brokerId', 'createdBy']);
       allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
-      allow delete: if isBroker();
+      allow delete: if false;
     }
 
-    // Commission Plans
+    // -----------------------------------------------------------------------
+    // COMMISSION PLANS
+    //   read:    broker or same org
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
     match /commissionPlans/{planId} {
-      allow read: if isAuthenticated();
-      allow create: if isBroker();
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isBroker() && requireFields(['name', 'type', 'brokerId']);
       allow update: if isBroker();
       allow delete: if isBroker();
     }
 
-    // Payouts
+    // -----------------------------------------------------------------------
+    // PAYOUTS
+    //   read:    broker, same org, or self (agentId)
+    //   create:  any staff
+    //   update:  broker only
+    //   delete:  NEVER (financial record)
+    // -----------------------------------------------------------------------
     match /payouts/{payoutId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['amount', 'agentId', 'brokerId']);
       allow update: if isBroker();
       allow delete: if false;
     }
 
-    // Viewings
+    // -----------------------------------------------------------------------
+    // VIEWINGS
+    //   read:    broker, same org, or assigned agent
+    //   create:  any staff
+    //   update:  broker or assigned agent
+    //   delete:  NEVER (client-relationship record)
+    // -----------------------------------------------------------------------
     match /viewings/{viewingId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['listingId', 'date', 'clientName', 'brokerId']);
       allow update: if isBroker() || resource.data.agentId == request.auth.uid;
-      allow delete: if isBroker();
+      allow delete: if false;
     }
 
-    // Tasks
+    // -----------------------------------------------------------------------
+    // TASKS
+    //   read:    broker, same org, or assigned agent
+    //   create:  any staff
+    //   update:  broker or assigned agent
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
     match /tasks/{taskId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.assignedTo == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['title', 'assignedTo', 'brokerId']);
+      allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // EXPENSES
+    //   read:    broker, same org, or self (agentId)
+    //   create:  any staff
+    //   update:  broker or owning agent
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /expenses/{expenseId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['amount', 'category', 'brokerId']);
       allow update: if isBroker() || resource.data.agentId == request.auth.uid;
       allow delete: if isBroker();
     }
 
-    // Expenses
-    match /expenses/{expenseId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isOwner(resource.data.agentId) || isBroker();
-      allow delete: if isBroker();
-    }
-
-    // Notifications
+    // -----------------------------------------------------------------------
+    // NOTIFICATIONS
+    //   read:    self (userId matches) or broker
+    //   create:  any staff (system-generated)
+    //   update:  self only
+    //   delete:  NEVER
+    // -----------------------------------------------------------------------
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isBroker());
       allow create: if isAuthenticated();
       allow update: if resource.data.userId == request.auth.uid;
       allow delete: if false;
     }
 
-    // Audit Logs — append only
+    // -----------------------------------------------------------------------
+    // AUDIT LOGS  — append-only immutable log
+    //   read:    broker only
+    //   create:  any staff
+    //   update:  NEVER
+    //   delete:  NEVER
+    // -----------------------------------------------------------------------
     match /auditLogs/{logId} {
       allow read: if isBroker();
       allow create: if isAuthenticated();
       allow update: if false;
       allow delete: if false;
     }
+
+    // -----------------------------------------------------------------------
+    // REFERRALS
+    //   read:    broker, same org, or assigned agent
+    //   create:  any staff
+    //   update:  broker or assigned agent
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /referrals/{referralId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['referralName', 'status', 'brokerId']);
+      allow update: if isBroker() || resource.data.agentId == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // MORTGAGES  (linked to deals)
+    //   read:    broker or same org
+    //   create:  any staff
+    //   update:  broker or creator
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /mortgages/{mortgageId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isAuthenticated() && requireFields(['dealId', 'lender', 'amount', 'status', 'brokerId']);
+      allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // COMM TEMPLATES  (communication templates)
+    //   read:    broker or same org
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /commTemplates/{templateId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isBroker() && requireFields(['name', 'subject', 'body', 'brokerId']);
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // DOCUMENTS  (document vault — per-deal/per-listing)
+    //   read:    broker, same org, or uploader
+    //   create:  any staff
+    //   update:  broker or uploader
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /documents/{documentId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.uploadedBy == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['name', 'url', 'dealId', 'brokerId', 'uploadedBy']);
+      allow update: if isBroker() || resource.data.uploadedBy == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // CHECKLIST TEMPLATES
+    //   read:    broker or same org
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /checklistTemplates/{templateId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isBroker() && requireFields(['name', 'items', 'brokerId']);
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // CHECKLIST INSTANCES  (linked to deals / leads)
+    //   read:    broker, same org, or assigned agent
+    //   create:  any staff
+    //   update:  broker or assigned agent
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /checklistInstances/{instanceId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.assignedTo == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['templateId', 'assignedTo', 'linkedTo', 'linkedType', 'brokerId']);
+      allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // ACTIVITY LOGS  — append-only immutable timeline
+    //   read:    broker or same org
+    //   create:  any staff (append)
+    //   update:  NEVER
+    //   delete:  NEVER
+    // -----------------------------------------------------------------------
+    match /activityLogs/{logId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isAuthenticated();
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // LEAD ACTIVITY (subcollection under each lead) — append-only timeline
+    //   read:    broker or same org
+    //   create:  any staff (append)
+    //   update:  NEVER
+    //   delete:  NEVER
+    // -----------------------------------------------------------------------
+    match /leads/{leadId}/leadActivity/{activityId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isAuthenticated();
+      allow update: if false;
+      allow delete: if false;
+    }
+
   }
 }

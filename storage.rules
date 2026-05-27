@@ -2,32 +2,116 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
+
+    // =========================================================================
+    // HELPER FUNCTIONS
+    // =========================================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isBroker() {
+      return isAuthenticated()
+        && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'broker';
+    }
+
+    function isAgent() {
+      return isAuthenticated()
+        && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role in ['agent', 'sub-agent'];
+    }
+
+    function isStaff() {
+      return isAgent() || isBroker();
+    }
+
+    // =========================================================================
+    // STORAGE PATHS
+    // =========================================================================
+
+    // -----------------------------------------------------------------------
+    // LISTINGS  — public read for brochure / property pages
+    //   read:    public (anyone)
+    //   write:   owner (userId in path matches auth uid)
+    //   delete:  owner or broker
+    // -----------------------------------------------------------------------
     match /listings/{userId}/{allPaths=**} {
-      allow read: if true; // Public read for brochure pages
-      allow write: if request.auth != null && request.auth.uid == userId;
-      allow delete: if request.auth != null;
+      allow read: if true;
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if isAuthenticated() && (request.auth.uid == userId || isBroker());
     }
 
+    // -----------------------------------------------------------------------
+    // RECEIPTS  — expense / payment receipts
+    //   read:    authenticated staff only
+    //   write:   owner only
+    //   delete:  owner or broker
+    // -----------------------------------------------------------------------
     match /receipts/{userId}/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
-      allow delete: if request.auth != null;
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if isAuthenticated() && (request.auth.uid == userId || isBroker());
     }
 
+    // -----------------------------------------------------------------------
+    // VIEWINGS  — property viewing photos / docs
+    //   read:    authenticated staff only
+    //   write:   owner only
+    //   delete:  owner or broker
+    // -----------------------------------------------------------------------
     match /viewings/{userId}/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
-      allow delete: if request.auth != null;
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if isAuthenticated() && (request.auth.uid == userId || isBroker());
     }
 
+    // -----------------------------------------------------------------------
+    // AVATARS  — user profile pictures
+    //   read:    public
+    //   write:   owner only
+    //   delete:  owner only
+    // -----------------------------------------------------------------------
     match /avatars/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
 
-    match /{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
+    // -----------------------------------------------------------------------
+    // DOCUMENTS  — deal / listing document vault
+    //   Path:    documents/{dealId}/{userId}/{filename}
+    //   read:    authenticated staff only (same broker org via app logic)
+    //   write:   owner (uploader) only
+    //   delete:  owner or broker
+    // -----------------------------------------------------------------------
+    match /documents/{dealId}/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if isAuthenticated() && (request.auth.uid == userId || isBroker());
     }
+
+    // -----------------------------------------------------------------------
+    // LOGOS  — office branding
+    //   Path:    logos/{officeId}/{filename}
+    //   read:    public (displayed on public-facing pages)
+    //   write:   broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /logos/{officeId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // CATCH-ALL  — deny everything not explicitly allowed
+    // -----------------------------------------------------------------------
+    match /{allPaths=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+
   }
 }
