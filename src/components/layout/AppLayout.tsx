@@ -36,6 +36,7 @@ const navItems = [
   { to: "/documents", label: "Documents", icon: "📑" },
   { to: "/compliance", label: "Compliance", icon: "✅" },
   { to: "/cma", label: "CMA", icon: "📊" },
+  { to: "/seed-data", label: "Seed Data", icon: "🌱" },
 ];
 export default function AppLayout() {
   const { userProfile, logout } = useAuth();
