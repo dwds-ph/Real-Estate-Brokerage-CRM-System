@@ -34,7 +34,7 @@
 | Tool         | Version       | Check Command        |
 | ------------ | ------------- | -------------------- |
 | Node.js      | ^18.0.0 (LTS) | `node --version`     |
-| npm          | ^9.0.0        | `npm --version`      |
+| yarn         | ^1.22.0       | `yarn --version`     |
 | Firebase CLI | ^13.0.0       | `firebase --version` |
 | Git          | ^2.30.0       | `git --version`      |
 
@@ -42,6 +42,8 @@
 
 ```bash
 npm install -g firebase-tools
+# or install via yarn
+yarn global add firebase-tools
 # or
 curl -sL https://firebase.tools | bash
 ```
@@ -118,27 +120,27 @@ Always verify the build succeeds **before** deploying.
 cd /root/Real-Estate-Brokerage-CRM-System
 
 # Install dependencies (if not already)
-npm ci
+yarn install
 
 # Run type checking
-npm run typecheck
+yarn typecheck
 
 # Run lint
-npm run lint
+yarn lint
 
 # Run tests
-npm test
+yarn test
 
 # Production build
-npm run build
+yarn build
 ```
 
 ### 3.2 What the Build Produces
 
-The `npm run build` command runs two steps (from `package.json`):
+The `yarn build` command runs three steps (from `package.json`):
 
 ```json
-"build": "tsc -b && vite build"
+"build": "tsc -b && vite build && node scripts/generate-sw.mjs"
 ```
 
 Output goes to the `dist/` directory:
@@ -380,11 +382,11 @@ git checkout main
 git pull origin main
 
 # 2. Verify the build
-npm ci --production=false
-npm run typecheck
-npm run lint
-npm test
-npm run build
+yarn install
+yarn typecheck
+yarn lint
+yarn test
+yarn build
 
 # 3. CRITICAL — Update FCM service worker config
 # Edit dist/firebase-messaging-sw.js and replace placeholder values
@@ -397,7 +399,7 @@ npm run build
 #   YOUR_APP_ID         → app ID
 
 # 4. Preview the build locally first
-npm run preview
+yarn preview
 
 # 5. Deploy
 firebase deploy --only hosting
@@ -522,8 +524,8 @@ firebase hosting:channel:list
 # Rollback to a specific version by redeploying from Git
 git log --oneline          # Find the commit hash of the stable version
 git checkout <stable-commit-hash>
-npm ci
-npm run build
+yarn install
+yarn build
 # Update dist/firebase-messaging-sw.js with real config
 firebase deploy --only hosting
 git checkout main          # Return to main branch
@@ -766,13 +768,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
+          cache: yarn
 
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
+      - run: yarn install --immutable
+      - run: yarn typecheck
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn build
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
