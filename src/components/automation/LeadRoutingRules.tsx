@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
+
 import { useCollection } from "@/hooks/useFirestore";
-import { AppUser } from "@/types";
 import {
   getRoutingConfig,
   saveRoutingConfig,
   RoutingConfig,
   LeadRoutingRule,
 } from "@/services/leadRoutingService";
+import { AppUser } from "@/types";
 
 interface Props {
   open: boolean;

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { createDoc } from "@/hooks/useFirestore";
 
-interface QuickCreateProps {
+export interface QuickCreateProps {
   open: boolean;
   onClose: () => void;
 }

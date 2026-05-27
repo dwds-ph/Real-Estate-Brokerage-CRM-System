@@ -8,7 +8,7 @@ import {
 } from "@/services/mortgageService";
 import { formatDate, cn } from "@/lib/utils";
 
-interface MortgageTrackerProps {
+export interface MortgageTrackerProps {
   mortgage: Mortgage;
   onUpdate?: () => void;
   compact?: boolean;

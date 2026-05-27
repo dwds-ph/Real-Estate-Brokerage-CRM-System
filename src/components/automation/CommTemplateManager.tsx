@@ -8,7 +8,7 @@ import {
   deleteCommTemplate,
 } from "@/services/commTemplates";
 
-interface Props {
+export interface CommTemplateManagerProps {
   open: boolean;
   onClose: () => void;
   onSelect?: (template: CommTemplate) => void;
@@ -18,7 +18,7 @@ export default function CommTemplateManager({
   open,
   onClose,
   onSelect,
-}: Props) {
+}: CommTemplateManagerProps) {
   const { userProfile } = useAuth();
   const [templates, setTemplates] = useState<CommTemplate[]>([]);
   const [loading, setLoading] = useState(true);

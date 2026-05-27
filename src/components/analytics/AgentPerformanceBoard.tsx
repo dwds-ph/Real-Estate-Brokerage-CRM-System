@@ -12,11 +12,11 @@ interface AgentStats {
   avgResponseTime: number; // in ms, approximate
 }
 
-interface AgentPerformanceBoardProps {
+export interface AgentPerformanceBoardProps {
   leads: Lead[];
   deals: Deal[];
   agents: AppUser[];
-  loading?: boolean;
+  isLoading?: boolean;
   currentUserId?: string;
   isBroker?: boolean;
 }
@@ -30,19 +30,21 @@ type SortKey = keyof Pick<
   | "conversionRate"
 >;
 
+export interface SortHeaderProps {
+  label: string;
+  sortKey: SortKey;
+  currentSortKey: SortKey;
+  sortAsc: boolean;
+  onSort: (key: SortKey) => void;
+}
+
 function SortHeader({
   label,
   sortKey: sk,
   currentSortKey,
   sortAsc,
   onSort,
-}: {
-  label: string;
-  sortKey: SortKey;
-  currentSortKey: SortKey;
-  sortAsc: boolean;
-  onSort: (key: SortKey) => void;
-}) {
+}: SortHeaderProps) {
   return (
     <th
       className="px-3 py-2 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
@@ -62,7 +64,7 @@ export default function AgentPerformanceBoard({
   leads,
   deals,
   agents,
-  loading,
+  isLoading,
   currentUserId,
   isBroker,
 }: AgentPerformanceBoardProps) {
@@ -149,7 +151,7 @@ export default function AgentPerformanceBoard({
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center py-12">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />

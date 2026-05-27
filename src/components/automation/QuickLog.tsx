@@ -4,13 +4,13 @@ import { updateDocById } from "@/hooks/useFirestore";
 import { CommTemplate, CommLogEntry, Lead } from "@/types";
 import CommTemplateManager from "./CommTemplateManager";
 
-interface Props {
+export interface QuickLogProps {
   leadId: string;
   lead: Lead;
   onLogged: () => void;
 }
 
-export default function QuickLog({ leadId, lead, onLogged }: Props) {
+export default function QuickLog({ leadId, lead, onLogged }: QuickLogProps) {
   const { userProfile } = useAuth();
   const [showTemplates, setShowTemplates] = useState(false);
   const [commText, setCommText] = useState("");

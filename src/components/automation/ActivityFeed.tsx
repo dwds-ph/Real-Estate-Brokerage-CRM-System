@@ -6,7 +6,11 @@ import { timeAgo } from "@/lib/utils";
 
 type ActionFilter = "all" | "create" | "update" | "delete";
 
-export default function ActivityFeed({ compact }: { compact?: boolean }) {
+export interface ActivityFeedProps {
+  compact?: boolean;
+}
+
+export default function ActivityFeed({ compact }: ActivityFeedProps) {
   const navigate = useNavigate();
   const {
     data: activities,

@@ -1,15 +1,12 @@
-import { useState, useMemo } from "react";
-import { where } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
-import { useCollection } from "@/hooks/useFirestore";
-import { Lead, Deal, Viewing, Listing, Expense, AppUser } from "@/types";
+import { useAnalyticsPage } from "@/hooks/useAnalyticsPage";
+import { cn, formatCurrency } from "@/lib/utils";
 import ConversionFunnel from "@/components/analytics/ConversionFunnel";
 import AgentPerformanceBoard from "@/components/analytics/AgentPerformanceBoard";
 import ExpenseVsCommission from "@/components/analytics/ExpenseVsCommission";
 import ListingPerformance from "@/components/analytics/ListingPerformance";
 import SourceAnalytics from "@/components/analytics/SourceAnalytics";
 import DateRangePicker from "@/components/analytics/DateRangePicker";
-import { cn, formatCurrency } from "@/lib/utils";
 
 const TABS = [
   { id: "funnel", label: "Funnel", icon: "🔽" },
@@ -18,13 +15,6 @@ const TABS = [
   { id: "listings", label: "Listings", icon: "🏠" },
   { id: "sources", label: "Sources", icon: "📡" },
 ];
-
-function getDefaultDateRange() {
-  const now = new Date();
-  const from = new Date(now.getFullYear(), 0, 1).toISOString().split("T")[0];
-  const to = now.toISOString().split("T")[0];
-  return { from, to };
-}
 
 function exportToCSV(filename: string, headers: string[], rows: string[][]) {
   const csvContent = [
@@ -42,63 +32,23 @@ function exportToCSV(filename: string, headers: string[], rows: string[][]) {
 
 export default function AnalyticsPage() {
   const { userProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState("funnel");
-  const [dateRange, setDateRange] = useState(getDefaultDateRange);
-
-  const isBroker = userProfile?.role === "broker";
-
-  // Fetch all data
-  const { data: leads, loading: leadsLoading } = useCollection<Lead>(
-    "leads",
-    [],
-  );
-  const { data: deals, loading: dealsLoading } = useCollection<Deal>(
-    "deals",
-    [],
-  );
-  const { data: viewings, loading: viewingsLoading } = useCollection<Viewing>(
-    "viewings",
-    [],
-  );
-  const { data: listings, loading: listingsLoading } = useCollection<Listing>(
-    "listings",
-    [],
-  );
-  const { data: expenses, loading: expensesLoading } = useCollection<Expense>(
-    "expenses",
-    [],
-  );
-  const { data: agents, loading: agentsLoading } = useCollection<AppUser>(
-    "users",
-    userProfile?.brokerId
-      ? [
-          where("brokerId", "==", userProfile.brokerId),
-          where("role", "in", ["agent", "sub-agent"]),
-        ]
-      : [],
-  );
-
-  // For agent view: also fetch all users if not broker to see own data
-  const { data: allUsers } = useCollection<AppUser>("users", []);
-
-  const effectiveAgents = isBroker
-    ? agents
-    : userProfile
-      ? allUsers.filter((u) => u.id === userProfile.id)
-      : [];
-
-  // Filter by date range for certain reports
-  const fromTs = new Date(dateRange.from).getTime();
-  const toTs = new Date(dateRange.to + "T23:59:59").getTime();
-
-  const filteredLeads = useMemo(
-    () => leads.filter((l) => l.createdAt >= fromTs && l.createdAt <= toTs),
-    [leads, fromTs, toTs],
-  );
-
-  const myLeads = isBroker
-    ? filteredLeads
-    : filteredLeads.filter((l) => l.assignedTo === userProfile?.id);
+  const {
+    activeTab,
+    setActiveTab,
+    dateRange,
+    setDateRange,
+    leads,
+    deals,
+    viewings,
+    listings,
+    expenses,
+    agents,
+    effectiveAgents,
+    myLeads,
+    isLoading,
+    hasData,
+    isBroker,
+  } = useAnalyticsPage();
 
   const handleExport = () => {
     switch (activeTab) {
@@ -154,6 +104,8 @@ export default function AnalyticsPage() {
       case "pnl": {
         const headers = ["Agent", "Expenses", "Commission", "Net", "ROI"];
         const rows = (isBroker ? agents : effectiveAgents).map((a) => {
+          const fromTs = new Date(dateRange.from).getTime();
+          const toTs = new Date(dateRange.to + "T23:59:59").getTime();
           const agentExpenses = expenses
             .filter(
               (e) => e.agentId === a.id && e.date >= fromTs && e.date <= toTs,
@@ -240,29 +192,6 @@ export default function AnalyticsPage() {
     }
   };
 
-  const isLoading =
-    leadsLoading ||
-    dealsLoading ||
-    viewingsLoading ||
-    listingsLoading ||
-    expensesLoading ||
-    agentsLoading;
-
-  const hasData =
-    activeTab === "funnel"
-      ? myLeads.length > 0
-      : activeTab === "agents"
-        ? effectiveAgents.length > 0
-        : activeTab === "pnl"
-          ? isBroker
-            ? agents.length > 0
-            : effectiveAgents.length > 0
-          : activeTab === "listings"
-            ? listings.length > 0
-            : activeTab === "sources"
-              ? myLeads.length > 0
-              : false;
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -343,7 +272,7 @@ export default function AnalyticsPage() {
                 <p className="text-sm text-muted-foreground mb-6">
                   Track how leads progress through each stage of the pipeline
                 </p>
-                <ConversionFunnel leads={myLeads} loading={leadsLoading} />
+                <ConversionFunnel leads={myLeads} isLoading={isLoading} />
               </div>
             )}
 
@@ -362,7 +291,7 @@ export default function AnalyticsPage() {
                   leads={leads}
                   deals={deals}
                   agents={effectiveAgents}
-                  loading={agentsLoading}
+                  isLoading={isLoading}
                   currentUserId={userProfile?.id}
                   isBroker={isBroker}
                 />
@@ -382,7 +311,7 @@ export default function AnalyticsPage() {
                   deals={deals}
                   agents={agents}
                   dateRange={dateRange}
-                  loading={expensesLoading}
+                  loading={isLoading}
                   isBroker={isBroker}
                   currentUserId={userProfile?.id}
                 />
@@ -401,7 +330,7 @@ export default function AnalyticsPage() {
                   listings={listings}
                   viewings={viewings}
                   deals={deals}
-                  loading={listingsLoading}
+                  loading={isLoading}
                 />
               </div>
             )}
@@ -414,7 +343,7 @@ export default function AnalyticsPage() {
                 <p className="text-sm text-muted-foreground mb-6">
                   Conversion performance by acquisition channel
                 </p>
-                <SourceAnalytics leads={leads} loading={leadsLoading} />
+                <SourceAnalytics leads={leads} loading={isLoading} />
               </div>
             )}
           </>

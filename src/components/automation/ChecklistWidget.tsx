@@ -8,7 +8,7 @@ import {
   updateChecklistInstance,
 } from "@/services/checklistService";
 
-interface Props {
+export interface ChecklistWidgetProps {
   scopeType: "lead" | "listing" | "deal";
   scopeId: string;
   compact?: boolean;
@@ -18,7 +18,7 @@ export default function ChecklistWidget({
   scopeType,
   scopeId,
   compact,
-}: Props) {
+}: ChecklistWidgetProps) {
   const { userProfile } = useAuth();
   const [templates, setTemplates] = useState<ChecklistTemplate[]>([]);
   const [instances, setInstances] = useState<ChecklistInstance[]>([]);
