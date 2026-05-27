@@ -76,8 +76,11 @@ export default function TaskForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <div>
-        <label className="mb-1 block text-xs font-medium">Title *</label>
+        <label htmlFor="task-title" className="mb-1 block text-xs font-medium">
+          Title *
+        </label>
         <input
+          id="task-title"
           type="text"
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
@@ -87,8 +90,11 @@ export default function TaskForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium">Description</label>
+        <label htmlFor="task-desc" className="mb-1 block text-xs font-medium">
+          Description
+        </label>
         <textarea
+          id="task-desc"
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
           className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -98,8 +104,14 @@ export default function TaskForm({
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="mb-1 block text-xs font-medium">Priority</label>
+          <label
+            htmlFor="task-priority"
+            className="mb-1 block text-xs font-medium"
+          >
+            Priority
+          </label>
           <select
+            id="task-priority"
             value={form.priority}
             onChange={(e) =>
               setForm({ ...form, priority: e.target.value as TaskPriority })
@@ -114,8 +126,14 @@ export default function TaskForm({
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium">Status</label>
+          <label
+            htmlFor="task-status"
+            className="mb-1 block text-xs font-medium"
+          >
+            Status
+          </label>
           <select
+            id="task-status"
             value={form.status}
             onChange={(e) =>
               setForm({ ...form, status: e.target.value as TaskStatus })
@@ -130,8 +148,14 @@ export default function TaskForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium">Due Date</label>
+        <label
+          htmlFor="task-due-date"
+          className="mb-1 block text-xs font-medium"
+        >
+          Due Date
+        </label>
         <input
+          id="task-due-date"
           type="date"
           value={form.dueDate}
           onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
@@ -140,8 +164,11 @@ export default function TaskForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium">Assign To</label>
+        <label htmlFor="task-assign" className="mb-1 block text-xs font-medium">
+          Assign To
+        </label>
         <select
+          id="task-assign"
           value={form.assignedTo}
           onChange={(e) => {
             const agent = agents.find((a) => a.id === e.target.value);
@@ -163,9 +190,15 @@ export default function TaskForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium">Related To</label>
+        <label
+          htmlFor="task-related-type"
+          className="mb-1 block text-xs font-medium"
+        >
+          Related To
+        </label>
         <div className="grid grid-cols-2 gap-3">
           <select
+            id="task-related-type"
             value={form.relatedToType}
             onChange={(e) =>
               setForm({
@@ -182,6 +215,7 @@ export default function TaskForm({
             <option value="project">Project</option>
           </select>
           <input
+            id="task-related-id"
             type="text"
             value={form.relatedToTitle}
             onChange={(e) =>
@@ -194,10 +228,11 @@ export default function TaskForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium">
+        <label htmlFor="task-tags" className="mb-1 block text-xs font-medium">
           Tags (comma-separated)
         </label>
         <input
+          id="task-tags"
           type="text"
           value={form.tags}
           onChange={(e) => setForm({ ...form, tags: e.target.value })}

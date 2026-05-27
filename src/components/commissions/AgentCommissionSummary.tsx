@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import type { Deal, Payout } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { computeFullBreakdown } from "@/lib/commissionEngine";
@@ -94,7 +94,7 @@ function getCommissionFromDeal(deal: Deal): {
 
 // ─── Sub-components ────────────────────────────────────────────────────
 
-function PeriodFilterBar({
+const PeriodFilterBar = memo(function PeriodFilterBar({
   value,
   onChange,
 }: {
@@ -126,9 +126,9 @@ function PeriodFilterBar({
       ))}
     </div>
   );
-}
+});
 
-function SummaryCard({
+const SummaryCard = memo(function SummaryCard({
   label,
   value,
   variant = "default",
@@ -149,24 +149,22 @@ function SummaryCard({
   return (
     <div className="rounded-lg border bg-card p-4 transition-colors hover:bg-muted/20">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
-      <p
-        className={`text-xl font-bold tabular-nums ${colorMap[variant]}`}
-      >
+      <p className={`text-xl font-bold tabular-nums ${colorMap[variant]}`}>
         {value}
       </p>
     </div>
   );
-}
+});
 
-function EmptyState({ message }: { message: string }) {
+const EmptyState = memo(function EmptyState({ message }: { message: string }) {
   return (
     <div className="rounded-lg border bg-card py-10 text-center text-sm text-muted-foreground">
       {message}
     </div>
   );
-}
+});
 
-function AgentMiniBreakdown({
+const AgentMiniBreakdown = memo(function AgentMiniBreakdown({
   agentId,
   agentName,
   deals,
@@ -245,9 +243,7 @@ function AgentMiniBreakdown({
                   className="flex items-center justify-between rounded-md bg-card px-3 py-2 text-xs"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium truncate">
-                      {deal.clientName}
-                    </p>
+                    <p className="font-medium truncate">{deal.clientName}</p>
                     <p className="text-muted-foreground">
                       {formatDate(deal.createdAt)} —{" "}
                       {formatCurrency(deal.dealPrice)}
@@ -285,9 +281,7 @@ function AgentMiniBreakdown({
                 className="flex items-center justify-between rounded-md bg-card px-3 py-2 text-xs"
               >
                 <span className="text-muted-foreground">
-                  {payout.paidAt
-                    ? formatDate(payout.paidAt)
-                    : "Not yet paid"}
+                  {payout.paidAt ? formatDate(payout.paidAt) : "Not yet paid"}
                 </span>
                 <div className="text-right">
                   <span className="font-semibold tabular-nums">
@@ -312,9 +306,9 @@ function AgentMiniBreakdown({
       )}
     </div>
   );
-}
+});
 
-function RankBadge({ rank }: { rank: number }) {
+const RankBadge = memo(function RankBadge({ rank }: { rank: number }) {
   if (rank === 0) {
     return (
       <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-xs font-bold">
@@ -341,7 +335,89 @@ function RankBadge({ rank }: { rank: number }) {
       #{rank + 1}
     </span>
   );
-}
+});
+
+const AgentRow = memo(function AgentRow({
+  row,
+  index,
+  isExpanded,
+  onToggle,
+  onClose,
+  filteredDeals,
+  filteredPayouts,
+}: {
+  row: AgentCommissionRow;
+  index: number;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+  filteredDeals: Deal[];
+  filteredPayouts: Payout[];
+}) {
+  return (
+    <div>
+      <button
+        onClick={onToggle}
+        className={`w-full grid grid-cols-1 sm:grid-cols-12 gap-2 px-4 py-3 text-sm transition-colors hover:bg-muted/30 text-left ${
+          isExpanded ? "bg-muted/20" : ""
+        }`}
+      >
+        {/* Mobile layout */}
+        <div className="flex items-center gap-3 sm:hidden">
+          <RankBadge rank={index} />
+          <div className="min-w-0 flex-1">
+            <p className="font-medium truncate">{row.agentName}</p>
+            <p className="text-xs text-muted-foreground">
+              {row.dealCount} deal{row.dealCount !== 1 ? "s" : ""} · Gross:{" "}
+              {formatCurrency(row.grossCommission)}
+            </p>
+          </div>
+          <span className="text-muted-foreground text-xs shrink-0">
+            {isExpanded ? "▲" : "▼"}
+          </span>
+        </div>
+
+        {/* Desktop layout */}
+        <div className="hidden sm:flex sm:contents">
+          <div className="col-span-1 flex items-center justify-center">
+            <RankBadge rank={index} />
+          </div>
+          <div className="col-span-3 flex items-center font-medium truncate">
+            {row.agentName}
+          </div>
+          <div className="col-span-1 flex items-center justify-end tabular-nums">
+            {row.dealCount}
+          </div>
+          <div className="col-span-2 flex items-center justify-end tabular-nums font-medium">
+            {formatCurrency(row.grossCommission)}
+          </div>
+          <div className="col-span-2 flex items-center justify-end tabular-nums text-muted-foreground">
+            {formatCurrency(row.netCommission)}
+          </div>
+          <div className="col-span-2 flex items-center justify-end tabular-nums text-green-600 dark:text-green-400">
+            {formatCurrency(row.paidAmount)}
+          </div>
+          <div className="col-span-1 flex items-center justify-center text-muted-foreground text-xs">
+            {isExpanded ? "▲" : "▼"}
+          </div>
+        </div>
+      </button>
+
+      {/* Expandable Mini Breakdown */}
+      {isExpanded && (
+        <div className="px-4 pb-4">
+          <AgentMiniBreakdown
+            agentId={row.agentId}
+            agentName={row.agentName}
+            deals={filteredDeals}
+            payouts={filteredPayouts}
+            onClose={onClose}
+          />
+        </div>
+      )}
+    </div>
+  );
+});
 
 // ─── Main Component ────────────────────────────────────────────────────
 
@@ -456,6 +532,17 @@ export default function AgentCommissionSummary({
       .sort((a, b) => b.grossCommission - a.grossCommission);
   }, [filteredDeals, filteredPayouts, agents]);
 
+  const handleToggleAgent = useCallback(
+    (agentId: string, isExpanded: boolean) => {
+      setExpandedAgentId(isExpanded ? null : agentId);
+    },
+    [],
+  );
+
+  const handleCloseBreakdown = useCallback(() => {
+    setExpandedAgentId(null);
+  }, []);
+
   const periodLabel =
     period === "all"
       ? "All Time"
@@ -536,75 +623,21 @@ export default function AgentCommissionSummary({
             {/* Table Rows */}
             {agentRows.map((row, index) => {
               const isExpanded = expandedAgentId === row.agentId;
-
               return (
-                <div key={row.agentId}>
-                  <button
-                    onClick={() =>
-                      setExpandedAgentId(
-                        isExpanded ? null : row.agentId,
-                      )
-                    }
-                    className={`w-full grid grid-cols-1 sm:grid-cols-12 gap-2 px-4 py-3 text-sm transition-colors hover:bg-muted/30 text-left ${
-                      isExpanded ? "bg-muted/20" : ""
-                    }`}
-                  >
-                    {/* Mobile layout */}
-                    <div className="flex items-center gap-3 sm:hidden">
-                      <RankBadge rank={index} />
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium truncate">
-                          {row.agentName}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {row.dealCount} deal{row.dealCount !== 1 ? "s" : ""}{" "}
-                          · Gross: {formatCurrency(row.grossCommission)}
-                        </p>
-                      </div>
-                      <span className="text-muted-foreground text-xs shrink-0">
-                        {isExpanded ? "▲" : "▼"}
-                      </span>
-                    </div>
-
-                    {/* Desktop layout */}
-                    <div className="hidden sm:flex sm:contents">
-                      <div className="col-span-1 flex items-center justify-center">
-                        <RankBadge rank={index} />
-                      </div>
-                      <div className="col-span-3 flex items-center font-medium truncate">
-                        {row.agentName}
-                      </div>
-                      <div className="col-span-1 flex items-center justify-end tabular-nums">
-                        {row.dealCount}
-                      </div>
-                      <div className="col-span-2 flex items-center justify-end tabular-nums font-medium">
-                        {formatCurrency(row.grossCommission)}
-                      </div>
-                      <div className="col-span-2 flex items-center justify-end tabular-nums text-muted-foreground">
-                        {formatCurrency(row.netCommission)}
-                      </div>
-                      <div className="col-span-2 flex items-center justify-end tabular-nums text-green-600 dark:text-green-400">
-                        {formatCurrency(row.paidAmount)}
-                      </div>
-                      <div className="col-span-1 flex items-center justify-center text-muted-foreground text-xs">
-                        {isExpanded ? "▲" : "▼"}
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* Expandable Mini Breakdown */}
-                  {isExpanded && (
-                    <div className="px-4 pb-4">
-                      <AgentMiniBreakdown
-                        agentId={row.agentId}
-                        agentName={row.agentName}
-                        deals={filteredDeals}
-                        payouts={filteredPayouts}
-                        onClose={() => setExpandedAgentId(null)}
-                      />
-                    </div>
+                <AgentRow
+                  key={row.agentId}
+                  row={row}
+                  index={index}
+                  isExpanded={isExpanded}
+                  onToggle={handleToggleAgent.bind(
+                    null,
+                    row.agentId,
+                    isExpanded,
                   )}
-                </div>
+                  onClose={handleCloseBreakdown}
+                  filteredDeals={filteredDeals}
+                  filteredPayouts={filteredPayouts}
+                />
               );
             })}
           </div>

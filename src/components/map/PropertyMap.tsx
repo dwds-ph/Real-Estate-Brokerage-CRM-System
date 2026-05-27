@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { formatCurrency } from "@/lib/utils";
 import { type MapFilters } from "@/types";
 import { getMarkerColor, DEFAULT_VIEWPORT } from "@/lib/mapUtils";
@@ -110,7 +111,7 @@ export default function PropertyMap({
                 {listing.images?.[0] && (
                   <img
                     src={listing.images[0]}
-                    alt=""
+                    alt={listing.title}
                     className="w-full h-24 object-cover rounded mb-2"
                   />
                 )}

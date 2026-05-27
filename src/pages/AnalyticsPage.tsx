@@ -37,14 +37,16 @@ export default function AnalyticsPage() {
   const [activeTab, setActiveTab] = useState("sources");
 
   // Data
-  const { data: leads, loading: leadsLoading } = useCollection<Lead>(
-    "leads",
-    [],
-  );
-  const { data: deals, loading: dealsLoading } = useCollection<Deal>(
-    "deals",
-    [],
-  );
+  const {
+    data: leads,
+    loading: leadsLoading,
+    error: leadsError,
+  } = useCollection<Lead>("leads", []);
+  const {
+    data: deals,
+    loading: dealsLoading,
+    error: dealsError,
+  } = useCollection<Deal>("deals", []);
   const [goals, setGoals] = useState<AgentGoal[]>([]);
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<AgentGoal | null>(null);
@@ -90,6 +92,7 @@ export default function AnalyticsPage() {
   }));
 
   const isLoading = leadsLoading || dealsLoading;
+  const dataError = leadsError || dealsError;
 
   // Goal CRUD handlers
   const handleCreateGoal = async (
@@ -203,7 +206,18 @@ export default function AnalyticsPage() {
 
       {/* Tab Content */}
       <div>
-        {isLoading ? (
+        {dataError ? (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+            <p className="font-medium text-sm">Error loading analytics data</p>
+            <p className="text-xs mt-1">{dataError}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-2 text-xs font-medium underline underline-offset-2 hover:no-underline"
+            >
+              Try again
+            </button>
+          </div>
+        ) : isLoading ? (
           <div className="flex justify-center py-24">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
@@ -218,7 +232,16 @@ export default function AnalyticsPage() {
                 <p className="text-sm text-muted-foreground mb-6">
                   Conversion performance by acquisition channel
                 </p>
-                <LeadSourceAnalytics analytics={sourceAnalytics} />
+                {leads.length === 0 && dealData.length === 0 ? (
+                  <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+                    <p className="font-medium">No data yet</p>
+                    <p className="text-sm mt-1">
+                      Add leads and close deals to see source analytics.
+                    </p>
+                  </div>
+                ) : (
+                  <LeadSourceAnalytics analytics={sourceAnalytics} />
+                )}
               </div>
             )}
 
@@ -271,7 +294,16 @@ export default function AnalyticsPage() {
                 <p className="text-sm text-muted-foreground mb-6">
                   Revenue trends, agent rankings, and period comparisons
                 </p>
-                <AdvancedAnalytics deals={dealData} />
+                {dealData.length === 0 ? (
+                  <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+                    <p className="font-medium">No deal data yet</p>
+                    <p className="text-sm mt-1">
+                      Close deals to unlock revenue trends and agent rankings.
+                    </p>
+                  </div>
+                ) : (
+                  <AdvancedAnalytics deals={dealData} />
+                )}
               </div>
             )}
 
@@ -285,7 +317,16 @@ export default function AnalyticsPage() {
                   <p className="text-sm text-muted-foreground mb-6">
                     Agent performance vs targets
                   </p>
-                  <GoalOverview goalsWithProgress={goalOverviewItems} />
+                  {goalOverviewItems.length === 0 ? (
+                    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+                      <p className="font-medium">No goals set yet</p>
+                      <p className="text-sm mt-1">
+                        Create goals to track team performance.
+                      </p>
+                    </div>
+                  ) : (
+                    <GoalOverview goalsWithProgress={goalOverviewItems} />
+                  )}
                 </div>
 
                 {/* Goals Summary Cards */}

@@ -105,6 +105,7 @@ export default function MortgageForm({
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close mortgage form"
             className="rounded-lg p-1 text-muted-foreground hover:bg-muted"
           >
             ✕
@@ -114,7 +115,12 @@ export default function MortgageForm({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Bank Selector */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Bank</label>
+            <label
+              htmlFor="mortgage-bank"
+              className="mb-1 block text-sm font-medium"
+            >
+              Bank
+            </label>
             <div className="grid grid-cols-2 gap-2">
               {BANKS.map((bank) => (
                 <button
@@ -149,10 +155,14 @@ export default function MortgageForm({
 
           {/* Loan Amount */}
           <div>
-            <label className="mb-1 block text-sm font-medium">
+            <label
+              htmlFor="mortgage-amount"
+              className="mb-1 block text-sm font-medium"
+            >
               Loan Amount (₱)
             </label>
             <input
+              id="mortgage-amount"
               type="number"
               value={loanAmount}
               onChange={(e) => setLoanAmount(e.target.value)}
@@ -172,8 +182,14 @@ export default function MortgageForm({
 
           {/* Notes */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Notes</label>
+            <label
+              htmlFor="mortgage-notes"
+              className="mb-1 block text-sm font-medium"
+            >
+              Notes
+            </label>
             <textarea
+              id="mortgage-notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"

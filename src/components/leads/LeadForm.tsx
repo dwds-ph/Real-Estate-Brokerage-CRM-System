@@ -29,14 +29,18 @@ export function LeadForm({
   onCancel,
 }: LeadFormProps) {
   return (
-    <form onSubmit={onSubmit} className="rounded-lg border bg-card p-6 space-y-4">
-      <h3 className="font-semibold">
-        {editingId ? "Edit Lead" : "New Lead"}
-      </h3>
+    <form
+      onSubmit={onSubmit}
+      className="rounded-lg border bg-card p-6 space-y-4"
+    >
+      <h3 className="font-semibold">{editingId ? "Edit Lead" : "New Lead"}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Name *</label>
+          <label htmlFor="lead-name" className="block text-sm font-medium mb-1">
+            Name *
+          </label>
           <input
+            id="lead-name"
             type="text"
             required
             value={form.name}
@@ -45,8 +49,14 @@ export function LeadForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Phone</label>
+          <label
+            htmlFor="lead-phone"
+            className="block text-sm font-medium mb-1"
+          >
+            Phone
+          </label>
           <input
+            id="lead-phone"
             type="tel"
             value={form.phone}
             onChange={(e) => onChange("phone", e.target.value)}
@@ -55,8 +65,14 @@ export function LeadForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
+          <label
+            htmlFor="lead-email"
+            className="block text-sm font-medium mb-1"
+          >
+            Email
+          </label>
           <input
+            id="lead-email"
             type="email"
             value={form.email}
             onChange={(e) => onChange("email", e.target.value)}
@@ -64,8 +80,14 @@ export function LeadForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Source</label>
+          <label
+            htmlFor="lead-source"
+            className="block text-sm font-medium mb-1"
+          >
+            Source
+          </label>
           <select
+            id="lead-source"
             value={form.source}
             onChange={(e) => onChange("source", e.target.value)}
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -77,8 +99,14 @@ export function LeadForm({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Status</label>
+          <label
+            htmlFor="lead-status"
+            className="block text-sm font-medium mb-1"
+          >
+            Status
+          </label>
           <select
+            id="lead-status"
             value={form.status}
             onChange={(e) => onChange("status", e.target.value)}
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -92,8 +120,14 @@ export function LeadForm({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Score</label>
+          <label
+            htmlFor="lead-score"
+            className="block text-sm font-medium mb-1"
+          >
+            Score
+          </label>
           <select
+            id="lead-score"
             value={form.score}
             onChange={(e) => onChange("score", e.target.value)}
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -104,10 +138,14 @@ export function LeadForm({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="lead-property"
+            className="block text-sm font-medium mb-1"
+          >
             Property Interest
           </label>
           <input
+            id="lead-property"
             type="text"
             value={form.propertyInterest}
             onChange={(e) => onChange("propertyInterest", e.target.value)}
@@ -116,10 +154,14 @@ export function LeadForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="lead-budget"
+            className="block text-sm font-medium mb-1"
+          >
             Budget (PHP)
           </label>
           <input
+            id="lead-budget"
             type="number"
             value={form.budget}
             onChange={(e) => onChange("budget", e.target.value)}
@@ -127,8 +169,14 @@ export function LeadForm({
           />
         </div>
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium mb-1">Notes</label>
+          <label
+            htmlFor="lead-notes"
+            className="block text-sm font-medium mb-1"
+          >
+            Notes
+          </label>
           <textarea
+            id="lead-notes"
             value={form.notes}
             onChange={(e) => onChange("notes", e.target.value)}
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm"

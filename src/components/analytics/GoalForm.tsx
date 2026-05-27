@@ -45,8 +45,14 @@ export default function GoalForm({ onSubmit, onCancel, initial }: Props) {
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium mb-1">Target Deals</label>
+          <label
+            htmlFor="goal-deals"
+            className="block text-xs font-medium mb-1"
+          >
+            Target Deals
+          </label>
           <input
+            id="goal-deals"
             type="number"
             value={targetDeals}
             onChange={(e) => setTargetDeals(Number(e.target.value))}
@@ -55,10 +61,14 @@ export default function GoalForm({ onSubmit, onCancel, initial }: Props) {
           />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">
+          <label
+            htmlFor="goal-commission"
+            className="block text-xs font-medium mb-1"
+          >
             Target Commission (PHP)
           </label>
           <input
+            id="goal-commission"
             type="number"
             value={targetCommission}
             onChange={(e) => setTargetCommission(Number(e.target.value))}
@@ -69,8 +79,14 @@ export default function GoalForm({ onSubmit, onCancel, initial }: Props) {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium mb-1">Period</label>
+          <label
+            htmlFor="goal-period"
+            className="block text-xs font-medium mb-1"
+          >
+            Period
+          </label>
           <select
+            id="goal-period"
             value={period}
             onChange={(e) => setPeriod(e.target.value as GoalPeriod)}
             className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm"
@@ -81,8 +97,14 @@ export default function GoalForm({ onSubmit, onCancel, initial }: Props) {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Start Date</label>
+          <label
+            htmlFor="goal-start"
+            className="block text-xs font-medium mb-1"
+          >
+            Start Date
+          </label>
           <input
+            id="goal-start"
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCollection } from "@/hooks/useFirestore";
 import {
@@ -58,10 +58,18 @@ export default function CoBrokeragePage() {
   const [deals, setDeals] = useState<Record<string, unknown>[]>([]);
   const [teams, setTeams] = useState<AgentTeam[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const loadedCountRef = useRef(0);
   const { data: agents } = useCollection<AppUser>(
     "users",
     brokerId ? [where("brokerId", "==", brokerId)] : [],
   );
+
+  const trackLoad = useCallback(() => {
+    loadedCountRef.current += 1;
+    if (loadedCountRef.current >= 4) setLoading(false);
+  }, []);
 
   useEffect(() => {
     if (!brokerId) return;
@@ -71,22 +79,42 @@ export default function CoBrokeragePage() {
         where("brokerId", "==", brokerId),
         orderBy("createdAt", "desc"),
       ),
-      (snap) => setDeals(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (snap) => {
+        setDeals(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        trackLoad();
+        setError(null);
+      },
+      (err) => {
+        setError("Failed to load deals: " + err.message);
+        trackLoad();
+      },
     );
     return unsub;
-  }, [brokerId]);
+  }, [brokerId, trackLoad]);
   useEffect(() => {
     if (!brokerId) return;
-    return subscribeCoBrokers(brokerId, setBrokers);
-  }, [brokerId]);
+    return subscribeCoBrokers(brokerId, (data) => {
+      setBrokers(data);
+      trackLoad();
+      setError(null);
+    });
+  }, [brokerId, trackLoad]);
   useEffect(() => {
     if (!brokerId) return;
-    return subscribeTeams(brokerId, setTeams);
-  }, [brokerId]);
+    return subscribeTeams(brokerId, (data) => {
+      setTeams(data);
+      trackLoad();
+      setError(null);
+    });
+  }, [brokerId, trackLoad]);
   useEffect(() => {
     if (!brokerId) return;
-    return subscribeBranches(brokerId, setBranches);
-  }, [brokerId]);
+    return subscribeBranches(brokerId, (data) => {
+      setBranches(data);
+      trackLoad();
+      setError(null);
+    });
+  }, [brokerId, trackLoad]);
 
   // UI state
   const [showForm, setShowForm] = useState(false);
@@ -213,119 +241,187 @@ export default function CoBrokeragePage() {
         ))}
       </div>
 
-      {/* Co-Brokers Tab */}
-      {activeTab === "cobrokers" && (
-        <div className="space-y-3">
-          {showForm && (
-            <CoBrokerForm
-              initial={editingBroker}
-              onSubmit={handleSaveBroker}
-              onCancel={() => {
-                setShowForm(false);
-                setEditingBroker(undefined);
-              }}
-            />
-          )}
-          {showSplit && splitBroker && (
-            <CoBrokerDealSplit
-              brokers={brokers}
-              deals={deals as { id: string; title: string }[]}
-              onSave={handleSaveSplit}
-              onCancel={() => {
-                setShowSplit(false);
-                setSplitBroker(undefined);
-              }}
-            />
-          )}
-          <CoBrokerList
-            brokers={brokers}
-            deals={deals}
-            onEdit={(b) => {
-              setEditingBroker(b);
-              setShowForm(true);
-            }}
-            onDelete={(id) => deleteCoBroker(id)}
-            onAddSplit={(b) => {
-              setSplitBroker(b);
-              setShowSplit(true);
-            }}
-          />
+      {/* Loading state */}
+      {loading ? (
+        <div className="flex justify-center py-24">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         </div>
-      )}
-
-      {/* Teams Tab */}
-      {activeTab === "teams" && (
-        <div className="space-y-3">
-          {viewingTeam ? (
-            <TeamDetail
-              team={viewingTeam}
-              members={(agents || []).filter((a: { id: string }) =>
-                viewingTeam.memberIds.includes(a.id),
-              )}
-              deals={deals}
-              onBack={() => setViewingTeam(null)}
-            />
-          ) : (
-            <>
-              {editingTeam && (
-                <TeamForm
-                  agents={(agents || []).map(
-                    (a: { id: string; displayName?: string }) => ({
-                      id: a.id,
-                      displayName: a.displayName ?? "",
-                    }),
-                  )}
-                  initial={editingTeam}
-                  onSubmit={handleSaveTeam}
-                  onCancel={() => setEditingTeam(undefined)}
+      ) : error ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <p className="font-medium text-sm">Error loading data</p>
+          <p className="text-xs mt-1">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 text-xs font-medium underline underline-offset-2 hover:no-underline"
+          >
+            Try again
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Co-Brokers Tab */}
+          {activeTab === "cobrokers" && (
+            <div className="space-y-3">
+              {showForm && (
+                <CoBrokerForm
+                  initial={editingBroker}
+                  onSubmit={handleSaveBroker}
+                  onCancel={() => {
+                    setShowForm(false);
+                    setEditingBroker(undefined);
+                  }}
                 />
               )}
-              <TeamList
-                teams={teams}
-                agents={agents || []}
-                onEdit={(t) => setEditingTeam(t)}
-                onDelete={(id) => deleteTeam(id)}
-                onViewDetail={(t) => setViewingTeam(t)}
-              />
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Branches Tab */}
-      {activeTab === "branches" && (
-        <div className="space-y-3">
-          {viewingBranch ? (
-            <BranchDetail
-              branch={viewingBranch}
-              agents={agents || []}
-              deals={deals}
-              onBack={() => setViewingBranch(null)}
-            />
-          ) : (
-            <>
-              {editingBranch && (
-                <BranchForm
-                  initial={editingBranch}
-                  agents={(agents || []).map(
-                    (a: { id: string; displayName?: string }) => ({
-                      id: a.id,
-                      displayName: a.displayName ?? "",
-                    }),
-                  )}
-                  onSubmit={handleSaveBranch}
-                  onCancel={() => setEditingBranch(undefined)}
+              {showSplit && splitBroker && (
+                <CoBrokerDealSplit
+                  brokers={brokers}
+                  deals={deals as { id: string; title: string }[]}
+                  onSave={handleSaveSplit}
+                  onCancel={() => {
+                    setShowSplit(false);
+                    setSplitBroker(undefined);
+                  }}
                 />
               )}
-              <BranchList
-                branches={branches}
-                onEdit={(b) => setEditingBranch(b)}
-                onDelete={(id) => deleteBranch(id)}
-                onViewDetail={(b) => setViewingBranch(b)}
-              />
-            </>
+              {brokers.length === 0 ? (
+                <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+                  <p className="font-medium">No co-brokers yet</p>
+                  <p className="text-sm mt-1">
+                    Add co-brokers to manage referral splits and partnerships.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setShowForm(true);
+                      setEditingBroker(undefined);
+                    }}
+                    className="mt-3 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                  >
+                    + Add Co-Broker
+                  </button>
+                </div>
+              ) : (
+                <CoBrokerList
+                  brokers={brokers}
+                  deals={deals}
+                  onEdit={(b) => {
+                    setEditingBroker(b);
+                    setShowForm(true);
+                  }}
+                  onDelete={(id) => deleteCoBroker(id)}
+                  onAddSplit={(b) => {
+                    setSplitBroker(b);
+                    setShowSplit(true);
+                  }}
+                />
+              )}
+            </div>
           )}
-        </div>
+
+          {/* Teams Tab */}
+          {activeTab === "teams" && (
+            <div className="space-y-3">
+              {viewingTeam ? (
+                <TeamDetail
+                  team={viewingTeam}
+                  members={(agents || []).filter((a: { id: string }) =>
+                    viewingTeam.memberIds.includes(a.id),
+                  )}
+                  deals={deals}
+                  onBack={() => setViewingTeam(null)}
+                />
+              ) : (
+                <>
+                  {editingTeam && (
+                    <TeamForm
+                      agents={(agents || []).map(
+                        (a: { id: string; displayName?: string }) => ({
+                          id: a.id,
+                          displayName: a.displayName ?? "",
+                        }),
+                      )}
+                      initial={editingTeam}
+                      onSubmit={handleSaveTeam}
+                      onCancel={() => setEditingTeam(undefined)}
+                    />
+                  )}
+                  {teams.length === 0 ? (
+                    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+                      <p className="font-medium">No teams yet</p>
+                      <p className="text-sm mt-1">
+                        Create teams to organize your agents.
+                      </p>
+                      <button
+                        onClick={() => setEditingTeam({} as AgentTeam)}
+                        className="mt-3 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                      >
+                        + Create Team
+                      </button>
+                    </div>
+                  ) : (
+                    <TeamList
+                      teams={teams}
+                      agents={agents || []}
+                      onEdit={(t) => setEditingTeam(t)}
+                      onDelete={(id) => deleteTeam(id)}
+                      onViewDetail={(t) => setViewingTeam(t)}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Branches Tab */}
+          {activeTab === "branches" && (
+            <div className="space-y-3">
+              {viewingBranch ? (
+                <BranchDetail
+                  branch={viewingBranch}
+                  agents={agents || []}
+                  deals={deals}
+                  onBack={() => setViewingBranch(null)}
+                />
+              ) : (
+                <>
+                  {editingBranch && (
+                    <BranchForm
+                      initial={editingBranch}
+                      agents={(agents || []).map(
+                        (a: { id: string; displayName?: string }) => ({
+                          id: a.id,
+                          displayName: a.displayName ?? "",
+                        }),
+                      )}
+                      onSubmit={handleSaveBranch}
+                      onCancel={() => setEditingBranch(undefined)}
+                    />
+                  )}
+                  {branches.length === 0 ? (
+                    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+                      <p className="font-medium">No branches yet</p>
+                      <p className="text-sm mt-1">
+                        Add branches to organize your office locations.
+                      </p>
+                      <button
+                        onClick={() => setEditingBranch({} as Branch)}
+                        className="mt-3 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                      >
+                        + Add Branch
+                      </button>
+                    </div>
+                  ) : (
+                    <BranchList
+                      branches={branches}
+                      onEdit={(b) => setEditingBranch(b)}
+                      onDelete={(id) => deleteBranch(id)}
+                      onViewDetail={(b) => setViewingBranch(b)}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

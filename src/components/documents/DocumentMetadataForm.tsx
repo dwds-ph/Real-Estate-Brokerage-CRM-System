@@ -35,10 +35,14 @@ export function DocumentMetadataForm({
     <>
       {/* Name */}
       <div>
-        <label className="mb-1 block text-sm font-medium">
+        <label
+          htmlFor="doc-meta-name"
+          className="mb-1 block text-sm font-medium"
+        >
           Document Name *
         </label>
         <input
+          id="doc-meta-name"
           type="text"
           value={form.name}
           onChange={(e) => onChange("name", e.target.value)}
@@ -50,8 +54,14 @@ export function DocumentMetadataForm({
 
       {/* Category */}
       <div>
-        <label className="mb-1 block text-sm font-medium">Category</label>
+        <label
+          htmlFor="doc-meta-category"
+          className="mb-1 block text-sm font-medium"
+        >
+          Category
+        </label>
         <select
+          id="doc-meta-category"
           value={form.category}
           onChange={(e) => onChange("category", e.target.value)}
           className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -75,8 +85,14 @@ export function DocumentMetadataForm({
       {/* Deal & Listing Linkage */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="mb-1 block text-sm font-medium">Deal ID</label>
+          <label
+            htmlFor="doc-meta-deal"
+            className="mb-1 block text-sm font-medium"
+          >
+            Deal ID
+          </label>
           <input
+            id="doc-meta-deal"
             type="text"
             value={form.dealId}
             onChange={(e) => onChange("dealId", e.target.value)}
@@ -85,8 +101,14 @@ export function DocumentMetadataForm({
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium">Listing ID</label>
+          <label
+            htmlFor="doc-meta-listing"
+            className="mb-1 block text-sm font-medium"
+          >
+            Listing ID
+          </label>
           <input
+            id="doc-meta-listing"
             type="text"
             value={form.listingId}
             onChange={(e) => onChange("listingId", e.target.value)}
@@ -99,8 +121,14 @@ export function DocumentMetadataForm({
       {/* Stage & Expiry */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="mb-1 block text-sm font-medium">Stage</label>
+          <label
+            htmlFor="doc-meta-stage"
+            className="mb-1 block text-sm font-medium"
+          >
+            Stage
+          </label>
           <input
+            id="doc-meta-stage"
             type="text"
             value={form.stage}
             onChange={(e) => onChange("stage", e.target.value)}
@@ -109,8 +137,14 @@ export function DocumentMetadataForm({
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium">Expiry Date</label>
+          <label
+            htmlFor="doc-meta-expiry"
+            className="mb-1 block text-sm font-medium"
+          >
+            Expiry Date
+          </label>
           <input
+            id="doc-meta-expiry"
             type="date"
             value={form.expiryDate}
             onChange={(e) => onChange("expiryDate", e.target.value)}
@@ -121,8 +155,14 @@ export function DocumentMetadataForm({
 
       {/* Notes */}
       <div>
-        <label className="mb-1 block text-sm font-medium">Notes</label>
+        <label
+          htmlFor="doc-meta-notes"
+          className="mb-1 block text-sm font-medium"
+        >
+          Notes
+        </label>
         <textarea
+          id="doc-meta-notes"
           value={form.notes}
           onChange={(e) => onChange("notes", e.target.value)}
           className="w-full rounded-lg border bg-background px-3 py-2 text-sm"

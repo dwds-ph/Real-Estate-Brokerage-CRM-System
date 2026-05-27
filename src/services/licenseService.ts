@@ -18,6 +18,7 @@ import { type License, type LicenseStatus, type LicenseType } from "@/types";
 export function subscribeLicensesForAgent(
   agentId: string | undefined,
   callback: (licenses: License[]) => void,
+  onError?: (error: string) => void,
 ) {
   if (!agentId) return () => {};
 
@@ -26,27 +27,37 @@ export function subscribeLicensesForAgent(
     where("agentId", "==", agentId),
     orderBy("expiryDate", "asc"),
   );
-  return onSnapshot(q, (snapshot) => {
-    const licenses = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as License,
-    );
-    callback(licenses);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const licenses = snapshot.docs.map(
+        (d) => ({ id: d.id, ...d.data() }) as License,
+      );
+      callback(licenses);
+    },
+    (err) => {
+      onError?.(err.message);
+    },
+  );
 }
 
 export function subscribeAllLicenses(
   callback: (licenses: License[]) => void,
+  onError?: (error: string) => void,
 ) {
-  const q = query(
-    collection(db, "licenses"),
-    orderBy("expiryDate", "asc"),
+  const q = query(collection(db, "licenses"), orderBy("expiryDate", "asc"));
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const licenses = snapshot.docs.map(
+        (d) => ({ id: d.id, ...d.data() }) as License,
+      );
+      callback(licenses);
+    },
+    (err) => {
+      onError?.(err.message);
+    },
   );
-  return onSnapshot(q, (snapshot) => {
-    const licenses = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as License,
-    );
-    callback(licenses);
-  });
 }
 
 export function subscribeExpiringLicenses(

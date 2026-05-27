@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { Project } from "@/types";
 import {
   getProjectStatusColor,
@@ -12,19 +13,18 @@ interface ProjectCardProps {
   onDelete: () => void;
 }
 
-export default function ProjectCard({
-  project,
-  onClick,
-  onEdit,
-  onDelete,
-}: ProjectCardProps) {
-  const sellThrough =
-    project.totalUnits > 0
-      ? Math.round(
-          ((project.totalUnits - project.availableUnits) / project.totalUnits) *
-            100,
-        )
-      : 0;
+function ProjectCard({ project, onClick, onEdit, onDelete }: ProjectCardProps) {
+  const sellThrough = useMemo(
+    () =>
+      project.totalUnits > 0
+        ? Math.round(
+            ((project.totalUnits - project.availableUnits) /
+              project.totalUnits) *
+              100,
+          )
+        : 0,
+    [project.totalUnits, project.availableUnits],
+  );
 
   return (
     <div
@@ -113,3 +113,5 @@ export default function ProjectCard({
     </div>
   );
 }
+
+export default memo(ProjectCard);

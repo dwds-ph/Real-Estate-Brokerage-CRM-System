@@ -10,12 +10,19 @@ import CommissionPlanManager from "@/components/commissions/CommissionPlanManage
 type Tab = "overview" | "plans" | "calculator" | "agents";
 
 export default function CommissionsPage() {
-  const { data: deals, loading: dealsLoading } = useCollection<Deal>(
-    "deals",
+  const {
+    data: deals,
+    loading: dealsLoading,
+    error: dealsError,
+  } = useCollection<Deal>("deals", []);
+  const { data: payouts, error: payoutsError } = useCollection<Payout>(
+    "payouts",
     [],
   );
-  const { data: payouts } = useCollection<Payout>("payouts", []);
-  const { data: agents } = useCollection<AppUser>("users", []);
+  const { data: agents, error: agentsError } = useCollection<AppUser>(
+    "users",
+    [],
+  );
 
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
@@ -37,6 +44,7 @@ export default function CommissionsPage() {
   const totalApproved = payouts
     .filter((p) => (p as Payout).status === "approved")
     .reduce((s, p) => s + (p as Payout).amount, 0);
+  const dataError = dealsError || payoutsError || agentsError;
 
   const agentList = agents.map((a) => ({
     id: (a as AppUser).id,
@@ -88,11 +96,23 @@ export default function CommissionsPage() {
       <div>
         <h1 className="text-2xl font-bold">Commissions</h1>
         <p className="text-sm text-muted-foreground">
-          {closedDeals.length} closed deals | ₱
-          {totalVolume.toLocaleString()} total volume | ₱
-          {totalPaid.toLocaleString()} paid
+          {closedDeals.length} closed deals | ₱{totalVolume.toLocaleString()}{" "}
+          total volume | ₱{totalPaid.toLocaleString()} paid
         </p>
       </div>
+
+      {dataError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <p className="font-medium text-sm">Error loading commission data</p>
+          <p className="text-xs mt-1">{dataError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 text-xs font-medium underline underline-offset-2 hover:no-underline"
+          >
+            Try again
+          </button>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 rounded-lg bg-muted p-1">
@@ -188,7 +208,8 @@ export default function CommissionsPage() {
                               Gross: {formatCurrency(deal.commission.total)}
                             </span>
                             <span>
-                              Agent: {formatCurrency(deal.commission.agentShare)}
+                              Agent:{" "}
+                              {formatCurrency(deal.commission.agentShare)}
                             </span>
                             <span>
                               Broker:{" "}
@@ -270,7 +291,9 @@ export default function CommissionsPage() {
               </div>
 
               <div>
-                <h4 className="text-sm font-medium mb-2">Split Configuration</h4>
+                <h4 className="text-sm font-medium mb-2">
+                  Split Configuration
+                </h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-muted-foreground mb-0.5">

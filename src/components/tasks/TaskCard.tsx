@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { cn, formatDate } from "@/lib/utils";
 import { type Task, type TaskPriority } from "@/types";
 
@@ -22,11 +22,7 @@ interface TaskCardProps {
   onClick: (task: Task) => void;
 }
 
-export default function TaskCard({
-  task,
-  onStatusChange,
-  onClick,
-}: TaskCardProps) {
+function TaskCard({ task, onStatusChange, onClick }: TaskCardProps) {
   const p = priorityConfig[task.priority];
   const now = useMemo(() => Date.now(), []); // eslint-disable-line react-hooks/purity
   const isOverdue =
@@ -133,3 +129,5 @@ export default function TaskCard({
     </div>
   );
 }
+
+export default memo(TaskCard);

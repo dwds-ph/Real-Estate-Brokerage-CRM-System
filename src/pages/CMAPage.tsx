@@ -21,21 +21,31 @@ export default function CMAPage() {
   const { userProfile } = useAuth();
   const brokerId = userProfile?.brokerId || userProfile?.id;
   const [reports, setReports] = useState<CMReport[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
   const [selectedReport, setSelectedReport] = useState<CMReport | null>(null);
 
   useEffect(() => {
     if (!brokerId) return;
+    setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
+    setError(null);
     const unsub = onSnapshot(
       query(
         collection(db, "cmaReports"),
         where("brokerId", "==", brokerId),
         orderBy("createdAt", "desc"),
       ),
-      (snap) =>
+      (snap) => {
         setReports(
           snap.docs.map((d) => ({ id: d.id, ...d.data() })) as CMReport[],
-        ),
+        );
+        setLoading(false);
+      },
+      (err) => {
+        setError(err.message);
+        setLoading(false);
+      },
     );
     return unsub;
   }, [brokerId]);
@@ -78,7 +88,7 @@ export default function CMAPage() {
         <div>
           <h1 className="text-2xl font-bold">Comparative Market Analysis</h1>
           <p className="text-sm text-muted-foreground">
-            {reports.length} reports
+            {loading ? "Loading..." : `${reports.length} reports`}
           </p>
         </div>
         <button
@@ -89,7 +99,23 @@ export default function CMAPage() {
         </button>
       </div>
 
-      {reports.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center py-24">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      ) : error ? (
+        <div className="space-y-4">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+            {error}
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
+      ) : reports.length === 0 ? (
         <div className="rounded-lg border bg-card p-8 text-center text-sm text-muted-foreground">
           No CMA reports yet. Create one to analyze property values.
         </div>

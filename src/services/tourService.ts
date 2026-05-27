@@ -18,6 +18,7 @@ import { type Tour, type TourStatus } from "@/types";
 export function subscribeToursForAgent(
   agentId: string | undefined,
   callback: (tours: Tour[]) => void,
+  onError?: (error: string) => void,
 ) {
   if (!agentId) return () => {};
 
@@ -27,18 +28,37 @@ export function subscribeToursForAgent(
   ];
 
   const q = query(collection(db, "tours"), ...constraints);
-  return onSnapshot(q, (snapshot) => {
-    const tours = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Tour);
-    callback(tours);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const tours = snapshot.docs.map(
+        (d) => ({ id: d.id, ...d.data() }) as Tour,
+      );
+      callback(tours);
+    },
+    (err) => {
+      onError?.(err.message);
+    },
+  );
 }
 
-export function subscribeToursForBroker(callback: (tours: Tour[]) => void) {
+export function subscribeToursForBroker(
+  callback: (tours: Tour[]) => void,
+  onError?: (error: string) => void,
+) {
   const q = query(collection(db, "tours"), orderBy("scheduledDate", "desc"));
-  return onSnapshot(q, (snapshot) => {
-    const tours = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Tour);
-    callback(tours);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const tours = snapshot.docs.map(
+        (d) => ({ id: d.id, ...d.data() }) as Tour,
+      );
+      callback(tours);
+    },
+    (err) => {
+      onError?.(err.message);
+    },
+  );
 }
 
 export function subscribeToursByStatus(

@@ -19,6 +19,7 @@ import { type Payout } from "@/types";
 export function subscribePayouts(
   brokerId: string | undefined,
   callback: (payouts: Payout[]) => void,
+  onError?: (error: string) => void,
 ): Unsubscribe {
   if (!brokerId) return () => {};
 
@@ -28,12 +29,18 @@ export function subscribePayouts(
   ];
 
   const q = query(collection(db, "payouts"), ...constraints);
-  return onSnapshot(q, (snapshot) => {
-    const payouts = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Payout,
-    );
-    callback(payouts);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const payouts = snapshot.docs.map(
+        (d) => ({ id: d.id, ...d.data() }) as Payout,
+      );
+      callback(payouts);
+    },
+    (err) => {
+      onError?.(err.message);
+    },
+  );
 }
 
 export function subscribePendingPayouts(

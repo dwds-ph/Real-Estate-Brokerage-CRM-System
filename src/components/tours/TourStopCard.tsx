@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { TourStop } from "@/types";
 import { formatDateTime, cn } from "@/lib/utils";
 import { formatDuration } from "@/services/tourService";
@@ -12,7 +13,7 @@ interface TourStopCardProps {
   compact?: boolean;
 }
 
-export default function TourStopCard({
+const TourStopCard = memo(function TourStopCard({
   stop,
   index,
   total,
@@ -94,4 +95,6 @@ export default function TourStopCard({
       )}
     </div>
   );
-}
+});
+
+export default TourStopCard;

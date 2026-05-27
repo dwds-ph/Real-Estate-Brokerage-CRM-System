@@ -17,16 +17,26 @@ const PERIODS: { value: PeriodFilter; label: string }[] = [
 
 export default function LeaderboardPage() {
   const { userProfile } = useAuth();
-  const { data: allAgents } = useCollection<AppUser>("users");
-  const { data: allDeals } = useCollection<Deal>("deals");
-  const { data: allLeads } = useCollection<Lead>("leads");
-  const { data: allViewings } = useCollection<Viewing>("viewings");
+  const {
+    data: allAgents,
+    loading: agentsLoading,
+    error: agentsError,
+  } = useCollection<AppUser>("users");
+  const { data: allDeals, loading: dealsLoading } =
+    useCollection<Deal>("deals");
+  const { data: allLeads, loading: leadsLoading } =
+    useCollection<Lead>("leads");
+  const { data: allViewings, loading: viewingsLoading } =
+    useCollection<Viewing>("viewings");
   const [period, setPeriod] = useState<PeriodFilter>(30);
+
+  const loading =
+    agentsLoading || dealsLoading || leadsLoading || viewingsLoading;
 
   // Filter by broker org
   const myAgents = useMemo(
     () =>
-      allAgents.filter(
+      (allAgents || []).filter(
         (a) =>
           a.brokerId === userProfile?.brokerId ||
           a.brokerId === userProfile?.id,
@@ -38,14 +48,38 @@ export default function LeaderboardPage() {
     () =>
       computeScorecard({
         agents: myAgents,
-        deals: allDeals,
-        leads: allLeads,
-        viewings: allViewings,
+        deals: allDeals || [],
+        leads: allLeads || [],
+        viewings: allViewings || [],
       }),
     [myAgents, allDeals, allLeads, allViewings],
   );
 
   const myScore = scores.find((s) => s.agentId === userProfile?.id);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-24">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (agentsError) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          {agentsError}
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -87,12 +121,20 @@ export default function LeaderboardPage() {
       {/* Leaderboard */}
       <div>
         <h2 className="text-lg font-semibold mb-3">Leaderboard</h2>
-        <AgentLeaderboard
-          scores={scores}
-          periodLabel={
-            PERIODS.find((p) => p.value === period)?.label || "This Month"
-          }
-        />
+        {scores.length === 0 ? (
+          <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+            {myAgents.length === 0
+              ? "No agents in your organization yet. Invite agents to see the leaderboard."
+              : "No performance data available yet. Deals, leads, and viewings data will populate the leaderboard."}
+          </div>
+        ) : (
+          <AgentLeaderboard
+            scores={scores}
+            periodLabel={
+              PERIODS.find((p) => p.value === period)?.label || "This Month"
+            }
+          />
+        )}
       </div>
     </div>
   );

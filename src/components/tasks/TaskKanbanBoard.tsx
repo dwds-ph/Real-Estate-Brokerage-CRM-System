@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { type Task, type TaskStatus } from "@/types";
 import TaskCard from "./TaskCard";
@@ -14,11 +15,29 @@ const columns: { status: TaskStatus; label: string; color: string }[] = [
   { status: "done", label: "Done", color: "border-t-emerald-500" },
 ];
 
-export default function TaskKanbanBoard({ tasks, onStatusChange, onTaskClick }: TaskKanbanBoardProps) {
+function TaskKanbanBoard({
+  tasks,
+  onStatusChange,
+  onTaskClick,
+}: TaskKanbanBoardProps) {
+  const taskMap = useMemo(() => {
+    const map: Record<TaskStatus, Task[]> = {
+      todo: [],
+      in_progress: [],
+      done: [],
+    };
+    tasks.forEach((t) => {
+      if (map[t.status]) {
+        map[t.status].push(t);
+      }
+    });
+    return map;
+  }, [tasks]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {columns.map((col) => {
-        const colTasks = tasks.filter((t) => t.status === col.status);
+        const colTasks = taskMap[col.status];
         return (
           <div
             key={col.status}
@@ -60,3 +79,5 @@ export default function TaskKanbanBoard({ tasks, onStatusChange, onTaskClick }: 
     </div>
   );
 }
+
+export default memo(TaskKanbanBoard);

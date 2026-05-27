@@ -52,6 +52,7 @@ export default function AppLayout() {
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
       <aside
+        aria-label="Main navigation"
         className={cn(
           "flex flex-col border-r bg-card transition-all duration-300",
           sidebarOpen ? "w-56" : "w-16",
@@ -70,11 +71,15 @@ export default function AppLayout() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto p-2 space-y-1">
+        <nav
+          aria-label="Sidebar pages"
+          className="flex-1 overflow-y-auto p-2 space-y-1"
+        >
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
+              aria-label={item.label}
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
@@ -94,6 +99,7 @@ export default function AppLayout() {
         <div className="border-t p-2 space-y-1">
           <button
             onClick={() => navigate("/settings")}
+            aria-label="Settings"
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <span className="text-lg">⚙️</span>
@@ -101,6 +107,9 @@ export default function AppLayout() {
           </button>
           <button
             onClick={toggleTheme}
+            aria-label={
+              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <span className="text-lg">{theme === "dark" ? "☀️" : "🌙"}</span>
@@ -108,6 +117,7 @@ export default function AppLayout() {
           </button>
           <button
             onClick={handleLogout}
+            aria-label="Logout"
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
           >
             <span className="text-lg">🚪</span>
@@ -129,6 +139,7 @@ export default function AppLayout() {
         {/* Collapse button */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           className="absolute bottom-4 left-4 hidden rounded-full border bg-background p-1 text-xs lg:block"
         >
           {sidebarOpen ? "◀" : "▶"}

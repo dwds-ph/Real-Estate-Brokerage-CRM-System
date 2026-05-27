@@ -44,6 +44,7 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [templates, setTemplates] = useState<ChecklistTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const now = useMemo(() => Date.now(), []); // eslint-disable-line react-hooks/purity
 
   // Listen to tasks
@@ -54,10 +55,18 @@ export default function TasksPage() {
       where("brokerId", "==", brokerId),
       orderBy("createdAt", "desc"),
     );
-    const unsub = onSnapshot(q, (snap) => {
-      setTasks(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Task));
-      setLoading(false);
-    });
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        setTasks(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Task));
+        setLoading(false);
+        setError(null);
+      },
+      (err) => {
+        setError("Failed to load tasks: " + err.message);
+        setLoading(false);
+      },
+    );
     return unsub;
   }, [brokerId]);
 
@@ -69,11 +78,20 @@ export default function TasksPage() {
       where("brokerId", "==", brokerId),
       orderBy("createdAt", "desc"),
     );
-    const unsub = onSnapshot(q, (snap) => {
-      setTemplates(
-        snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ChecklistTemplate),
-      );
-    });
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        setTemplates(
+          snap.docs.map(
+            (d) => ({ id: d.id, ...d.data() }) as ChecklistTemplate,
+          ),
+        );
+        setError(null);
+      },
+      (err) => {
+        setError("Failed to load templates: " + err.message);
+      },
+    );
     return unsub;
   }, [brokerId]);
 
@@ -259,6 +277,20 @@ export default function TasksPage() {
         onChange={setFilters}
       />
 
+      {/* Error state */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <p className="font-medium text-sm">Error loading tasks</p>
+          <p className="text-xs mt-1">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 text-xs font-medium underline underline-offset-2 hover:no-underline"
+          >
+            Try again
+          </button>
+        </div>
+      )}
+
       {/* Main content: Kanban + detail sidebar */}
       <div className="flex gap-4">
         {/* Kanban board */}
@@ -266,6 +298,19 @@ export default function TasksPage() {
           {loading ? (
             <div className="flex justify-center py-12">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            </div>
+          ) : tasks.length === 0 ? (
+            <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+              <p className="font-medium">No tasks yet</p>
+              <p className="text-sm mt-1">
+                Create your first task to get started.
+              </p>
+              <button
+                onClick={() => setShowForm(true)}
+                className="mt-3 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                + Create Task
+              </button>
             </div>
           ) : (
             <TaskKanbanBoard

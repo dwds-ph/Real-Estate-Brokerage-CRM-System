@@ -21,10 +21,12 @@ export default function DocumentsPage() {
   const brokerId = userProfile?.brokerId || userProfile?.id;
   const [documents, setDocuments] = useState<PropertyDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showUpload, setShowUpload] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selectedListingId, setSelectedListingId] = useState("");
   const [listings, setListings] = useState<Listing[]>([]);
+  const [listingsError, setListingsError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!brokerId) return;
@@ -38,12 +40,15 @@ export default function DocumentsPage() {
         setListings(
           snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Listing[],
         ),
+      (err) => setListingsError(err.message),
     );
     return unsub;
   }, [brokerId]);
 
   useEffect(() => {
     if (!brokerId) return;
+    setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
+    setError(null);
     const unsub = subscribePropertyDocuments(
       brokerId,
       selectedListingId || undefined,
@@ -52,6 +57,8 @@ export default function DocumentsPage() {
         setLoading(false);
       },
     );
+    // subscribePropertyDocuments doesn't support error callback,
+    // but we set loading false on any data change
     return unsub;
   }, [brokerId, selectedListingId]);
 
@@ -97,6 +104,18 @@ export default function DocumentsPage() {
           </p>
         </div>
       </div>
+
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          {error}
+        </div>
+      )}
+
+      {listingsError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          Failed to load listings: {listingsError}
+        </div>
+      )}
 
       <div className="flex items-center gap-2">
         <label className="text-xs font-medium">Filter by listing:</label>

@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { type SourceAnalytics } from "@/types";
 
@@ -5,13 +6,18 @@ interface Props {
   analytics: SourceAnalytics[];
 }
 
-export default function LeadSourceAnalytics({ analytics }: Props) {
-  const maxLeads = Math.max(...analytics.map((a) => a.leadCount), 1);
+function LeadSourceAnalytics({ analytics }: Props) {
+  const maxLeads = useMemo(
+    () => Math.max(...analytics.map((a) => a.leadCount), 1),
+    [analytics],
+  );
 
   return (
     <div className="space-y-4">
       {analytics.length === 0 ? (
-        <div className="rounded-lg border bg-card p-6 text-center text-sm text-muted-foreground">No lead source data yet</div>
+        <div className="rounded-lg border bg-card p-6 text-center text-sm text-muted-foreground">
+          No lead source data yet
+        </div>
       ) : (
         <>
           {/* Bar Chart */}
@@ -20,11 +26,18 @@ export default function LeadSourceAnalytics({ analytics }: Props) {
             {analytics.map((a) => (
               <div key={a.source} className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="capitalize">{a.source.replace("-", " ")}</span>
-                  <span className="text-muted-foreground">{a.leadCount} leads</span>
+                  <span className="capitalize">
+                    {a.source.replace("-", " ")}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {a.leadCount} leads
+                  </span>
                 </div>
                 <div className="h-3 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${(a.leadCount / maxLeads) * 100}%` }} />
+                  <div
+                    className="h-full rounded-full bg-primary transition-all"
+                    style={{ width: `${(a.leadCount / maxLeads) * 100}%` }}
+                  />
                 </div>
               </div>
             ))}
@@ -46,12 +59,20 @@ export default function LeadSourceAnalytics({ analytics }: Props) {
               <tbody>
                 {analytics.map((a) => (
                   <tr key={a.source} className="border-t">
-                    <td className="px-2 py-1.5 font-medium capitalize">{a.source.replace("-", " ")}</td>
+                    <td className="px-2 py-1.5 font-medium capitalize">
+                      {a.source.replace("-", " ")}
+                    </td>
                     <td className="px-2 py-1.5 text-right">{a.leadCount}</td>
                     <td className="px-2 py-1.5 text-right">{a.dealCount}</td>
-                    <td className="px-2 py-1.5 text-right">{(a.conversionRate * 100).toFixed(1)}%</td>
-                    <td className="px-2 py-1.5 text-right">{formatCurrency(a.avgDealValue)}</td>
-                    <td className="px-2 py-1.5 text-right">{formatCurrency(a.totalCommission)}</td>
+                    <td className="px-2 py-1.5 text-right">
+                      {(a.conversionRate * 100).toFixed(1)}%
+                    </td>
+                    <td className="px-2 py-1.5 text-right">
+                      {formatCurrency(a.avgDealValue)}
+                    </td>
+                    <td className="px-2 py-1.5 text-right">
+                      {formatCurrency(a.totalCommission)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -62,3 +83,5 @@ export default function LeadSourceAnalytics({ analytics }: Props) {
     </div>
   );
 }
+
+export default memo(LeadSourceAnalytics);

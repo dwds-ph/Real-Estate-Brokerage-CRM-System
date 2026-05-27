@@ -19,15 +19,74 @@ import { useNavigate } from "react-router-dom";
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { userProfile } = useAuth();
-  const { data: leads } = useCollection<Lead>("leads", []);
-  const { data: listings } = useCollection<Listing>("listings", []);
-  const { data: viewings } = useCollection<Viewing>("viewings", []);
-  const { data: deals } = useCollection<Deal>("deals", []);
-  const { data: tasks } = useCollection<TaskItem>("tasks", []);
-  const { data: payouts } = useCollection<Payout>("payouts", []);
-  const { data: licenses } = useCollection<License>("licenses", []);
-  const { data: payments } = useCollection<Payment>("payments", []);
-  const { data: tours } = useCollection<Tour>("tours", []);
+  const {
+    data: leads,
+    loading: leadsLoading,
+    error: leadsError,
+  } = useCollection<Lead>("leads", []);
+  const {
+    data: listings,
+    loading: listingsLoading,
+    error: listingsError,
+  } = useCollection<Listing>("listings", []);
+  const {
+    data: viewings,
+    loading: viewingsLoading,
+    error: viewingsError,
+  } = useCollection<Viewing>("viewings", []);
+  const {
+    data: deals,
+    loading: dealsLoading,
+    error: dealsError,
+  } = useCollection<Deal>("deals", []);
+  const {
+    data: tasks,
+    loading: tasksLoading,
+    error: tasksError,
+  } = useCollection<TaskItem>("tasks", []);
+  const {
+    data: payouts,
+    loading: payoutsLoading,
+    error: payoutsError,
+  } = useCollection<Payout>("payouts", []);
+  const {
+    data: licenses,
+    loading: licensesLoading,
+    error: licensesError,
+  } = useCollection<License>("licenses", []);
+  const {
+    data: payments,
+    loading: paymentsLoading,
+    error: paymentsError,
+  } = useCollection<Payment>("payments", []);
+  const {
+    data: tours,
+    loading: toursLoading,
+    error: toursError,
+  } = useCollection<Tour>("tours", []);
+
+  // ─── Combined loading & error ────────────────────────────────────
+  const loading =
+    leadsLoading ||
+    listingsLoading ||
+    viewingsLoading ||
+    dealsLoading ||
+    tasksLoading ||
+    payoutsLoading ||
+    licensesLoading ||
+    paymentsLoading ||
+    toursLoading;
+
+  const error =
+    leadsError ||
+    listingsError ||
+    viewingsError ||
+    dealsError ||
+    tasksError ||
+    payoutsError ||
+    licensesError ||
+    paymentsError ||
+    toursError;
 
   // ─── KPIs ─────────────────────────────────────────────────────────
   const totalLeads = leads.length;
@@ -155,6 +214,89 @@ export default function DashboardPage() {
     .slice(0, 5);
 
   // ─── Activity Feed ──────────────────────────────────────────────────
+
+  // ─── Loading state ─────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+        </div>
+        <div className="flex justify-center py-24">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Error state ───────────────────────────────────────────────────
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+        </div>
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <p className="font-medium">Failed to load dashboard data</p>
+          <p className="mt-1 text-sm">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-3 rounded-md bg-red-100 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-200 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Empty state ────────────────────────────────────────────────────
+  const hasAnyData =
+    leads.length > 0 ||
+    listings.length > 0 ||
+    viewings.length > 0 ||
+    deals.length > 0 ||
+    tasks.length > 0 ||
+    payouts.length > 0 ||
+    licenses.length > 0 ||
+    payments.length > 0 ||
+    tours.length > 0;
+
+  if (!hasAnyData) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          {userProfile && (
+            <p className="text-sm text-muted-foreground">
+              Welcome back, {userProfile.displayName || "User"}
+            </p>
+          )}
+        </div>
+        <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+          <p className="text-lg">No data yet</p>
+          <p className="mt-2 text-sm">
+            Start by adding your first lead, listing, or deal to see your
+            dashboard come to life.
+          </p>
+          <div className="mt-4 flex justify-center gap-3">
+            <button
+              onClick={() => navigate("/leads")}
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Add Lead
+            </button>
+            <button
+              onClick={() => navigate("/listings")}
+              className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+            >
+              Add Listing
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

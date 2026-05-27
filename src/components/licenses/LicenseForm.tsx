@@ -27,7 +27,9 @@ export default function LicenseForm({
   const isBroker = userProfile?.role === "broker";
   const [saving, setSaving] = useState(false);
 
-  const [agentId, setAgentId] = useState(license?.agentId || userProfile?.id || "");
+  const [agentId, setAgentId] = useState(
+    license?.agentId || userProfile?.id || "",
+  );
   const [agentName, setAgentName] = useState(
     license?.agentName || userProfile?.displayName || "",
   );
@@ -35,9 +37,7 @@ export default function LicenseForm({
   const [licenseNumber, setLicenseNumber] = useState(
     license?.licenseNumber || "",
   );
-  const [issuingBody, setIssuingBody] = useState(
-    license?.issuingBody || "",
-  );
+  const [issuingBody, setIssuingBody] = useState(license?.issuingBody || "");
   const [issueDate, setIssueDate] = useState(
     license ? dateToInput(license.issueDate) : "",
   );
@@ -90,7 +90,8 @@ export default function LicenseForm({
   // Auto-set issuing body based on type
   const typeIssuingBodies: Record<LicenseType, string> = {
     prc: "Professional Regulation Commission (PRC)",
-    "broker-license": "Department of Human Settlements and Urban Development (DHSUD)",
+    "broker-license":
+      "Department of Human Settlements and Urban Development (DHSUD)",
     "bir-accreditation": "Bureau of Internal Revenue (BIR)",
     hlurb: "Housing and Land Use Regulatory Board (HLURB)",
     other: "",
@@ -107,8 +108,14 @@ export default function LicenseForm({
 
       {isBroker && (
         <div>
-          <label className="block text-sm font-medium mb-1">Agent</label>
+          <label
+            htmlFor="license-agent"
+            className="block text-sm font-medium mb-1"
+          >
+            Agent
+          </label>
           <select
+            id="license-agent"
             value={agentId}
             onChange={(e) => handleAgentChange(e.target.value)}
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -125,10 +132,14 @@ export default function LicenseForm({
       )}
 
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label
+          htmlFor="license-type"
+          className="block text-sm font-medium mb-1"
+        >
           License Type *
         </label>
         <select
+          id="license-type"
           value={type}
           onChange={(e) => {
             const t = e.target.value as LicenseType;
@@ -148,10 +159,14 @@ export default function LicenseForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label
+          htmlFor="license-number"
+          className="block text-sm font-medium mb-1"
+        >
           License Number *
         </label>
         <input
+          id="license-number"
           type="text"
           value={licenseNumber}
           onChange={(e) => setLicenseNumber(e.target.value)}
@@ -162,10 +177,14 @@ export default function LicenseForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label
+          htmlFor="license-issuer"
+          className="block text-sm font-medium mb-1"
+        >
           Issuing Body
         </label>
         <input
+          id="license-issuer"
           type="text"
           value={issuingBody}
           onChange={(e) => setIssuingBody(e.target.value)}
@@ -176,10 +195,14 @@ export default function LicenseForm({
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="license-issue-date"
+            className="block text-sm font-medium mb-1"
+          >
             Issue Date *
           </label>
           <input
+            id="license-issue-date"
             type="date"
             value={issueDate}
             onChange={(e) => setIssueDate(e.target.value)}
@@ -188,10 +211,14 @@ export default function LicenseForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="license-expiry-date"
+            className="block text-sm font-medium mb-1"
+          >
             Expiry Date *
           </label>
           <input
+            id="license-expiry-date"
             type="date"
             value={expiryDate}
             onChange={(e) => setExpiryDate(e.target.value)}
@@ -202,10 +229,14 @@ export default function LicenseForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label
+          htmlFor="license-doc-url"
+          className="block text-sm font-medium mb-1"
+        >
           Document URL (scanned copy)
         </label>
         <input
+          id="license-doc-url"
           type="url"
           value={documentUrl}
           onChange={(e) => setDocumentUrl(e.target.value)}
@@ -215,8 +246,14 @@ export default function LicenseForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Notes</label>
+        <label
+          htmlFor="license-notes"
+          className="block text-sm font-medium mb-1"
+        >
+          Notes
+        </label>
         <textarea
+          id="license-notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           className="w-full rounded-lg border bg-background px-3 py-2 text-sm"

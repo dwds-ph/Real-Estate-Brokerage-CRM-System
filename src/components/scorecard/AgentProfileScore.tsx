@@ -22,7 +22,7 @@ export function AgentProfileScore({
             {score.photoURL ? (
               <img
                 src={score.photoURL}
-                alt=""
+                alt={`${score.displayName}'s avatar`}
                 className="h-12 w-12 rounded-full object-cover"
               />
             ) : (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Project, ProjectStatus } from "@/types";
 import ProjectCard from "./ProjectCard";
@@ -16,12 +16,50 @@ const STATUS_FILTERS: Array<{ label: string; value: ProjectStatus | "all" }> = [
 interface ProjectListProps {
   projects: Project[];
   loading?: boolean;
-  onCreateProject: (data: Omit<Project, "id" | "createdAt" | "updatedAt">) => Promise<void>;
+  onCreateProject: (
+    data: Omit<Project, "id" | "createdAt" | "updatedAt">,
+  ) => Promise<void>;
   onUpdateProject: (id: string, data: Partial<Project>) => Promise<void>;
   onDeleteProject: (id: string) => Promise<void>;
 }
 
-export default function ProjectList({
+interface ProjectCardItemProps {
+  project: Project;
+  onEditProject: (project: Project) => void;
+  onDeleteProjectId: (id: string) => void;
+  onNavigate: (path: string) => void;
+}
+
+const ProjectCardItem = memo(function ProjectCardItem({
+  project,
+  onEditProject,
+  onDeleteProjectId,
+  onNavigate,
+}: ProjectCardItemProps) {
+  const onClick = useCallback(
+    () => onNavigate(`/projects/${project.id}`),
+    [onNavigate, project.id],
+  );
+  const onEdit = useCallback(
+    () => onEditProject(project),
+    [onEditProject, project],
+  );
+  const onDelete = useCallback(
+    () => onDeleteProjectId(project.id),
+    [onDeleteProjectId, project.id],
+  );
+
+  return (
+    <ProjectCard
+      project={project}
+      onClick={onClick}
+      onEdit={onEdit}
+      onDelete={onDelete}
+    />
+  );
+});
+
+function ProjectList({
   projects,
   loading = false,
   onCreateProject,
@@ -37,33 +75,50 @@ export default function ProjectList({
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
-  const filtered = projects.filter((p) => {
-    if (statusFilter !== "all" && p.status !== statusFilter) return false;
-    if (debouncedSearch) {
-      const q = debouncedSearch.toLowerCase();
-      if (
-        !p.name.toLowerCase().includes(q) &&
-        !p.developer.toLowerCase().includes(q) &&
-        !p.location.city.toLowerCase().includes(q)
-      ) return false;
-    }
-    return true;
-  });
+  const filtered = useMemo(
+    () =>
+      projects.filter((p) => {
+        if (statusFilter !== "all" && p.status !== statusFilter) return false;
+        if (debouncedSearch) {
+          const q = debouncedSearch.toLowerCase();
+          if (
+            !p.name.toLowerCase().includes(q) &&
+            !p.developer.toLowerCase().includes(q) &&
+            !p.location.city.toLowerCase().includes(q)
+          )
+            return false;
+        }
+        return true;
+      }),
+    [projects, statusFilter, debouncedSearch],
+  );
 
-  const handleEdit = (project: Project) => {
+  const handleEdit = useCallback((project: Project) => {
     setEditingProject(project);
     setShowForm(true);
-  };
+  }, []);
 
-  const handleFormSubmit = async (data: Omit<Project, "id" | "createdAt" | "updatedAt"> | Partial<Project>) => {
-    if (editingProject) {
-      await onUpdateProject(editingProject.id, data as Partial<Project>);
-    } else {
-      await onCreateProject(data as Omit<Project, "id" | "createdAt" | "updatedAt">);
-    }
-    setShowForm(false);
-    setEditingProject(null);
-  };
+  const handleFormSubmit = useCallback(
+    async (
+      data: Omit<Project, "id" | "createdAt" | "updatedAt"> | Partial<Project>,
+    ) => {
+      if (editingProject) {
+        await onUpdateProject(editingProject.id, data as Partial<Project>);
+      } else {
+        await onCreateProject(
+          data as Omit<Project, "id" | "createdAt" | "updatedAt">,
+        );
+      }
+      setShowForm(false);
+      setEditingProject(null);
+    },
+    [editingProject, onUpdateProject, onCreateProject],
+  );
+
+  const handleNavigate = useCallback(
+    (path: string) => navigate(path),
+    [navigate],
+  );
 
   if (loading) {
     return (
@@ -124,12 +179,12 @@ export default function ProjectList({
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((project) => (
-            <ProjectCard
+            <ProjectCardItem
               key={project.id}
               project={project}
-              onClick={() => navigate(`/projects/${project.id}`)}
-              onEdit={() => handleEdit(project)}
-              onDelete={() => onDeleteProject(project.id)}
+              onEditProject={handleEdit}
+              onDeleteProjectId={onDeleteProject}
+              onNavigate={handleNavigate}
             />
           ))}
         </div>
@@ -149,3 +204,5 @@ export default function ProjectList({
     </div>
   );
 }
+
+export default memo(ProjectList);

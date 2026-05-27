@@ -2,12 +2,22 @@ import { useState } from "react";
 import { type DocumentCategory } from "@/types";
 
 interface Props {
-  onSave: (data: { name: string; category: DocumentCategory; file: File | null; expiryDate: string; notes: string }) => void;
+  onSave: (data: {
+    name: string;
+    category: DocumentCategory;
+    file: File | null;
+    expiryDate: string;
+    notes: string;
+  }) => void;
   onCancel: () => void;
   saving?: boolean;
 }
 
-export default function DocumentUploadForm({ onSave, onCancel, saving }: Props) {
+export default function DocumentUploadForm({
+  onSave,
+  onCancel,
+  saving,
+}: Props) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState<DocumentCategory>("other");
   const [file, setFile] = useState<File | null>(null);
@@ -20,16 +30,38 @@ export default function DocumentUploadForm({ onSave, onCancel, saving }: Props) 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-4 space-y-3">
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-lg border bg-card p-4 space-y-3"
+    >
       <h4 className="font-medium text-sm">Upload Document</h4>
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
-          <label className="block text-xs font-medium mb-1">Document Name *</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm" required />
+          <label htmlFor="doc-name" className="block text-xs font-medium mb-1">
+            Document Name *
+          </label>
+          <input
+            id="doc-name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm"
+            required
+          />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Category *</label>
-          <select value={category} onChange={(e) => setCategory(e.target.value as DocumentCategory)} className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm">
+          <label
+            htmlFor="doc-category"
+            className="block text-xs font-medium mb-1"
+          >
+            Category *
+          </label>
+          <select
+            id="doc-category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value as DocumentCategory)}
+            className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm"
+          >
             <option value="title">Title</option>
             <option value="tax-declaration">Tax Declaration</option>
             <option value="permit">Permit</option>
@@ -41,23 +73,60 @@ export default function DocumentUploadForm({ onSave, onCancel, saving }: Props) 
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Expiry Date</label>
-          <input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm" />
+          <label
+            htmlFor="doc-expiry"
+            className="block text-xs font-medium mb-1"
+          >
+            Expiry Date
+          </label>
+          <input
+            id="doc-expiry"
+            type="date"
+            value={expiryDate}
+            onChange={(e) => setExpiryDate(e.target.value)}
+            className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm"
+          />
         </div>
       </div>
       <div>
-        <label className="block text-xs font-medium mb-1">File *</label>
-        <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="w-full text-sm" required />
+        <label htmlFor="doc-file" className="block text-xs font-medium mb-1">
+          File *
+        </label>
+        <input
+          id="doc-file"
+          type="file"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="w-full text-sm"
+          required
+        />
       </div>
       <div>
-        <label className="block text-xs font-medium mb-1">Notes</label>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm" rows={2} />
+        <label htmlFor="doc-notes" className="block text-xs font-medium mb-1">
+          Notes
+        </label>
+        <textarea
+          id="doc-notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm"
+          rows={2}
+        />
       </div>
       <div className="flex gap-2 pt-1">
-        <button type="submit" disabled={saving} className="flex-1 rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground disabled:opacity-50">
+        <button
+          type="submit"
+          disabled={saving}
+          className="flex-1 rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
+        >
           {saving ? "Uploading..." : "Upload"}
         </button>
-        <button type="button" onClick={onCancel} className="rounded-lg border px-4 py-1.5 text-sm font-medium">Cancel</button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-lg border px-4 py-1.5 text-sm font-medium"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   );

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { computeComparison } from "@/lib/loanEngine";
 import { formatCurrency } from "@/lib/utils";
 
@@ -7,8 +7,38 @@ interface Props {
   downPayment: number;
 }
 
+const LoanComparisonRow = memo(function LoanComparisonRow({
+  r,
+}: {
+  r: ReturnType<typeof computeComparison>[number];
+}) {
+  return (
+    <tr className="border-t">
+      <td className="px-3 py-2 font-medium capitalize">
+        {r.loanType === "pagibig"
+          ? "Pag-IBIG"
+          : r.loanType === "bank"
+            ? "Bank"
+            : "In-House"}
+      </td>
+      <td className="px-3 py-2 text-right">{r.rate}%</td>
+      <td className="px-3 py-2 text-right">{r.term} yrs</td>
+      <td className="px-3 py-2 text-right font-medium text-primary">
+        {formatCurrency(r.monthlyPayment)}
+      </td>
+      <td className="px-3 py-2 text-right text-red-500">
+        {formatCurrency(r.totalInterest)}
+      </td>
+      <td className="px-3 py-2 text-right">{formatCurrency(r.totalCost)}</td>
+    </tr>
+  );
+});
+
 export default function LoanComparison({ propertyPrice, downPayment }: Props) {
-  const results = useMemo(() => computeComparison(propertyPrice, downPayment), [propertyPrice, downPayment]);
+  const results = useMemo(
+    () => computeComparison(propertyPrice, downPayment),
+    [propertyPrice, downPayment],
+  );
 
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
@@ -25,14 +55,7 @@ export default function LoanComparison({ propertyPrice, downPayment }: Props) {
         </thead>
         <tbody>
           {results.map((r) => (
-            <tr key={r.loanType} className="border-t">
-              <td className="px-3 py-2 font-medium capitalize">{r.loanType === "pagibig" ? "Pag-IBIG" : r.loanType === "bank" ? "Bank" : "In-House"}</td>
-              <td className="px-3 py-2 text-right">{r.rate}%</td>
-              <td className="px-3 py-2 text-right">{r.term} yrs</td>
-              <td className="px-3 py-2 text-right font-medium text-primary">{formatCurrency(r.monthlyPayment)}</td>
-              <td className="px-3 py-2 text-right text-red-500">{formatCurrency(r.totalInterest)}</td>
-              <td className="px-3 py-2 text-right">{formatCurrency(r.totalCost)}</td>
-            </tr>
+            <LoanComparisonRow key={r.loanType} r={r} />
           ))}
         </tbody>
       </table>

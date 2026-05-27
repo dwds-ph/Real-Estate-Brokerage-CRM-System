@@ -24,11 +24,9 @@ function getPayoutStatusColor(status: Payout["status"]): string {
   const colors: Record<Payout["status"], string> = {
     pending:
       "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-    approved:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+    approved: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
     paid: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-    cancelled:
-      "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+    cancelled: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
   };
   return colors[status];
 }
@@ -37,10 +35,12 @@ function getPayoutStatusColor(status: Payout["status"]): string {
 
 export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
   const { userProfile } = useAuth();
-  const effectiveBrokerId = brokerId || userProfile?.brokerId || userProfile?.id;
+  const effectiveBrokerId =
+    brokerId || userProfile?.brokerId || userProfile?.id;
 
   const [payouts, setPayouts] = useState<Payout[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("pending");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [confirmAction, setConfirmAction] = useState<{
@@ -51,10 +51,19 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
   // ── Subscribe to realtime data ──────────────────────────────────
 
   useEffect(() => {
-    const unsub = subscribePayouts(effectiveBrokerId, (data) => {
-      setPayouts(data);
-      setLoading(false);
-    });
+    setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
+    setError(null);
+    const unsub = subscribePayouts(
+      effectiveBrokerId,
+      (data) => {
+        setPayouts(data);
+        setLoading(false);
+      },
+      (errMessage) => {
+        setError(errMessage);
+        setLoading(false);
+      },
+    );
     return unsub;
   }, [effectiveBrokerId]);
 
@@ -208,6 +217,22 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
     );
   }
 
+  // ── Error state ────────────────────────────────────────────────────
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+        <p className="font-medium">Failed to load payouts</p>
+        <p className="mt-1 text-sm">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-3 rounded-md bg-red-100 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-200 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* ── Summary Cards ──────────────────────────────────────────── */}
@@ -218,7 +243,8 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
             {formatCurrency(totalPendingAmount)}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            {pendingPayouts.length} payout{pendingPayouts.length !== 1 ? "s" : ""}
+            {pendingPayouts.length} payout
+            {pendingPayouts.length !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="rounded-lg border bg-card p-4">
@@ -227,11 +253,14 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
             {formatCurrency(totalApprovedAmount)}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            {approvedPayouts.length} payout{approvedPayouts.length !== 1 ? "s" : ""}
+            {approvedPayouts.length} payout
+            {approvedPayouts.length !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="rounded-lg border bg-card p-4">
-          <p className="text-xs text-muted-foreground">Total Paid This Period</p>
+          <p className="text-xs text-muted-foreground">
+            Total Paid This Period
+          </p>
           <p className="text-xl font-bold text-green-600 dark:text-green-400">
             {formatCurrency(totalPaidThisPeriod)}
           </p>
@@ -282,7 +311,10 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
             {activeTab === "pending" && (
               <button
                 onClick={() =>
-                  setConfirmAction({ type: "approve", ids: Array.from(selectedIds) })
+                  setConfirmAction({
+                    type: "approve",
+                    ids: Array.from(selectedIds),
+                  })
                 }
                 className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
               >
@@ -292,7 +324,10 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
             {activeTab === "approved" && (
               <button
                 onClick={() =>
-                  setConfirmAction({ type: "pay", ids: Array.from(selectedIds) })
+                  setConfirmAction({
+                    type: "pay",
+                    ids: Array.from(selectedIds),
+                  })
                 }
                 className="rounded-md bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700 transition-colors"
               >

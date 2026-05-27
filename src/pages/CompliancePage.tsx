@@ -24,29 +24,54 @@ export default function CompliancePage() {
   const { userProfile } = useAuth();
   const brokerId = userProfile?.brokerId || userProfile?.id;
   const [deals, setDeals] = useState<Deal[]>([]);
+  const [dealsLoading, setDealsLoading] = useState(true);
+  const [dealsError, setDealsError] = useState<string | null>(null);
   const [selectedDealId, setSelectedDealId] = useState("");
   const [activeChecklist, setActiveChecklist] =
     useState<ComplianceChecklistType | null>(null);
+  const [checklistLoading, setChecklistLoading] = useState(false);
+  const [checklistError, setChecklistError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!brokerId) return;
+    setDealsLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
+    setDealsError(null);
     const unsub = onSnapshot(
       query(
         collection(db, "deals"),
         where("brokerId", "==", brokerId),
         orderBy("createdAt", "desc"),
       ),
-      (snap) =>
-        setDeals(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Deal[]),
+      (snap) => {
+        setDeals(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Deal[]);
+        setDealsLoading(false);
+      },
+      (err) => {
+        setDealsError(err.message);
+        setDealsLoading(false);
+      },
     );
     return unsub;
   }, [brokerId]);
 
   useEffect(() => {
-    if (!selectedDealId) return;
-    const unsub = subscribeComplianceChecklists(selectedDealId, (itemsList) => {
-      setActiveChecklist(itemsList[0] || null);
-    });
+    if (!selectedDealId) {
+      setActiveChecklist(null); // eslint-disable-line react-hooks/set-state-in-effect
+      return;
+    }
+    setChecklistLoading(true);
+    setChecklistError(null);
+    const unsub = subscribeComplianceChecklists(
+      selectedDealId,
+      (itemsList) => {
+        setActiveChecklist(itemsList[0] || null);
+        setChecklistLoading(false);
+      },
+      (err) => {
+        setChecklistError(err);
+        setChecklistLoading(false);
+      },
+    );
     return unsub;
   }, [selectedDealId]);
 
@@ -106,37 +131,75 @@ export default function CompliancePage() {
         PH-specific deal closing compliance tracking
       </p>
 
-      <div className="flex items-center gap-2">
-        <label className="text-xs font-medium">Deal:</label>
-        <select
-          value={selectedDealId}
-          onChange={(e) => setSelectedDealId(e.target.value)}
-          className="flex-1 rounded-lg border bg-background px-3 py-1.5 text-sm"
-        >
-          <option value="">Select a deal...</option>
-          {deals.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.clientName}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {selectedDealId && !activeChecklist && (
-        <button
-          onClick={handleCreateChecklist}
-          className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-        >
-          + Create PH Compliance Checklist
-        </button>
+      {dealsError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          Failed to load deals: {dealsError}
+        </div>
       )}
 
-      {activeChecklist && (
-        <ComplianceChecklist
-          items={activeChecklist.items}
-          onToggle={handleToggle}
-          onUpdateNotes={handleUpdateNotes}
-        />
+      {checklistError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          Failed to load checklist: {checklistError}
+        </div>
+      )}
+
+      {dealsLoading ? (
+        <div className="flex justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium">Deal:</label>
+            <select
+              value={selectedDealId}
+              onChange={(e) => setSelectedDealId(e.target.value)}
+              className="flex-1 rounded-lg border bg-background px-3 py-1.5 text-sm"
+            >
+              <option value="">Select a deal...</option>
+              {deals.length === 0 ? (
+                <option value="" disabled>
+                  No deals available
+                </option>
+              ) : (
+                deals.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.clientName}
+                  </option>
+                ))
+              )}
+            </select>
+          </div>
+
+          {selectedDealId && checklistLoading && (
+            <div className="flex justify-center py-8">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          )}
+
+          {selectedDealId && !checklistLoading && !activeChecklist && (
+            <button
+              onClick={handleCreateChecklist}
+              className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            >
+              + Create PH Compliance Checklist
+            </button>
+          )}
+
+          {activeChecklist && (
+            <ComplianceChecklist
+              items={activeChecklist.items}
+              onToggle={handleToggle}
+              onUpdateNotes={handleUpdateNotes}
+            />
+          )}
+
+          {deals.length === 0 && !dealsLoading && (
+            <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+              No deals yet. Create a deal first to start tracking compliance.
+            </div>
+          )}
+        </>
       )}
     </div>
   );

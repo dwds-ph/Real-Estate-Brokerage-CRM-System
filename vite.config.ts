@@ -65,4 +65,29 @@ export default defineConfig({
     port: 3000,
     host: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (
+            id.includes("firebase/firestore") ||
+            id.includes("firebase/auth") ||
+            id.includes("firebase/storage") ||
+            id.includes("firebase/messaging")
+          )
+            return "vendor-firebase";
+          if (
+            id.includes("react") ||
+            id.includes("react-dom") ||
+            id.includes("react-router")
+          )
+            return "vendor-react";
+          if (id.includes("recharts")) return "vendor-charts";
+          if (id.includes("leaflet")) return "vendor-leaflet";
+          if (id.includes("jspdf") || id.includes("html2canvas"))
+            return "vendor-pdf";
+        },
+      },
+    },
+  },
 });

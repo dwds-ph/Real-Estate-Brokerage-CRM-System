@@ -13,7 +13,12 @@ interface CallLogFormProps {
   saving?: boolean;
 }
 
-export default function CallLogForm({ contacts, onSubmit, onCancel, saving }: CallLogFormProps) {
+export default function CallLogForm({
+  contacts,
+  onSubmit,
+  onCancel,
+  saving,
+}: CallLogFormProps) {
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [duration, setDuration] = useState(5);
@@ -41,9 +46,15 @@ export default function CallLogForm({ contacts, onSubmit, onCancel, saving }: Ca
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <div>
-        <label className="block text-sm font-medium mb-1">Contact *</label>
+        <label
+          htmlFor="call-contact"
+          className="block text-sm font-medium mb-1"
+        >
+          Contact *
+        </label>
         {contacts.length > 0 ? (
           <select
+            id="call-contact"
             value={contactName}
             onChange={(e) => handleContactChange(e.target.value)}
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -58,6 +69,7 @@ export default function CallLogForm({ contacts, onSubmit, onCancel, saving }: Ca
           </select>
         ) : (
           <input
+            id="call-contact"
             type="text"
             value={contactName}
             onChange={(e) => setContactName(e.target.value)}
@@ -70,8 +82,14 @@ export default function CallLogForm({ contacts, onSubmit, onCancel, saving }: Ca
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium mb-1">Phone</label>
+          <label
+            htmlFor="call-phone"
+            className="block text-sm font-medium mb-1"
+          >
+            Phone
+          </label>
           <input
+            id="call-phone"
             type="text"
             value={contactPhone}
             onChange={(e) => setContactPhone(e.target.value)}
@@ -80,11 +98,19 @@ export default function CallLogForm({ contacts, onSubmit, onCancel, saving }: Ca
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Duration (min)</label>
+          <label
+            htmlFor="call-duration"
+            className="block text-sm font-medium mb-1"
+          >
+            Duration (min)
+          </label>
           <input
+            id="call-duration"
             type="number"
             value={duration}
-            onChange={(e) => setDuration(Math.max(1, parseInt(e.target.value) || 1))}
+            onChange={(e) =>
+              setDuration(Math.max(1, parseInt(e.target.value) || 1))
+            }
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             min={1}
           />
@@ -92,8 +118,11 @@ export default function CallLogForm({ contacts, onSubmit, onCancel, saving }: Ca
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Notes</label>
+        <label htmlFor="call-notes" className="block text-sm font-medium mb-1">
+          Notes
+        </label>
         <textarea
+          id="call-notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -103,8 +132,14 @@ export default function CallLogForm({ contacts, onSubmit, onCancel, saving }: Ca
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Follow-up Date</label>
+        <label
+          htmlFor="call-followup"
+          className="block text-sm font-medium mb-1"
+        >
+          Follow-up Date
+        </label>
         <input
+          id="call-followup"
           type="date"
           value={followUpDate}
           onChange={(e) => setFollowUpDate(e.target.value)}

@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import { memo, useMemo } from "react";
 import { type AchievementBadge, type AchievementBadgeId } from "@/types";
 
 // ─── All possible badges ────────────────────────────────────────────
@@ -51,7 +52,11 @@ export const ALL_BADGES: Record<
 
 // ─── Badge Display Component ──────────────────────────────────────
 
-export function BadgeDisplay({ badge }: { badge: AchievementBadge }) {
+export const BadgeDisplay = memo(function BadgeDisplay({
+  badge,
+}: {
+  badge: AchievementBadge;
+}) {
   return (
     <div
       className="group relative inline-flex items-center gap-1.5 rounded-lg border bg-card px-3 py-2 text-sm hover:bg-muted/50 transition-colors cursor-default"
@@ -64,11 +69,15 @@ export function BadgeDisplay({ badge }: { badge: AchievementBadge }) {
       </div>
     </div>
   );
-}
+});
 
 // ─── Badge Gallery ──────────────────────────────────────────────────
 
-export function BadgeGallery({ badges }: { badges: AchievementBadge[] }) {
+export const BadgeGallery = memo(function BadgeGallery({
+  badges,
+}: {
+  badges: AchievementBadge[];
+}) {
   if (badges.length === 0) {
     return (
       <div className="py-8 text-center text-sm text-muted-foreground">
@@ -84,19 +93,23 @@ export function BadgeGallery({ badges }: { badges: AchievementBadge[] }) {
       ))}
     </div>
   );
-}
+});
 
 // ─── Badge Library (all possible badges, earned vs locked) ─────────
 
-export function BadgeLibrary({
+export const BadgeLibrary = memo(function BadgeLibrary({
   earnedBadges,
 }: {
   earnedBadges: AchievementBadgeId[];
 }) {
-  const entries = Object.entries(ALL_BADGES) as [
-    AchievementBadgeId,
-    (typeof ALL_BADGES)[AchievementBadgeId],
-  ][];
+  const entries = useMemo(
+    () =>
+      Object.entries(ALL_BADGES) as [
+        AchievementBadgeId,
+        (typeof ALL_BADGES)[AchievementBadgeId],
+      ][],
+    [],
+  );
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -121,4 +134,4 @@ export function BadgeLibrary({
       })}
     </div>
   );
-}
+});

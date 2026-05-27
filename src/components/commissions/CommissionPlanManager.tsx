@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { useCollection } from "@/hooks/useFirestore";
 import {
   createPlan,
@@ -13,6 +13,46 @@ const PLAN_TYPES: Array<{ value: CommissionPlan["type"]; label: string }> = [
   { value: "escalating", label: "Escalating" },
   { value: "referral", label: "Referral Fee" },
 ];
+
+const CommissionPlanCard = memo(function CommissionPlanCard({
+  plan,
+  onEdit,
+  onDelete,
+}: {
+  plan: CommissionPlan;
+  onEdit: (plan: CommissionPlan) => void;
+  onDelete: (plan: CommissionPlan) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-lg border bg-card p-4">
+      <div>
+        <p className="font-medium text-sm">{plan.name}</p>
+        <p className="text-xs text-muted-foreground">
+          {PLAN_TYPES.find((t) => t.value === plan.type)?.label ?? plan.type}
+          {plan.rules.percent && ` — ${plan.rules.percent}%`}
+          {plan.rules.referralFee && ` — ${plan.rules.referralFee}%`}
+          {plan.rules.tiers &&
+            plan.rules.tiers.length > 0 &&
+            ` — ${plan.rules.tiers.length} tiers`}
+        </p>
+      </div>
+      <div className="flex gap-1">
+        <button
+          onClick={() => onEdit(plan)}
+          className="rounded px-2 py-1 text-xs hover:bg-muted"
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => onDelete(plan)}
+          className="rounded px-2 py-1 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+});
 
 export default function CommissionPlanManager() {
   const { data: plans, loading } = useCollection<CommissionPlan>(
@@ -32,7 +72,7 @@ export default function CommissionPlanManager() {
   );
   const [submitting, setSubmitting] = useState(false);
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setName("");
     setPlanType("fixed");
     setPercent("3");
@@ -40,9 +80,9 @@ export default function CommissionPlanManager() {
     setMinVolume("5000000");
     setTiers([]);
     setEditing(null);
-  };
+  }, []);
 
-  const openEdit = (plan: CommissionPlan) => {
+  const openEdit = useCallback((plan: CommissionPlan) => {
     setName(plan.name);
     setPlanType(plan.type);
     setPercent(String(plan.rules.percent ?? 3));
@@ -51,47 +91,59 @@ export default function CommissionPlanManager() {
     setTiers(plan.rules.tiers ?? []);
     setEditing(plan);
     setShowForm(true);
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      const rules: CommissionPlan["rules"] = {};
-      if (planType === "fixed" || planType === "escalating") {
-        rules.percent = Number(percent);
-      }
-      if (planType === "tiered") {
-        rules.tiers = tiers;
-      }
-      if (planType === "referral") {
-        rules.referralFee = Number(referralFee);
-      }
-      if (planType === "escalating") {
-        rules.minVolumeForEscalation = Number(minVolume);
-      }
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setSubmitting(true);
+      try {
+        const rules: CommissionPlan["rules"] = {};
+        if (planType === "fixed" || planType === "escalating") {
+          rules.percent = Number(percent);
+        }
+        if (planType === "tiered") {
+          rules.tiers = tiers;
+        }
+        if (planType === "referral") {
+          rules.referralFee = Number(referralFee);
+        }
+        if (planType === "escalating") {
+          rules.minVolumeForEscalation = Number(minVolume);
+        }
 
-      const data = {
-        name,
-        type: planType,
-        rules,
-        assignedTo: editing?.assignedTo ?? [],
-        brokerId: editing?.brokerId ?? "",
-      };
+        const data = {
+          name,
+          type: planType,
+          rules,
+          assignedTo: editing?.assignedTo ?? [],
+          brokerId: editing?.brokerId ?? "",
+        };
 
-      if (editing) {
-        await updatePlan(editing.id, data);
-      } else {
-        await createPlan(data);
+        if (editing) {
+          await updatePlan(editing.id, data);
+        } else {
+          await createPlan(data);
+        }
+        resetForm();
+        setShowForm(false);
+      } finally {
+        setSubmitting(false);
       }
-      resetForm();
-      setShowForm(false);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    },
+    [
+      name,
+      planType,
+      percent,
+      referralFee,
+      minVolume,
+      tiers,
+      editing,
+      resetForm,
+    ],
+  );
 
-  const handleDelete = async (plan: CommissionPlan) => {
+  const handleDelete = useCallback(async (plan: CommissionPlan) => {
     if (
       window.confirm(
         `Delete commission plan "${plan.name}"? This cannot be undone.`,
@@ -99,23 +151,28 @@ export default function CommissionPlanManager() {
     ) {
       await deletePlan(plan.id);
     }
-  };
+  }, []);
 
-  const addTier = () => {
-    setTiers([...tiers, { minVolume: 0, percent: 3 }]);
-  };
+  const addTier = useCallback(() => {
+    setTiers((prev) => [...prev, { minVolume: 0, percent: 3 }]);
+  }, []);
 
-  const updateTier = (
-    index: number,
-    field: "minVolume" | "percent",
-    value: number,
-  ) => {
-    setTiers(tiers.map((t, i) => (i === index ? { ...t, [field]: value } : t)));
-  };
+  const updateTier = useCallback(
+    (index: number, field: "minVolume" | "percent", value: number) => {
+      setTiers((prev) =>
+        prev.map((t, i) => (i === index ? { ...t, [field]: value } : t)),
+      );
+    },
+    [],
+  );
 
-  const removeTier = (index: number) => {
-    setTiers(tiers.filter((_, i) => i !== index));
-  };
+  const removeTier = useCallback((index: number) => {
+    setTiers((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const sortedPlans = [...plans].sort(
+    (a, b) => (b as CommissionPlan).createdAt - (a as CommissionPlan).createdAt,
+  );
 
   return (
     <div className="space-y-4">
@@ -142,52 +199,23 @@ export default function CommissionPlanManager() {
         <div className="flex justify-center py-8">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
-      ) : plans.length === 0 ? (
+      ) : sortedPlans.length === 0 ? (
         <div className="rounded-lg border bg-muted/30 p-8 text-center text-sm text-muted-foreground">
           No commission plans defined yet. Create your first plan.
         </div>
       ) : (
         <div className="space-y-2">
-          {plans
-            .sort(
-              (a, b) => (b as CommissionPlan).createdAt - (a as CommissionPlan).createdAt,
-            )
-            .map((p) => {
-              const plan = p as CommissionPlan;
-              return (
-                <div
-                  key={plan.id}
-                  className="flex items-center justify-between rounded-lg border bg-card p-4"
-                >
-                  <div>
-                    <p className="font-medium text-sm">{plan.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {PLAN_TYPES.find((t) => t.value === plan.type)?.label ??
-                        plan.type}
-                      {plan.rules.percent && ` — ${plan.rules.percent}%`}
-                      {plan.rules.referralFee &&
-                        ` — ${plan.rules.referralFee}%`}
-                      {plan.rules.tiers && plan.rules.tiers.length > 0 &&
-                        ` — ${plan.rules.tiers.length} tiers`}
-                    </p>
-                  </div>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => openEdit(plan)}
-                      className="rounded px-2 py-1 text-xs hover:bg-muted"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(plan)}
-                      className="rounded px-2 py-1 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+          {sortedPlans.map((p) => {
+            const plan = p as CommissionPlan;
+            return (
+              <CommissionPlanCard
+                key={plan.id}
+                plan={plan}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+              />
+            );
+          })}
         </div>
       )}
 

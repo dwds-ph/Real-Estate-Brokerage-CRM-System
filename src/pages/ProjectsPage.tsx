@@ -9,7 +9,11 @@ import { Project } from "@/types";
 import ProjectList from "@/components/projects/ProjectList";
 
 export default function ProjectsPage() {
-  const { data: projects, loading } = useCollection<Project>("projects", []);
+  const {
+    data: projects,
+    loading,
+    error,
+  } = useCollection<Project>("projects", []);
   const [viewMode, setViewMode] = useState<"list" | "dashboard">("list");
 
   const handleCreate = async (
@@ -48,6 +52,19 @@ export default function ProjectsPage() {
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <p className="font-medium text-sm">Error loading projects</p>
+          <p className="text-xs mt-1">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 text-xs font-medium underline underline-offset-2 hover:no-underline"
+          >
+            Try again
+          </button>
+        </div>
+      )}
 
       <ProjectList
         projects={projects as Project[]}
