@@ -348,6 +348,22 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 
 ---
 
-## 🏁 All 12 Phases Complete ✅
+## ✅ Phase 13: 🏠 Client Portal Enhancement — COMPLETE
 
-The CRM now includes **30 modules**, **170+ components**, **30+ services**, and comprehensive PH-market features covering the full real estate brokerage workflow.
+**Goal:** Rich client-facing dashboard showing deal progress, payment history, tour schedule, and shared documents — accessed publicly via lead token.
+
+### Tasks
+
+- [x] **13.1** Enhanced `ClientPortalPage.tsx` — 6 sections: Header (name, status, preferences), Deal Status (cards + progress bar), Payment Schedule (paid/pending/overdue with summary), Tour Schedule (cards with stops), Shared Documents (placeholder), Agent Contact (avatar + info)
+- [x] **13.2** Data loading from Firestore via lead token: deals by leadId, payments by dealId, tours by leadId, documents by dealId
+- [x] **13.3** Mobile-first responsive design with dark/light mode, loading spinners, graceful empty states
+- [x] **Validation:** typecheck ✓ build ✓
+
+**Files modified:**
+- `src/pages/ClientPortalPage.tsx` — complete rewrite (115 → ~690 lines)
+
+---
+
+## 🏁 All 13 Phases Complete ✅
+
+The CRM now includes **30 modules**, **170+ components**, **30+ services**, and a client-facing portal for buyer/seller self-service.

@@ -31,12 +31,6 @@ const IMPORT_TYPES: ImportTypeOption[] = [
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 function truncateValue(val: unknown, maxLen = 60): string {
   if (val === null || val === undefined) return "—";
   const str = String(val);
@@ -107,8 +101,6 @@ function StepIndicator({ steps, current }: StepIndicatorProps) {
 export default function ImportWizard() {
   const [step, setStep] = useState<Step>("select");
   const [selectedConfig, setSelectedConfig] = useState<ImportConfig | null>(null);
-  const [fileName, setFileName] = useState<string>("");
-  const [fileSize, setFileSize] = useState<number>(0);
   const [csvText, setCsvText] = useState<string>("");
   const [preview, setPreview] = useState<{
     headers: string[];
@@ -140,8 +132,6 @@ export default function ImportWizard() {
       return;
     }
 
-    setFileName(file.name);
-    setFileSize(file.size);
     setError("");
 
     const reader = new FileReader();
@@ -221,8 +211,6 @@ export default function ImportWizard() {
   function resetAll() {
     setStep("select");
     setSelectedConfig(null);
-    setFileName("");
-    setFileSize(0);
     setCsvText("");
     setPreview(null);
     setImportResult(null);
