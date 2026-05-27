@@ -247,67 +247,36 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 
 ---
 
-## 📋 All 8 Phases Complete ✅
+## ✅ Phase 9: 💰 Smart Commission Engine — COMPLETE
 
-The CRM now includes **26 modules**, **150+ components**, **25+ services**, and **184+ tests** covering the full real estate brokerage workflow for the Philippine market.
-
----
-
-## 🚀 Upcoming Phases
-
-### Phase 9: 🧪 E2E Tests with Playwright
-
-**Goal:** Add end-to-end test coverage for critical user flows — login, lead CRUD, deal pipeline, listing management, viewing scheduling, and project management.
+**Goal:** PH-specific commission computation engine with agent-broker splits, co-broking, referral fees, BIR taxes (VAT 12%, WT 1-2%, CGT 6%, DST 1.5%), net commission calculation, commission plan management, and agent commission summaries.
 
 ### Tasks
 
-- [ ] **9.1** Install Playwright + `@playwright/test` as dev dependency
-- [ ] **9.2** Configure `playwright.config.ts` — headless Chrome/Firefox, CI mode, video recording on failure
-- [ ] **9.3** Auth setup — test helper that authenticates via Firebase Auth emulator (email/password + Google SSO mocks)
-- [ ] **9.4** **Lead flow E2E**: create lead → edit → change status → add communication log entry → delete
-- [ ] **9.5** **Deal pipeline E2E**: create deal from lead → verify kanban card → move through statuses → set co-broking split → mark closed
-- [ ] **9.6** **Listing flow E2E**: create listing with media → verify detail page → generate brochure link → verify public brochure renders
-- [ ] **9.7** **Viewing flow E2E**: schedule viewing → verify calendar event → submit post-viewing feedback → check tour completion
-- [ ] **9.8** **Project/Subdivision flow E2E**: create project → add phases → add units → verify unit status board → track payment milestone
-- [ ] **9.9** **Auth flows**: login with valid creds → logout → protected route redirect → registration → password reset flow
-- [ ] **9.10** **CI integration**: add `e2e` job to GitHub Actions — start Firebase emulators + Vite dev server → run Playwright → upload videos/artifacts
-- [ ] **9.11** Add `yarn e2e` script + `yarn e2e:ci` (with emulator setup)
+- [x] **9.1** Create `src/lib/commissionEngine.ts` — core computation engine (gross commission, splits, taxes, net, full breakdown)
+- [x] **9.2** Add enhanced commission types to `src/types/index.ts` — CommissionBreakdown, CommissionSplitConfig, CommissionPeriodSummary
+- [x] **9.3** Create `src/services/commissionPlanService.ts` — CRUD + real-time listeners for commission plans
+- [x] **9.4** Create `CommissionBreakdown.tsx` — visual breakdown component with summary cards, detail list, proportional split bar
+- [x] **9.5** Create `CommissionPlanManager.tsx` — plan CRUD UI with fixed/tiered/escalating/referral types
+- [x] **9.6** Create `AgentCommissionSummary.tsx` — agent ranking table with period filters, per-agent expandable breakdown
+- [x] **9.7** Overhaul `CommissionsPage.tsx` — 4-tab layout (Overview, Plans, Calculator, Agents) with interactive calculator
+- [x] **9.8** Add `CommissionPlan` createdAt/updatedAt timestamps
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/lib/commissionEngine.ts`
+- `src/services/commissionPlanService.ts`
+- `src/components/commissions/CommissionBreakdown.tsx`
+- `src/components/commissions/CommissionPlanManager.tsx`
+- `src/components/commissions/AgentCommissionSummary.tsx`
+- `src/components/commissions/index.ts`
+
+**Files modified:**
+- `src/types/index.ts` — added CommissionBreakdown, CommissionSplitConfig, CommissionPeriodSummary types
+- `src/pages/CommissionsPage.tsx` — complete overhaul with 4-tab layout
 
 ---
 
-### Phase 10: ⚡ Performance Optimization
+## 📋 All 9 Phases Complete ✅
 
-**Goal:** Reduce bundle size, improve load times, and optimize runtime performance for mobile agents.
-
-### Tasks
-
-- [ ] **10.1** **Route-level code splitting** — convert all `import Page from "@/pages/..."` to `React.lazy(() => import("..."))` with `<Suspense fallback={<Skeleton />}>` in App.tsx
-- [ ] **10.2** **Component-level lazy loading** — lazy-load heavy components: PropertyMap, ContractGenerator, TourBuilder, ProjectForm, Analytics charts, PaymentMilestoneTracker timeline view
-- [ ] **10.3** **Bundle analysis** — add `vite-plugin-visualizer` to generate bundle report; identify and trim large dependencies
-- [ ] **10.4** **Tree-shake Firebase** — verify only used Firestore/Auth/Storage modules are imported (not the entire `firebase` barrel)
-- [ ] **10.5** **Memoize expensive computations** — `React.useMemo` on: marketReport computation, scorecard computation, filtered/sorted lists in ProjectList, LeadList, TourList
-- [ ] **10.6** **Virtualize long lists** — use `react-window` or `@tanstack/virtual` for: LeadList with 500+ leads, unit inventory in large projects, activity feed with pagination
-- [ ] **10.7** **Image optimization** — use Firebase Storage `?alt=media&width=...` resize parameters on listing images, brochure images; add `loading="lazy"` to all `<img>` tags
-- [ ] **10.8** **Debounce search inputs** — add debounce (300ms) on search fields in LeadList, ListingList, ProjectList, LicenseList
-- [ ] **10.9** **Reduce Firestore reads** — cache frequently accessed static data (office list, agent list) with React Query staleTime; batch Firestone listeners where possible
-- [ ] **10.10** **Bundle budget** — set Rollup chunk size warning threshold; ensure initial JS payload < 200KB gzipped
-
----
-
-### Phase 11: 🛡️ Production Hardening
-
-**Goal:** Add error monitoring, analytics, security hardening, and operational readiness.
-
-### Tasks
-
-- [ ] **11.1** **Error boundary coverage** — wrap each route/page with an `<ErrorBoundary>` that shows a friendly error + retry button (currently only App-level); add error reporting to console in dev
-- [ ] **11.2** **Firebase Performance Monitoring** — enable `firebase/performance` for automatic trace reporting (page load, network requests)
-- [ ] **11.3** **Analytics events** — add Firebase Analytics custom events for key actions: lead_created, deal_closed, viewing_scheduled, project_created, document_generated, brochure_shared
-- [ ] **11.4** **User-facing error toasts** — replace raw `alert()` calls with a Toast/Sonner notification pattern for all service operations (create/update/delete success/failure)
-- [ ] **11.5** **Form validation feedback** — ensure all forms (LeadForm, ListingForm, ProjectForm, LicenseForm, TourBuilder) have inline validation errors with `aria-invalid` / `aria-describedby`
-- [ ] **11.6** **Security headers audit** — verify `firebase.json` hosting headers include: `Content-Security-Policy`, `Strict-Transport-Security`, `Permissions-Policy`, `Referrer-Policy`
-- [ ] **11.7** **Firestore rules audit** — review all collection rules for: no open writes, proper `request.auth.uid` checks, `inMyOrg()` consistency, no `if true` rules
-- [ ] **11.8** **Storage rules audit** — verify `storage.rules` restrict upload size, file type, and path patterns per user role
-- [ ] **11.9** **Input sanitization** — ensure all user-generated text is rendered as text (not HTML) via React's default XSS protection; verify no `dangerouslySetInnerHTML` usage
-- [ ] **11.10** **Rate limiting simulation** — verify app degrades gracefully when Firestore read quota is near limit: show cached data, display quota warning banner
-- [ ] **11.11** **Operational runbook** — update `plan/DEPLOYMENT.md` with: rollback procedure, monitoring dashboards link, alert response guide, incident escalation path
+The CRM now includes **27 modules**, **155+ components**, **28+ services**, and comprehensive PH-market features covering the full real estate brokerage workflow.

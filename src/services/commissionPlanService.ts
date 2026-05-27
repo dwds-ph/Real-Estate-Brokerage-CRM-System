@@ -26,7 +26,7 @@ export function subscribePlans(callback: (plans: CommissionPlan[]) => void) {
 // ─── Commission Plans: CRUD ───────────────────────────────────────────
 
 export async function createPlan(
-  data: Omit<CommissionPlan, "id">,
+  data: Omit<CommissionPlan, "id" | "createdAt" | "updatedAt">,
 ) {
   const now = Date.now();
   const docRef = await addDoc(collection(db, "commissionPlans"), {
