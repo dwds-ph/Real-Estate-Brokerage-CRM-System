@@ -46,6 +46,12 @@ const ToursPage = lazy(() => import("@/pages/ToursPage"));
 const LeaderboardPage = lazy(() => import("@/pages/LeaderboardPage"));
 const PayoutsPage = lazy(() => import("@/pages/PayoutsPage"));
 const ImportPage = lazy(() => import("@/pages/ImportPage"));
+const MapPage = lazy(() => import("@/pages/MapPage"));
+const LoanCalculatorPage = lazy(() => import("@/pages/LoanCalculatorPage"));
+const CoBrokeragePage = lazy(() => import("@/pages/CoBrokeragePage"));
+const DocumentsPage = lazy(() => import("@/pages/DocumentsPage"));
+const CompliancePage = lazy(() => import("@/pages/CompliancePage"));
+const CMAPage = lazy(() => import("@/pages/CMAPage"));
 
 function PageLoader() {
   return (
@@ -121,6 +127,12 @@ function App() {
                 <Route path="/licenses" element={<LicensesPage />} />
                 <Route path="/tours" element={<ToursPage />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
+                <Route path="/map" element={<MapPage />} />
+                <Route path="/loans" element={<LoanCalculatorPage />} />
+                <Route path="/cobrokerage" element={<CoBrokeragePage />} />
+                <Route path="/documents" element={<DocumentsPage />} />
+                <Route path="/compliance" element={<CompliancePage />} />
+                <Route path="/cma" element={<CMAPage />} />
                 <Route
                   path="/settings/notifications"
                   element={<NotificationPreferencesPage />}

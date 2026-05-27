@@ -219,8 +219,8 @@ export const DOCUMENT_CATEGORIES: {
     color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   },
   {
-    value: "tax",
-    label: "Tax",
+    value: "tax-declaration",
+    label: "Tax Declaration",
     color: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
   },
   {
@@ -235,13 +235,13 @@ export const DOCUMENT_CATEGORIES: {
       "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
   },
   {
-    value: "hoa",
-    label: "HOA",
+    value: "permit",
+    label: "Permit",
     color: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
   },
   {
-    value: "miscellaneous",
-    label: "Misc",
+    value: "other",
+    label: "Other",
     color: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
   },
 ];

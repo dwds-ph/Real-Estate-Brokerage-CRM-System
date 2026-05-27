@@ -1,195 +1,88 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useAnalyticsPage } from "@/hooks/useAnalyticsPage";
-import { cn, formatCurrency } from "@/lib/utils";
-import ConversionFunnel from "@/components/analytics/ConversionFunnel";
-import AgentPerformanceBoard from "@/components/analytics/AgentPerformanceBoard";
-import ExpenseVsCommission from "@/components/analytics/ExpenseVsCommission";
-import ListingPerformance from "@/components/analytics/ListingPerformance";
-import SourceAnalytics from "@/components/analytics/SourceAnalytics";
-import DateRangePicker from "@/components/analytics/DateRangePicker";
+import { useCollection } from "@/hooks/useFirestore";
+import { cn } from "@/lib/utils";
+import { subscribeGoals, createGoal, updateGoal, deleteGoal } from "@/services/goalService";
+import { computeSourceAnalytics, computeGoalProgress } from "@/lib/sourceAnalytics";
+import {
+  LeadSourceAnalytics,
+  AgentGoalTracker,
+  GoalForm,
+  GoalOverview,
+  AdvancedAnalytics,
+} from "@/components/analytics";
+import type { Lead, Deal, AgentGoal } from "@/types";
 
 const TABS = [
-  { id: "funnel", label: "Funnel", icon: "🔽" },
-  { id: "agents", label: "Agent Performance", icon: "👤" },
-  { id: "pnl", label: "P&L", icon: "📊" },
-  { id: "listings", label: "Listings", icon: "🏠" },
-  { id: "sources", label: "Sources", icon: "📡" },
+  { id: "sources", label: "Lead Sources", icon: "📡" },
+  { id: "goals", label: "Goals", icon: "🎯" },
+  { id: "advanced", label: "Advanced", icon: "📊" },
+  { id: "overview", label: "Overview", icon: "📋" },
 ];
-
-function exportToCSV(filename: string, headers: string[], rows: string[][]) {
-  const csvContent = [
-    headers.join(","),
-    ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-  ].join("\n");
-
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `${filename}-${new Date().toISOString().split("T")[0]}.csv`;
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
 
 export default function AnalyticsPage() {
   const { userProfile } = useAuth();
-  const {
-    activeTab,
-    setActiveTab,
-    dateRange,
-    setDateRange,
-    leads,
-    deals,
-    viewings,
-    listings,
-    expenses,
-    agents,
-    effectiveAgents,
-    myLeads,
-    isLoading,
-    hasData,
-    isBroker,
-  } = useAnalyticsPage();
+  const isBroker = userProfile?.role === "broker";
+  const brokerId = userProfile?.brokerId || userProfile?.id;
 
-  const handleExport = () => {
-    switch (activeTab) {
-      case "funnel": {
-        const headers = ["Stage", "Count"];
-        const rows = [
-          "new",
-          "contacted",
-          "viewed",
-          "negotiating",
-          "closed",
-        ].map((stage) => [
-          stage,
-          String(leads.filter((l) => l.status === stage).length),
-        ]);
-        exportToCSV("lead-funnel", headers, rows);
-        break;
-      }
-      case "agents": {
-        const headers = [
-          "Agent",
-          "Leads",
-          "Deals Closed",
-          "Commission",
-          "Conversion Rate",
-          "Avg Response Time",
-        ];
-        const rows = (isBroker ? agents : effectiveAgents).map((a) => {
-          const agentLeads = leads.filter((l) => l.assignedTo === a.id);
-          const agentDeals = deals.filter(
-            (d) => d.status === "closed" && d.createdBy === a.id,
-          );
-          const commission = agentDeals.reduce(
-            (s, d) => s + (d.commission?.agentShare || 0),
-            0,
-          );
-          const convRate =
-            agentLeads.length > 0
-              ? Math.round((agentDeals.length / agentLeads.length) * 100) + "%"
-              : "0%";
-          return [
-            a.displayName,
-            String(agentLeads.length),
-            String(agentDeals.length),
-            formatCurrency(commission),
-            convRate,
-            "—",
-          ];
-        });
-        exportToCSV("agent-performance", headers, rows);
-        break;
-      }
-      case "pnl": {
-        const headers = ["Agent", "Expenses", "Commission", "Net", "ROI"];
-        const rows = (isBroker ? agents : effectiveAgents).map((a) => {
-          const fromTs = new Date(dateRange.from).getTime();
-          const toTs = new Date(dateRange.to + "T23:59:59").getTime();
-          const agentExpenses = expenses
-            .filter(
-              (e) => e.agentId === a.id && e.date >= fromTs && e.date <= toTs,
-            )
-            .reduce((s, e) => s + e.amount, 0);
-          const agentCommission = deals
-            .filter(
-              (d) =>
-                d.createdBy === a.id &&
-                d.status === "closed" &&
-                d.createdAt >= fromTs &&
-                d.createdAt <= toTs,
-            )
-            .reduce((s, d) => s + (d.commission?.agentShare || 0), 0);
-          const net = agentCommission - agentExpenses;
-          const roi =
-            agentExpenses > 0
-              ? ((net / agentExpenses) * 100).toFixed(0) + "%"
-              : "∞";
-          return [
-            a.displayName,
-            formatCurrency(agentExpenses),
-            formatCurrency(agentCommission),
-            formatCurrency(net),
-            roi,
-          ];
-        });
-        exportToCSV("pnl-report", headers, rows);
-        break;
-      }
-      case "listings": {
-        const headers = [
-          "Listing",
-          "Views",
-          "Inquiries",
-          "Viewings Done",
-          "Days on Market",
-          "Converted",
-        ];
-        const rows = listings.map((l) => {
-          const listingViewings = viewings.filter(
-            (v) => v.listingId === l.id && v.status === "done",
-          );
-          const converted = deals.some(
-            (d) => d.listingId === l.id && d.status === "closed",
-          )
-            ? "Yes"
-            : "No";
-          const dom = Math.floor(
-            (Date.now() - l.createdAt) / (24 * 60 * 60 * 1000),
-          );
-          return [
-            l.title,
-            String(l.views || 0),
-            String(l.inquiries || 0),
-            String(listingViewings.length),
-            `${dom}d`,
-            converted,
-          ];
-        });
-        exportToCSV("listing-performance", headers, rows);
-        break;
-      }
-      case "sources": {
-        const sources = ["facebook", "manual", "referral", "walk-in"];
-        const headers = [
-          "Source",
-          "Total Leads",
-          "Closed Deals",
-          "Conversion Rate",
-        ];
-        const rows = sources.map((src) => {
-          const srcLeads = leads.filter((l) => l.source === src);
-          const closed = srcLeads.filter((l) => l.status === "closed").length;
-          const rate =
-            srcLeads.length > 0
-              ? Math.round((closed / srcLeads.length) * 100) + "%"
-              : "0%";
-          return [src, String(srcLeads.length), String(closed), rate];
-        });
-        exportToCSV("source-analytics", headers, rows);
-        break;
-      }
-    }
+  const [activeTab, setActiveTab] = useState("sources");
+
+  // Data
+  const { data: leads, loading: leadsLoading } = useCollection<Lead>("leads", []);
+  const { data: deals, loading: dealsLoading } = useCollection<Deal>("deals", []);
+  const [goals, setGoals] = useState<AgentGoal[]>([]);
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<AgentGoal | null>(null);
+
+  // Goals subscription
+  useEffect(() => {
+    if (!brokerId) return;
+    const unsub = subscribeGoals(brokerId, setGoals);
+    return unsub;
+  }, [brokerId]);
+
+  // Source analytics
+  const sourceAnalytics = computeSourceAnalytics(leads, deals);
+
+  // Goal progress
+  const goalsWithProgress = computeGoalProgress(goals, deals).map((item) => ({
+    goal: item.goal,
+    progress: {
+      dealsClosed: item.dealsClosed,
+      commission: item.commission,
+      dealProgress: item.dealProgress,
+      commissionProgress: item.commissionProgress,
+    },
+  }));
+
+  const isLoading = leadsLoading || dealsLoading;
+
+  // Goal CRUD handlers
+  const handleCreateGoal = async (
+    data: Omit<AgentGoal, "id" | "createdAt" | "updatedAt">,
+  ) => {
+    if (!userProfile || !brokerId) return;
+    await createGoal({
+      ...data,
+      createdBy: brokerId,
+    });
+    setShowGoalForm(false);
+    setEditingGoal(null);
+  };
+
+  const handleUpdateGoal = async (data: any) => {
+    if (!editingGoal || !userProfile) return;
+    await updateGoal(editingGoal.id, {
+      ...data,
+      updatedAt: Date.now(),
+    });
+    setShowGoalForm(false);
+    setEditingGoal(null);
+  };
+
+  const handleDeleteGoal = async (goalId: string) => {
+    if (!window.confirm("Delete this goal?")) return;
+    await deleteGoal(goalId);
   };
 
   return (
@@ -198,63 +91,58 @@ export default function AnalyticsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Analytics & Reports</h1>
-          <p className="text-muted-foreground">
-            {isBroker
-              ? "Full business insights at a glance"
-              : "Your performance overview"}
+          <p className="text-sm text-muted-foreground">
+            Lead source performance, agent goals, and revenue analytics
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <DateRangePicker value={dateRange} onChange={setDateRange} />
+        {(activeTab === "goals" || activeTab === "overview") && isBroker && (
           <button
-            onClick={handleExport}
-            disabled={!hasData}
-            className={cn(
-              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-              hasData
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                : "bg-muted text-muted-foreground cursor-not-allowed",
-            )}
+            onClick={() => {
+              setEditingGoal(null);
+              setShowGoalForm(!showGoalForm);
+            }}
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            📥 Export CSV
+            {showGoalForm ? "✕ Close" : "+ New Goal"}
           </button>
-        </div>
+        )}
       </div>
 
       {/* Tab Navigation */}
       <div className="flex flex-wrap gap-1 border-b">
-        {TABS.map((tab) => {
-          // Agents can only see their own performance
-          if (
-            !isBroker &&
-            tab.id !== "agents" &&
-            tab.id !== "funnel" &&
-            tab.id !== "sources" &&
-            tab.id !== "listings"
-          ) {
-            return null;
-          }
-          // For non-broker, only show relevant tabs
-          if (!isBroker && tab.id === "pnl") {
-            return null;
-          }
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors -mb-px",
-                activeTab === tab.id
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30",
-              )}
-            >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors -mb-px",
+              activeTab === tab.id
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30",
+            )}
+          >
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
       </div>
+
+      {/* Goal Form (shown on Goals and Overview tabs) */}
+      {(activeTab === "goals" || activeTab === "overview") && showGoalForm && (
+        <div className="rounded-lg border bg-card p-4">
+          <h3 className="font-semibold mb-3">
+            {editingGoal ? "Edit Goal" : "Create New Goal"}
+          </h3>
+          <GoalForm
+            initial={editingGoal || undefined}
+            onSubmit={(data: any) => (editingGoal ? handleUpdateGoal(data) : handleCreateGoal({ ...data, agentId: userProfile?.id || "", agentName: userProfile?.displayName, createdBy: userProfile?.id || "" }))}
+            onCancel={() => {
+              setShowGoalForm(false);
+              setEditingGoal(null);
+            }}
+          />
+        </div>
+      )}
 
       {/* Tab Content */}
       <div>
@@ -264,77 +152,7 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <>
-            {activeTab === "funnel" && (
-              <div className="rounded-lg border bg-card p-6">
-                <h2 className="text-lg font-semibold mb-4">
-                  Lead Conversion Funnel
-                </h2>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Track how leads progress through each stage of the pipeline
-                </p>
-                <ConversionFunnel leads={myLeads} isLoading={isLoading} />
-              </div>
-            )}
-
-            {activeTab === "agents" && (
-              <div className="rounded-lg border bg-card p-6">
-                <h2 className="text-lg font-semibold mb-4">
-                  Agent Performance
-                </h2>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Click column headers to sort.{" "}
-                  {isBroker
-                    ? "Showing all agents."
-                    : "Showing your metrics only."}
-                </p>
-                <AgentPerformanceBoard
-                  leads={leads}
-                  deals={deals}
-                  agents={effectiveAgents}
-                  isLoading={isLoading}
-                  currentUserId={userProfile?.id}
-                  isBroker={isBroker}
-                />
-              </div>
-            )}
-
-            {activeTab === "pnl" && isBroker && (
-              <div className="rounded-lg border bg-card p-6">
-                <h2 className="text-lg font-semibold mb-4">
-                  Profit & Loss Report
-                </h2>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Expenses claimed vs commission earned per agent
-                </p>
-                <ExpenseVsCommission
-                  expenses={expenses}
-                  deals={deals}
-                  agents={agents}
-                  dateRange={dateRange}
-                  loading={isLoading}
-                  isBroker={isBroker}
-                  currentUserId={userProfile?.id}
-                />
-              </div>
-            )}
-
-            {activeTab === "listings" && (
-              <div className="rounded-lg border bg-card p-6">
-                <h2 className="text-lg font-semibold mb-4">
-                  Listing Performance
-                </h2>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Views, inquiries, viewings, and conversion metrics per listing
-                </p>
-                <ListingPerformance
-                  listings={listings}
-                  viewings={viewings}
-                  deals={deals}
-                  loading={isLoading}
-                />
-              </div>
-            )}
-
+            {/* Lead Sources */}
             {activeTab === "sources" && (
               <div className="rounded-lg border bg-card p-6">
                 <h2 className="text-lg font-semibold mb-4">
@@ -343,7 +161,110 @@ export default function AnalyticsPage() {
                 <p className="text-sm text-muted-foreground mb-6">
                   Conversion performance by acquisition channel
                 </p>
-                <SourceAnalytics leads={leads} loading={isLoading} />
+                <LeadSourceAnalytics analytics={sourceAnalytics} />
+              </div>
+            )}
+
+            {/* Goals */}
+            {activeTab === "goals" && (
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Agent Goals</h2>
+                {goals.length === 0 && !showGoalForm ? (
+                  <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+                    No goals set yet. Click "+ New Goal" to create one.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {goalsWithProgress.map(({ goal, progress }) => (
+                      <div key={goal.id} className="relative group">
+                        <AgentGoalTracker goal={goal} progress={progress} />
+                        {isBroker && (
+                          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => {
+                                setEditingGoal(goal);
+                                setShowGoalForm(true);
+                              }}
+                              className="rounded bg-muted/80 px-2 py-1 text-[10px] font-medium hover:bg-muted"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteGoal(goal.id)}
+                              className="rounded bg-red-100 text-red-600 px-2 py-1 text-[10px] font-medium hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"
+                            >
+                              Del
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Advanced */}
+            {activeTab === "advanced" && (
+              <div className="rounded-lg border bg-card p-6">
+                <h2 className="text-lg font-semibold mb-4">
+                  Advanced Analytics
+                </h2>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Revenue trends, agent rankings, and period comparisons
+                </p>
+                <AdvancedAnalytics deals={deals} />
+              </div>
+            )}
+
+            {/* Overview */}
+            {activeTab === "overview" && (
+              <div className="space-y-6">
+                <div className="rounded-lg border bg-card p-6">
+                  <h2 className="text-lg font-semibold mb-4">
+                    Team Goals Overview
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Agent performance vs targets
+                  </p>
+                  <GoalOverview goalsWithProgress={goalsWithProgress} />
+                </div>
+
+                {/* Goals Summary Cards */}
+                {goalsWithProgress.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="rounded-lg border bg-card p-4">
+                      <p className="text-xs text-muted-foreground mb-1">Total Goals</p>
+                      <p className="text-2xl font-bold">{goalsWithProgress.length}</p>
+                    </div>
+                    <div className="rounded-lg border bg-card p-4">
+                      <p className="text-xs text-muted-foreground mb-1">Avg Deal Progress</p>
+                      <p className="text-2xl font-bold">
+                        {goalsWithProgress.length > 0
+                          ? `${Math.round(
+                              goalsWithProgress.reduce(
+                                (s, gp) => s + gp.progress.dealProgress,
+                                0,
+                              ) / goalsWithProgress.length,
+                            )}%`
+                          : "—"}
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-card p-4">
+                      <p className="text-xs text-muted-foreground mb-1">Avg Commission Progress</p>
+                      <p className="text-2xl font-bold">
+                        {goalsWithProgress.length > 0
+                          ? `${Math.round(
+                              goalsWithProgress.reduce(
+                                (s, gp) => s + gp.progress.commissionProgress,
+                                0,
+                              ) / goalsWithProgress.length,
+                            )}%`
+                          : "—"}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </>

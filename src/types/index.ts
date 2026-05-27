@@ -26,7 +26,7 @@ export type LeadStatus =
   | "negotiating"
   | "closed"
   | "lost";
-export type LeadSource = "facebook" | "manual" | "referral" | "walk-in";
+export type LeadSource = "facebook" | "manual" | "referral" | "walk-in" | "website" | "call" | "sms" | "email" | "open-house" | "event" | "other";
 export type LeadScore = "hot" | "warm" | "cold";
 
 export interface Lead {
@@ -327,14 +327,6 @@ export interface AuditLog {
 }
 
 // ─── Phase 13: Document Vault ─────────────────────────────────────
-
-export type DocumentCategory =
-  | "title"
-  | "tax"
-  | "contract"
-  | "identification"
-  | "hoa"
-  | "miscellaneous";
 
 export interface VaultDocument {
   id: string;
@@ -769,5 +761,251 @@ export interface CallLog {
   followUpDate?: number;
   createdBy: string;
   createdByName?: string;
+  createdAt: number;
+}
+
+// ─── Phase 16: Property Map View ─────────────────────────────────
+
+export interface MapViewport {
+  center: [number, number];
+  zoom: number;
+}
+
+export interface MapFilters {
+  propertyType: string;
+  status: string;
+  minPrice: number;
+  maxPrice: number;
+  location: string;
+}
+
+// ─── Phase 17: PH Loan Calculator ────────────────────────────────
+
+export type LoanType = "pagibig" | "bank" | "in-house";
+
+export interface LoanInput {
+  loanType: LoanType;
+  propertyPrice: number;
+  downPayment: number;
+  loanTerm: number; // years
+  annualRate: number; // percentage
+  grossIncome?: number;
+  existingDebts?: number;
+  pagibigTier?: string;
+}
+
+export interface AmortizationRow {
+  month: number;
+  year: number;
+  beginningBalance: number;
+  payment: number;
+  principal: number;
+  interest: number;
+  endingBalance: number;
+}
+
+export interface AffordabilityResult {
+  maxLoanAmount: number;
+  maxPropertyPrice: number;
+  monthlyPayment: number;
+  debtToIncomeRatio: number;
+  isAffordable: boolean;
+  level: "green" | "yellow" | "red";
+}
+
+// ─── Phase 18: Lead Source & Agent Analytics ─────────────────────
+
+export type GoalPeriod = "monthly" | "quarterly" | "yearly";
+
+export interface AgentGoal {
+  id: string;
+  agentId: string;
+  agentName?: string;
+  period: GoalPeriod;
+  periodStart: number;
+  periodEnd: number;
+  targetDeals: number;
+  targetCommission: number;
+  createdBy: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface SourceAnalytics {
+  source: string;
+  leadCount: number;
+  dealCount: number;
+  conversionRate: number;
+  totalCommission: number;
+  avgDealValue: number;
+  avgDaysToDeal: number;
+}
+
+// ─── Phase 19: Co-Brokerage, Teams & Branches ────────────────────
+
+export type BranchType = "head-office" | "branch" | "satellite";
+
+export interface Branch {
+  id: string;
+  name: string;
+  type: BranchType;
+  address: string;
+  city: string;
+  province: string;
+  phone?: string;
+  email?: string;
+  manager?: string;
+  managerId?: string;
+  brokerId: string;
+  isActive: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface AgentTeam {
+  id: string;
+  name: string;
+  description?: string;
+  teamLeadId: string;
+  teamLeadName?: string;
+  memberIds: string[];
+  brokerId: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface TeamMember {
+  userId: string;
+  displayName: string;
+  role: string;
+  joinedAt: number;
+}
+
+export interface CoBroker {
+  id: string;
+  name: string;
+  brokerage: string;
+  licenseNumber?: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  referralFeeRate?: number;
+  notes?: string;
+  createdBy: string;
+  brokerId: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface CoBrokerDeal {
+  id: string;
+  dealId: string;
+  coBrokerId: string;
+  coBrokerName: string;
+  coBrokerBrokerage: string;
+  splitPercentage: number;
+  commissionAmount: number;
+  status: "pending" | "approved" | "paid";
+  createdBy: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface SplitAgreement {
+  id: string;
+  dealId: string;
+  parties: {
+    agentId?: string;
+    agentName?: string;
+    coBrokerId?: string;
+    coBrokerName?: string;
+    role: string;
+    percentage: number;
+    amount: number;
+  }[];
+  totalCommission: number;
+  brokerShare: number;
+  brokerId: string;
+  createdBy: string;
+  createdAt: number;
+}
+
+// ─── Phase 21: Documents Vault & Compliance ──────────────────────
+
+export type DocumentCategory =
+  | "title"
+  | "tax-declaration"
+  | "permit"
+  | "contract"
+  | "identification"
+  | "financial"
+  | "legal"
+  | "other";
+
+export interface PropertyDocument {
+  id: string;
+  listingId?: string;
+  dealId?: string;
+  name: string;
+  category: DocumentCategory;
+  fileUrl: string;
+  fileType: string;
+  fileSize?: number;
+  notes?: string;
+  expiryDate?: number;
+  uploadedBy: string;
+  uploadedByName?: string;
+  brokerId: string;
+  createdAt: number;
+}
+
+export interface ComplianceItem {
+  id: string;
+  label: string;
+  category: "legal" | "tax" | "documentary" | "financial";
+  required: boolean;
+  completed: boolean;
+  completedAt?: number;
+  completedBy?: string;
+  notes?: string;
+  documentId?: string;
+}
+
+export interface ComplianceChecklist {
+  id: string;
+  dealId: string;
+  dealTitle?: string;
+  items: ComplianceItem[];
+  progress: number;
+  createdBy: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface CMReport {
+  id: string;
+  listingId: string;
+  listingTitle?: string;
+  subjectProperty: {
+    address: string;
+    propertyType: string;
+    size: number;
+    price: number;
+    pricePerSqm: number;
+  };
+  comparables: {
+    address: string;
+    propertyType: string;
+    size: number;
+    price: number;
+    pricePerSqm: number;
+    distance: string;
+    adjustment: number;
+    adjustedPrice: number;
+  }[];
+  adjustedRange: { min: number; max: number };
+  recommendedPrice: number;
+  notes?: string;
+  createdBy: string;
   createdAt: number;
 }

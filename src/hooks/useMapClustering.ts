@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { MapFiltersState } from "@/components/map/MapFilters";
+import { type MapFiltersState } from "@/components/map/MapFilters";
 
 // ─── Types ──────────────────────────────────────────────────────────
 

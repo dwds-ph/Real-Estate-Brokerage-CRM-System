@@ -490,5 +490,117 @@ service cloud.firestore {
       allow delete: if isBroker();
     }
 
+    // -----------------------------------------------------------------------
+    // AGENT GOALS  (sales targets per agent)
+    //   read:    broker, same org, or self
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /goals/{goalId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow create: if isBroker();
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // CO-BROKERS  (external broker directory)
+    //   read:    broker or same org
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /coBrokers/{coBrokerId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isBroker() && requireFields(['name', 'brokerage', 'phone', 'brokerId']);
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // CO-BROKER DEALS  (cross-brokerage deal splits)
+    //   read:    broker or same org
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /coBrokerDeals/{dealId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isBroker() && requireFields(['dealId', 'coBrokerId', 'splitPercentage']);
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // TEAMS  (agent teams)
+    //   read:    broker or same org
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /teams/{teamId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isBroker() && requireFields(['name', 'teamLeadId', 'brokerId']);
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // BRANCHES  (office/branch locations)
+    //   read:    broker or same org
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /branches/{branchId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isBroker() && requireFields(['name', 'address', 'city', 'province', 'brokerId']);
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // PROPERTY DOCUMENTS  (per-property document vault)
+    //   read:    broker, same org, or uploader
+    //   create:  any staff
+    //   update:  broker or uploader
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /propertyDocuments/{docId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.uploadedBy == request.auth.uid);
+      allow create: if isAuthenticated() && requireFields(['name', 'fileUrl', 'category', 'brokerId']);
+      allow update: if isBroker() || resource.data.uploadedBy == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // COMPLIANCE CHECKLISTS  (deal closing compliance)
+    //   read:    broker, same org, or deal creator
+    //   create:  any staff
+    //   update:  broker or deal creator
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /complianceChecklists/{checklistId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isAuthenticated();
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // CMA REPORTS  (comparative market analysis)
+    //   read:    broker or same org
+    //   create:  any staff
+    //   update:  broker or creator
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /cmaReports/{reportId} {
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow create: if isAuthenticated();
+      allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
+      allow delete: if isBroker();
+    }
+
   }
 }

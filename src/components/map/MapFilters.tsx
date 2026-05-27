@@ -1,142 +1,57 @@
-import { cn } from "@/lib/utils";
-import { PROPERTY_TYPE_ICONS } from "./MapMarker";
-
-// ─── Types ──────────────────────────────────────────────────────────
-
-export interface MapFiltersState {
+import { type MapFilters } from "@/types";
+export type MapFiltersState = MapFilters & {
+  priceMin: number;
+  priceMax: number;
   propertyTypes: string[];
   statuses: string[];
   floodRisks: string[];
-  priceMin: number;
-  priceMax: number;
+};
+
+interface Props {
+  filters: MapFilters;
+  onChange: (f: MapFilters) => void;
 }
 
-export interface FilterOptions {
-  propertyTypes: string[];
-  statuses: string[];
-  floodRisks: string[];
-  priceMin: number;
-  priceMax: number;
-}
-
-export interface MapFiltersProps {
-  filters: MapFiltersState;
-  onFilterChange: (key: keyof MapFiltersState, value: string) => void;
-  onReset: () => void;
-  filterOptions: FilterOptions;
-  totalGeocoded: number;
-  totalListings: number;
-  geocoding: boolean;
-  showFilterPanel: boolean;
-}
-
-// ─── MapFilters Component ───────────────────────────────────────────
-
-export function MapFilters({
-  filters,
-  onFilterChange,
-  onReset,
-  filterOptions,
-  totalGeocoded,
-  totalListings,
-  geocoding,
-  showFilterPanel,
-}: MapFiltersProps) {
-  if (!showFilterPanel) return null;
+export default function MapFilters({ filters, onChange }: Props) {
+  const update = (patch: Partial<MapFilters>) => onChange({ ...filters, ...patch });
 
   return (
-    <div className="absolute top-12 right-3 z-[1000] rounded-lg border bg-card shadow-lg p-4 w-64 max-h-[60vh] overflow-y-auto space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-sm">Filters</h3>
-        <button
-          onClick={onReset}
-          className="text-xs text-primary hover:underline"
-        >
-          Reset
-        </button>
+    <div className="space-y-3 p-3">
+      <div>
+        <label className="block text-xs font-medium mb-1">Property Type</label>
+        <select value={filters.propertyType} onChange={(e) => update({ propertyType: e.target.value })} className="w-full rounded-lg border bg-background px-2 py-1.5 text-sm">
+          <option value="">All Types</option>
+          <option value="condo">Condo</option>
+          <option value="house-lot">House & Lot</option>
+          <option value="lot-only">Lot Only</option>
+          <option value="commercial">Commercial</option>
+          <option value="foreclosed">Foreclosed</option>
+        </select>
       </div>
-
-      {/* Property Type */}
-      {filterOptions.propertyTypes.length > 0 && (
+      <div>
+        <label className="block text-xs font-medium mb-1">Status</label>
+        <select value={filters.status} onChange={(e) => update({ status: e.target.value })} className="w-full rounded-lg border bg-background px-2 py-1.5 text-sm">
+          <option value="">All Status</option>
+          <option value="available">Available</option>
+          <option value="under-option">Under Option</option>
+          <option value="sold">Sold</option>
+          <option value="rented">Rented</option>
+          <option value="off-market">Off Market</option>
+        </select>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
         <div>
-          <p className="text-xs font-medium text-muted-foreground mb-1.5">
-            Property Type
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {filterOptions.propertyTypes.map((t) => (
-              <button
-                key={t}
-                onClick={() => onFilterChange("propertyTypes", t)}
-                className={cn(
-                  "rounded-full px-2.5 py-1 text-xs border transition-colors",
-                  filters.propertyTypes.includes(t)
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card hover:bg-muted",
-                )}
-              >
-                {PROPERTY_TYPE_ICONS[t] || "🏠"} {t}
-              </button>
-            ))}
-          </div>
+          <label className="block text-xs font-medium mb-1">Min Price</label>
+          <input type="number" value={filters.minPrice || ""} onChange={(e) => update({ minPrice: Number(e.target.value) || 0 })} className="w-full rounded-lg border bg-background px-2 py-1.5 text-sm" placeholder="0" />
         </div>
-      )}
-
-      {/* Status */}
-      {filterOptions.statuses.length > 0 && (
         <div>
-          <p className="text-xs font-medium text-muted-foreground mb-1.5">
-            Status
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {filterOptions.statuses.map((s) => (
-              <button
-                key={s}
-                onClick={() => onFilterChange("statuses", s)}
-                className={cn(
-                  "rounded-full px-2.5 py-1 text-xs border transition-colors",
-                  filters.statuses.includes(s)
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card hover:bg-muted",
-                )}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+          <label className="block text-xs font-medium mb-1">Max Price</label>
+          <input type="number" value={filters.maxPrice || ""} onChange={(e) => update({ maxPrice: Number(e.target.value) || 0 })} className="w-full rounded-lg border bg-background px-2 py-1.5 text-sm" placeholder="Any" />
         </div>
-      )}
-
-      {/* Flood Risk */}
-      {filterOptions.floodRisks.length > 0 && (
-        <div>
-          <p className="text-xs font-medium text-muted-foreground mb-1.5">
-            Flood Risk
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {filterOptions.floodRisks.map((r) => (
-              <button
-                key={r}
-                onClick={() => onFilterChange("floodRisks", r)}
-                className={cn(
-                  "rounded-full px-2.5 py-1 text-xs border transition-colors",
-                  filters.floodRisks.includes(r)
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card hover:bg-muted",
-                )}
-              >
-                🌊 {r}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Geocoding status */}
-      <div className="border-t pt-2">
-        <p className="text-xs text-muted-foreground">
-          {totalGeocoded}/{totalListings} geocoded
-          {geocoding && <span className="ml-1 animate-pulse">⏳</span>}
-        </p>
+      </div>
+      <div>
+        <label className="block text-xs font-medium mb-1">Location</label>
+        <input type="text" value={filters.location} onChange={(e) => update({ location: e.target.value })} className="w-full rounded-lg border bg-background px-2 py-1.5 text-sm" placeholder="Search location..." />
       </div>
     </div>
   );
