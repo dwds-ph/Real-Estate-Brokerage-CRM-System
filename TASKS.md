@@ -2,7 +2,7 @@
 
 All features below are **purely client-side** (React + Firestore + Firebase Storage + browser APIs). No Cloud Functions, no server-side logic, no external API proxies.
 
-**All 3 phases complete ✅**
+**All 4 phases complete ✅**
 
 ---
 
@@ -30,6 +30,36 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `vite.config.ts` — VitePWA plugin with runtime caching
 - `src/main.tsx` — Firestore offline persistence enabled
 - `src/App.tsx` — OfflineIndicator integration
+
+## ✅ Phase 2: 🏆 Agent Scorecard & Leaderboard — COMPLETE
+
+**Goal:** Gamified agent performance dashboard with monthly/quarterly rankings, metrics, and achievement badges.
+
+### Tasks
+
+- [x] **2.1** Define `AgentScore` / `AchievementBadge` types
+- [x] **2.2** Create `src/lib/scorecard.ts` — client-side computation engine
+  - Deals closed, total commission, lead conversion rate, avg deal size
+  - Viewing-to-deal ratio, period-over-period trends
+  - Overall 0–100 weighted score with per-agent normalization
+- [x] **2.3** Create `AgentLeaderboard.tsx` — ranked table with medal positions (#1 🥇, #2 🥈, #3 🥉)
+- [x] **2.4** Create `AgentProfileScore.tsx` — individual agent metrics grid
+- [x] **2.5** Create `AchievementBadges.tsx` — 8 badges, BadgeGallery, BadgeLibrary (earned/locked view)
+- [x] **2.6** Add route `/leaderboard` + sidebar nav entry
+- [x] **2.7** LeaderboardPage with period filter (week/month/quarter/all-time)
+- [x] **2.8** Client-side only — no new Firestore collection needed (reads existing deals/leads/viewings/users)
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+
+- `src/types/index.ts` — AgentScore, AchievementBadge, AchievementBadgeId types
+- `src/lib/scorecard.ts`
+- `src/components/scorecard/AgentLeaderboard.tsx`
+- `src/components/scorecard/AgentProfileScore.tsx`
+- `src/components/scorecard/AchievementBadges.tsx`
+- `src/components/scorecard/index.ts`
+- `src/pages/LeaderboardPage.tsx`
+- `src/App.tsx` / `src/components/layout/AppLayout.tsx` — routing + nav
 
 ---
 
