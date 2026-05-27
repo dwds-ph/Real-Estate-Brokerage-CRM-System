@@ -27,7 +27,14 @@ export type AnalyticsEventName =
   | "commission_computed"
   | "brochure_viewed"
   | "listing_shared"
-  | "task_completed";
+  | "task_completed"
+  | "deal_closed"
+  | "project_created"
+  | "document_generated"
+  | "login"
+  | "registration"
+  | "payment_recorded"
+  | "tour_completed";
 
 /** Params dict for gtag events. */
 export type AnalyticsEventParams = Record<string, string | number | boolean>;

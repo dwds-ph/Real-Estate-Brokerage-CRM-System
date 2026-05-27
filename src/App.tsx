@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { useFcmService } from "@/services/fcm";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import ShortcutsHelpModal from "@/components/ShortcutsHelpModal";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import AppLayout from "@/components/layout/AppLayout";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
@@ -76,7 +77,8 @@ function App() {
         <AppContent />
         <AppKeyboardShortcuts />
         <Suspense fallback={<PageLoader />}>
-          <Routes>
+          <ErrorBoundary>
+            <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/b/:listingId" element={<BrochurePage />} />
@@ -122,6 +124,7 @@ function App() {
               </Route>
             </Route>
           </Routes>
+          </ErrorBoundary>
         </Suspense>
       </AuthProvider>
     </ThemeProvider>

@@ -168,13 +168,22 @@ export interface Payout {
   id: string;
   dealId: string;
   agentId: string;
+  agentName?: string;
   brokerId: string;
   amount: number;
-  status: "pending" | "approved" | "paid";
+  status: "pending" | "approved" | "paid" | "cancelled";
   paidAt?: number;
   paidBy?: string;
+  approvedAt?: number;
+  approvedBy?: string;
   receiptUrl?: string;
   notes?: string;
+  dealClientName?: string;
+  dealPrice?: number;
+  commissionPercent?: number;
+  periodLabel?: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 // ─── Phase 9: Smart Commission Engine ────────────────────────────────

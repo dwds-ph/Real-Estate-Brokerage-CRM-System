@@ -39,3 +39,30 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
           channelId: live
           projectId: '${{ secrets.FIREBASE_PROJECT_ID }}'
+
+  e2e:
+    if: github.event_name == 'pull_request'
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - run: npx playwright install chromium
+      - name: Start Firebase Emulators + Vite
+        run: |
+          npx concurrently -k -s first \
+            "firebase emulators:start --only auth,firestore --project demo-crm" \
+            "sleep 4 && yarn dev --host 0.0.0.0" \
+            "sleep 8 && yarn e2e"
+        env:
+          E2E_BASE_URL: http://localhost:5173
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

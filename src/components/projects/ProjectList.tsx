@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Project, ProjectStatus } from "@/types";
 import ProjectCard from "./ProjectCard";
 import ProjectForm from "./ProjectForm";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const STATUS_FILTERS: Array<{ label: string; value: ProjectStatus | "all" }> = [
   { label: "All", value: "all" },
@@ -32,19 +33,19 @@ export default function ProjectList({
     "all",
   );
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   const filtered = projects.filter((p) => {
     if (statusFilter !== "all" && p.status !== statusFilter) return false;
-    if (search) {
-      const q = search.toLowerCase();
+    if (debouncedSearch) {
+      const q = debouncedSearch.toLowerCase();
       if (
         !p.name.toLowerCase().includes(q) &&
         !p.developer.toLowerCase().includes(q) &&
         !p.location.city.toLowerCase().includes(q)
-      )
-        return false;
+      ) return false;
     }
     return true;
   });
