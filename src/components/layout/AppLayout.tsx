@@ -13,6 +13,7 @@ const navItems = [
   { to: "/viewings", label: "Viewings", icon: "📅" },
   { to: "/commissions", label: "Commissions", icon: "💰" },
   { to: "/payouts", label: "Payouts", icon: "💸" },
+  { to: "/import", label: "Import", icon: "📥" },
   { to: "/tasks", label: "Tasks", icon: "✅" },
   { to: "/agents", label: "Agents", icon: "👤" },
   { to: "/offices", label: "Offices", icon: "🏢" },

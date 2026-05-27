@@ -324,6 +324,30 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 
 ---
 
-## 🏁 All 11 Phases Complete ✅
+## ✅ Phase 12: 📥 Bulk CSV Import Tool — COMPLETE
 
-The CRM now includes **29 modules**, **165+ components**, **30+ services**, and comprehensive PH-market features covering the full real estate brokerage workflow.
+**Goal:** Import leads, listings, and projects from CSV files with validation, preview, and progress tracking.
+
+### Tasks
+
+- [x] **12.1** Create `src/lib/csvImport.ts` — CSV parser (`parseCSV()`), field mapping engine (`applyFieldMapping`), import executor (`importFromCSV` with batch writes + progress), preview (`previewImport`), 3 import configs (leads, listings, projects)
+- [x] **12.2** Create `ImportWizard.tsx` — 5-step wizard (Select Type → Upload → Preview → Import → Done) with drag-and-drop, preview table, validation errors, progress bar, result summary
+- [x] **12.3** Create `ImportPage.tsx` — route page
+- [x] **12.4** Add route `/import` + sidebar nav entry
+- [x] **Validation:** typecheck ✓ build ✓
+
+**Files created:**
+- `src/lib/csvImport.ts`
+- `src/components/import/ImportWizard.tsx`
+- `src/components/import/index.ts`
+- `src/pages/ImportPage.tsx`
+
+**Files modified:**
+- `src/App.tsx` — added /import route (lazy loaded)
+- `src/components/layout/AppLayout.tsx` — added Import nav entry
+
+---
+
+## 🏁 All 12 Phases Complete ✅
+
+The CRM now includes **30 modules**, **170+ components**, **30+ services**, and comprehensive PH-market features covering the full real estate brokerage workflow.

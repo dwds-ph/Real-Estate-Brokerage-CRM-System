@@ -51,7 +51,6 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
   // ── Subscribe to realtime data ──────────────────────────────────
 
   useEffect(() => {
-    setLoading(true);
     const unsub = subscribePayouts(effectiveBrokerId, (data) => {
       setPayouts(data);
       setLoading(false);
