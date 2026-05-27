@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { ChecklistTemplate } from '@/types';
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { ChecklistTemplate } from "@/types";
 import {
   fetchChecklistTemplates,
   createChecklistTemplate,
   updateChecklistTemplate,
   deleteChecklistTemplate,
-} from '@/services/checklistService';
+} from "@/services/checklistService";
 
 export default function ChecklistTemplatesPage() {
   const { userProfile } = useAuth();
@@ -17,12 +17,12 @@ export default function ChecklistTemplatesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<{
     name: string;
-    scope: 'lead' | 'listing' | 'deal';
+    scope: "lead" | "listing" | "deal";
     items: { label: string; required: boolean }[];
-  }>({ name: '', scope: 'deal', items: [{ label: '', required: false }] });
+  }>({ name: "", scope: "deal", items: [{ label: "", required: false }] });
   const [saving, setSaving] = useState(false);
 
-  const isBroker = userProfile?.role === 'broker';
+  const isBroker = userProfile?.role === "broker";
 
   const loadTemplates = useCallback(async () => {
     setLoading(true);
@@ -31,7 +31,7 @@ export default function ChecklistTemplatesPage() {
       const data = await fetchChecklistTemplates();
       setTemplates(data);
     } catch (err) {
-      setError('Failed to load templates');
+      setError("Failed to load templates");
       console.error(err);
     } finally {
       setLoading(false);
@@ -43,13 +43,20 @@ export default function ChecklistTemplatesPage() {
   }, [loadTemplates]);
 
   const resetForm = () => {
-    setForm({ name: '', scope: 'deal', items: [{ label: '', required: false }] });
+    setForm({
+      name: "",
+      scope: "deal",
+      items: [{ label: "", required: false }],
+    });
     setEditingId(null);
     setShowForm(false);
   };
 
   const handleAddItem = () => {
-    setForm((prev) => ({ ...prev, items: [...prev.items, { label: '', required: false }] }));
+    setForm((prev) => ({
+      ...prev,
+      items: [...prev.items, { label: "", required: false }],
+    }));
   };
 
   const handleRemoveItem = (index: number) => {
@@ -59,7 +66,11 @@ export default function ChecklistTemplatesPage() {
     }));
   };
 
-  const handleItemChange = (index: number, field: 'label' | 'required', value: string | boolean) => {
+  const handleItemChange = (
+    index: number,
+    field: "label" | "required",
+    value: string | boolean,
+  ) => {
     setForm((prev) => {
       const items = [...prev.items];
       items[index] = { ...items[index], [field]: value as never };
@@ -69,16 +80,23 @@ export default function ChecklistTemplatesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile || !form.name.trim() || form.items.some((item) => !item.label.trim())) return;
+    if (
+      !userProfile ||
+      !form.name.trim() ||
+      form.items.some((item) => !item.label.trim())
+    )
+      return;
     setSaving(true);
     try {
       const data = {
         name: form.name.trim(),
         scope: form.scope,
-        items: form.items.filter((item) => item.label.trim()).map((item) => ({
-          label: item.label.trim(),
-          required: item.required,
-        })),
+        items: form.items
+          .filter((item) => item.label.trim())
+          .map((item) => ({
+            label: item.label.trim(),
+            required: item.required,
+          })),
         createdBy: userProfile.id,
       };
 
@@ -97,7 +115,12 @@ export default function ChecklistTemplatesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this checklist template? It will not affect existing instances.')) return;
+    if (
+      !confirm(
+        "Delete this checklist template? It will not affect existing instances.",
+      )
+    )
+      return;
     try {
       await deleteChecklistTemplate(id);
       await loadTemplates();
@@ -110,7 +133,8 @@ export default function ChecklistTemplatesPage() {
     setForm({
       name: tpl.name,
       scope: tpl.scope,
-      items: tpl.items.length > 0 ? tpl.items : [{ label: '', required: false }],
+      items:
+        tpl.items.length > 0 ? tpl.items : [{ label: "", required: false }],
     });
     setEditingId(tpl.id);
     setShowForm(true);
@@ -135,19 +159,31 @@ export default function ChecklistTemplatesPage() {
           <p className="text-muted-foreground">{templates.length} templates</p>
         </div>
         <button
-          onClick={() => { resetForm(); setShowForm(!showForm); }}
+          onClick={() => {
+            resetForm();
+            setShowForm(!showForm);
+          }}
           className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
-          {showForm ? 'Cancel' : '+ New Template'}
+          {showForm ? "Cancel" : "+ New Template"}
         </button>
       </div>
 
-      {error && <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 text-sm text-red-600 dark:text-red-400">{error}</div>}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 text-sm text-red-600 dark:text-red-400">
+          {error}
+        </div>
+      )}
 
       {/* Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-4">
-          <h3 className="font-semibold">{editingId ? 'Edit Template' : 'New Template'}</h3>
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-lg border bg-card p-6 space-y-4"
+        >
+          <h3 className="font-semibold">
+            {editingId ? "Edit Template" : "New Template"}
+          </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -165,7 +201,12 @@ export default function ChecklistTemplatesPage() {
               <label className="block text-sm font-medium mb-1">Scope</label>
               <select
                 value={form.scope}
-                onChange={(e) => setForm({ ...form, scope: e.target.value as 'lead' | 'listing' | 'deal' })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    scope: e.target.value as "lead" | "listing" | "deal",
+                  })
+                }
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               >
                 <option value="lead">Lead</option>
@@ -179,7 +220,11 @@ export default function ChecklistTemplatesPage() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium">Items</label>
-              <button type="button" onClick={handleAddItem} className="text-xs text-primary hover:underline">
+              <button
+                type="button"
+                onClick={handleAddItem}
+                className="text-xs text-primary hover:underline"
+              >
                 + Add Item
               </button>
             </div>
@@ -190,7 +235,9 @@ export default function ChecklistTemplatesPage() {
                     type="text"
                     required
                     value={item.label}
-                    onChange={(e) => handleItemChange(i, 'label', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(i, "label", e.target.value)
+                    }
                     className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm"
                     placeholder={`Item ${i + 1}`}
                   />
@@ -198,13 +245,19 @@ export default function ChecklistTemplatesPage() {
                     <input
                       type="checkbox"
                       checked={item.required}
-                      onChange={(e) => handleItemChange(i, 'required', e.target.checked)}
+                      onChange={(e) =>
+                        handleItemChange(i, "required", e.target.checked)
+                      }
                       className="h-3 w-3 rounded border-gray-300"
                     />
                     Required
                   </label>
                   {form.items.length > 1 && (
-                    <button type="button" onClick={() => handleRemoveItem(i)} className="text-xs text-red-500 hover:text-red-700 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItem(i)}
+                      className="text-xs text-red-500 hover:text-red-700 shrink-0"
+                    >
                       ✕
                     </button>
                   )}
@@ -214,9 +267,19 @@ export default function ChecklistTemplatesPage() {
           </div>
 
           <div className="flex gap-2 justify-end">
-            <button type="button" onClick={resetForm} className="rounded-lg border px-4 py-2 text-sm hover:bg-muted">Cancel</button>
-            <button type="submit" disabled={saving} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
-              {saving ? 'Saving...' : editingId ? 'Update' : 'Create'}
+            <button
+              type="button"
+              onClick={resetForm}
+              className="rounded-lg border px-4 py-2 text-sm hover:bg-muted"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+            >
+              {saving ? "Saving..." : editingId ? "Update" : "Create"}
             </button>
           </div>
         </form>
@@ -239,20 +302,39 @@ export default function ChecklistTemplatesPage() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <h3 className="font-medium">{tpl.name}</h3>
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium capitalize">{tpl.scope}</span>
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium capitalize">
+                      {tpl.scope}
+                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground">{tpl.items.length} items · Created by {tpl.createdBy?.slice(0, 8)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {tpl.items.length} items · Created by{" "}
+                    {tpl.createdBy?.slice(0, 8)}
+                  </p>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => editTemplate(tpl)} className="rounded p-1 text-xs text-muted-foreground hover:text-foreground">✏️</button>
-                  <button onClick={() => handleDelete(tpl.id)} className="rounded p-1 text-xs text-red-500 hover:text-red-700">🗑️</button>
+                  <button
+                    onClick={() => editTemplate(tpl)}
+                    className="rounded p-1 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => handleDelete(tpl.id)}
+                    className="rounded p-1 text-xs text-red-500 hover:text-red-700"
+                  >
+                    🗑️
+                  </button>
                 </div>
               </div>
               {tpl.items.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1">
                   {tpl.items.map((item, i) => (
-                    <span key={i} className="rounded-full bg-muted/50 px-2 py-0.5 text-[10px] text-muted-foreground">
-                      {item.label}{item.required ? ' *' : ''}
+                    <span
+                      key={i}
+                      className="rounded-full bg-muted/50 px-2 py-0.5 text-[10px] text-muted-foreground"
+                    >
+                      {item.label}
+                      {item.required ? " *" : ""}
                     </span>
                   ))}
                 </div>

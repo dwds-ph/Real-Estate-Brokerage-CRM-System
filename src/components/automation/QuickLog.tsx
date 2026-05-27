@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { updateDocById } from '@/hooks/useFirestore';
-import { CommTemplate, CommLogEntry, Lead } from '@/types';
-import CommTemplateManager from './CommTemplateManager';
+import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { updateDocById } from "@/hooks/useFirestore";
+import { CommTemplate, CommLogEntry, Lead } from "@/types";
+import CommTemplateManager from "./CommTemplateManager";
 
 interface Props {
   leadId: string;
@@ -13,8 +13,8 @@ interface Props {
 export default function QuickLog({ leadId, lead, onLogged }: Props) {
   const { userProfile } = useAuth();
   const [showTemplates, setShowTemplates] = useState(false);
-  const [commText, setCommText] = useState('');
-  const [commType, setCommType] = useState<CommLogEntry['type']>('call');
+  const [commText, setCommText] = useState("");
+  const [commType, setCommType] = useState<CommLogEntry["type"]>("call");
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -39,23 +39,23 @@ export default function QuickLog({ leadId, lead, onLogged }: Props) {
         timestamp: Date.now(),
         by: userProfile.displayName,
       };
-      await updateDocById('leads', leadId, {
+      await updateDocById("leads", leadId, {
         communicationLog: [...(lead.communicationLog || []), entry],
         activityTimeline: [
           ...(lead.activityTimeline || []),
           {
-            action: `${commType} logged: ${commText.trim().slice(0, 50)}${commText.length > 50 ? '...' : ''}`,
+            action: `${commType} logged: ${commText.trim().slice(0, 50)}${commText.length > 50 ? "..." : ""}`,
             timestamp: Date.now(),
             by: userProfile.displayName,
           },
         ],
       });
-      setCommText('');
-      showToast('✅ Communication logged successfully');
+      setCommText("");
+      showToast("✅ Communication logged successfully");
       onLogged();
     } catch (err) {
       console.error(err);
-      showToast('❌ Failed to log communication');
+      showToast("❌ Failed to log communication");
     } finally {
       setSaving(false);
     }
@@ -76,7 +76,7 @@ export default function QuickLog({ leadId, lead, onLogged }: Props) {
       <div className="flex gap-2 mb-2">
         <select
           value={commType}
-          onChange={(e) => setCommType(e.target.value as CommLogEntry['type'])}
+          onChange={(e) => setCommType(e.target.value as CommLogEntry["type"])}
           className="rounded-lg border bg-background px-2 py-1 text-xs"
         >
           <option value="call">📞 Call</option>
@@ -90,20 +90,22 @@ export default function QuickLog({ leadId, lead, onLogged }: Props) {
           onChange={(e) => setCommText(e.target.value)}
           placeholder="Type a quick note..."
           className="flex-1 rounded-lg border bg-background px-3 py-1 text-sm"
-          onKeyDown={(e) => e.key === 'Enter' && handleQuickLog()}
+          onKeyDown={(e) => e.key === "Enter" && handleQuickLog()}
         />
         <button
           onClick={handleQuickLog}
           disabled={!commText.trim() || saving}
           className="rounded-lg bg-primary px-3 py-1 text-xs text-primary-foreground disabled:opacity-50"
         >
-          {saving ? '...' : 'Log'}
+          {saving ? "..." : "Log"}
         </button>
       </div>
 
       {/* Toast */}
       {toast && (
-        <div className="text-xs text-center text-green-600 dark:text-green-400 mt-1">{toast}</div>
+        <div className="text-xs text-center text-green-600 dark:text-green-400 mt-1">
+          {toast}
+        </div>
       )}
 
       {/* Template Manager Modal */}

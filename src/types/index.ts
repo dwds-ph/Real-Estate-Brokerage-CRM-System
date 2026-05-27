@@ -1,4 +1,4 @@
-export type UserRole = 'broker' | 'agent' | 'sub-agent';
+export type UserRole = "broker" | "agent" | "sub-agent";
 
 export interface AppUser {
   id: string;
@@ -19,9 +19,15 @@ export interface AppUser {
   createdAt: number;
 }
 
-export type LeadStatus = 'new' | 'contacted' | 'viewed' | 'negotiating' | 'closed' | 'lost';
-export type LeadSource = 'facebook' | 'manual' | 'referral' | 'walk-in';
-export type LeadScore = 'hot' | 'warm' | 'cold';
+export type LeadStatus =
+  | "new"
+  | "contacted"
+  | "viewed"
+  | "negotiating"
+  | "closed"
+  | "lost";
+export type LeadSource = "facebook" | "manual" | "referral" | "walk-in";
+export type LeadScore = "hot" | "warm" | "cold";
 
 export interface Lead {
   id: string;
@@ -44,7 +50,7 @@ export interface Lead {
 }
 
 export interface CommLogEntry {
-  type: 'call' | 'text' | 'meeting' | 'email';
+  type: "call" | "text" | "meeting" | "email";
   note: string;
   timestamp: number;
   by: string;
@@ -56,9 +62,19 @@ export interface ActivityEntry {
   by: string;
 }
 
-export type ListingStatus = 'available' | 'under-option' | 'sold' | 'rented' | 'off-market';
-export type PropertyType = 'condo' | 'house-lot' | 'lot-only' | 'commercial' | 'foreclosed';
-export type FloodRisk = 'low' | 'medium' | 'high' | 'unknown';
+export type ListingStatus =
+  | "available"
+  | "under-option"
+  | "sold"
+  | "rented"
+  | "off-market";
+export type PropertyType =
+  | "condo"
+  | "house-lot"
+  | "lot-only"
+  | "commercial"
+  | "foreclosed";
+export type FloodRisk = "low" | "medium" | "high" | "unknown";
 
 export interface Listing {
   id: string;
@@ -98,7 +114,7 @@ export interface Deal {
   clientName: string;
   clientContact: string;
   dealPrice: number;
-  status: 'pending' | 'closed' | 'cancelled';
+  status: "pending" | "closed" | "cancelled";
   commissionPlanId?: string;
   coBroking?: {
     enabled: boolean;
@@ -125,12 +141,12 @@ export interface Deal {
 }
 
 export interface TitleStatus {
-  stage: 'with-seller' | 'bir-cgt' | 'registry-deeds' | 'transfer' | 'complete';
-  documents: { name: string; status: 'pending' | 'submitted' | 'done' }[];
+  stage: "with-seller" | "bir-cgt" | "registry-deeds" | "transfer" | "complete";
+  documents: { name: string; status: "pending" | "submitted" | "done" }[];
   lastUpdate: number;
 }
 
-export type CommissionPlanType = 'fixed' | 'tiered' | 'referral' | 'escalating';
+export type CommissionPlanType = "fixed" | "tiered" | "referral" | "escalating";
 
 export interface CommissionPlan {
   id: string;
@@ -152,14 +168,14 @@ export interface Payout {
   agentId: string;
   brokerId: string;
   amount: number;
-  status: 'pending' | 'approved' | 'paid';
+  status: "pending" | "approved" | "paid";
   paidAt?: number;
   paidBy?: string;
   receiptUrl?: string;
   notes?: string;
 }
 
-export type ViewingStatus = 'scheduled' | 'done' | 'cancelled' | 'no-show';
+export type ViewingStatus = "scheduled" | "done" | "cancelled" | "no-show";
 
 export interface Viewing {
   id: string;
@@ -169,12 +185,12 @@ export interface Viewing {
   scheduledAt: number;
   status: ViewingStatus;
   checkIn?: {
-    method: 'qr' | 'photo';
+    method: "qr" | "photo";
     timestamp: number;
     photo?: string;
   };
   feedback?: {
-    interestLevel: 'low' | 'medium' | 'high';
+    interestLevel: "low" | "medium" | "high";
     concerns?: string;
     nextSteps?: string;
   };
@@ -192,18 +208,18 @@ export interface TaskItem {
   createdBy: string;
   title: string;
   description?: string;
-  priority: 'high' | 'medium' | 'low';
+  priority: "high" | "medium" | "low";
   dueDate?: number;
-  status: 'pending' | 'done';
-  recurring?: 'none' | 'daily' | 'weekly' | 'monthly';
+  status: "pending" | "done";
+  recurring?: "none" | "daily" | "weekly" | "monthly";
   relatedTo?: {
-    type: 'lead' | 'listing' | 'deal';
+    type: "lead" | "listing" | "deal";
     id: string;
   };
   createdAt: number;
 }
 
-export type ExpenseCategory = 'transportation' | 'meals' | 'ads' | 'misc';
+export type ExpenseCategory = "transportation" | "meals" | "ads" | "misc";
 
 export interface Expense {
   id: string;
@@ -245,7 +261,13 @@ export interface AuditLog {
 
 // ─── Phase 13: Document Vault ─────────────────────────────────────
 
-export type DocumentCategory = 'title' | 'tax' | 'contract' | 'identification' | 'hoa' | 'miscellaneous';
+export type DocumentCategory =
+  | "title"
+  | "tax"
+  | "contract"
+  | "identification"
+  | "hoa"
+  | "miscellaneous";
 
 export interface VaultDocument {
   id: string;
@@ -272,7 +294,7 @@ export interface DocumentRequest {
   toUserId: string;
   dealId?: string;
   description: string;
-  status: 'pending' | 'uploaded' | 'cancelled';
+  status: "pending" | "uploaded" | "cancelled";
   createdAt: number;
   respondedAt?: number;
   uploadedDocId?: string;
@@ -280,8 +302,13 @@ export interface DocumentRequest {
 
 // ─── Phase 14: Mortgage Tracker ───────────────────────────────────
 
-export type MortgageStage = 'application' | 'bank-evaluation' | 'bir-docs' | 'rod' | 'loan-release';
-export type MortgageStatus = 'ongoing' | 'approved' | 'rejected';
+export type MortgageStage =
+  | "application"
+  | "bank-evaluation"
+  | "bir-docs"
+  | "rod"
+  | "loan-release";
+export type MortgageStatus = "ongoing" | "approved" | "rejected";
 
 export interface Mortgage {
   id: string;
@@ -294,7 +321,7 @@ export interface Mortgage {
   stages: {
     key: MortgageStage;
     label: string;
-    status: 'pending' | 'in-progress' | 'done';
+    status: "pending" | "in-progress" | "done";
     startedAt?: number;
     completedAt?: number;
     notes?: string;
@@ -312,7 +339,11 @@ export interface BankProfile {
 
 // ─── Phase 17: Unified Calendar ───────────────────────────────────
 
-export type CalendarEventType = 'viewing' | 'task' | 'deal-milestone' | 'document-expiry';
+export type CalendarEventType =
+  | "viewing"
+  | "task"
+  | "deal-milestone"
+  | "document-expiry";
 
 export interface CalendarEvent {
   id: string;
@@ -332,7 +363,7 @@ export interface CalendarEvent {
 export interface CommTemplate {
   id: string;
   name: string;
-  type: 'call' | 'text' | 'meeting' | 'email';
+  type: "call" | "text" | "meeting" | "email";
   body: string;
   createdBy: string;
   createdAt: number;
@@ -341,7 +372,7 @@ export interface CommTemplate {
 export interface ChecklistTemplate {
   id: string;
   name: string;
-  scope: 'lead' | 'listing' | 'deal';
+  scope: "lead" | "listing" | "deal";
   items: { label: string; required: boolean }[];
   createdBy: string;
   createdAt: number;
@@ -351,7 +382,7 @@ export interface ChecklistInstance {
   id: string;
   templateId: string;
   templateName: string;
-  scopeType: 'lead' | 'listing' | 'deal';
+  scopeType: "lead" | "listing" | "deal";
   scopeId: string;
   items: { label: string; required: boolean; done: boolean }[];
   progress: number;
@@ -364,7 +395,7 @@ export interface Referral {
   referrerName: string;
   referrerContact: string;
   referralFee: number;
-  status: 'pending' | 'paid';
+  status: "pending" | "paid";
   paidAt?: number;
   createdAt: number;
 }

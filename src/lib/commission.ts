@@ -27,7 +27,10 @@ export interface CommissionBreakdown {
   totalDeductions: number;
 }
 
-export function calcGrossCommission(dealPrice: number, percent: number): number {
+export function calcGrossCommission(
+  dealPrice: number,
+  percent: number,
+): number {
   return dealPrice * (percent / 100);
 }
 
@@ -51,7 +54,9 @@ export function calcCreditableWithholding(dealPrice: number): number {
   return dealPrice * 0.01;
 }
 
-export function calculateFullCommission(input: CommissionInput): CommissionBreakdown {
+export function calculateFullCommission(
+  input: CommissionInput,
+): CommissionBreakdown {
   const gross = calcGrossCommission(input.dealPrice, input.commissionPercent);
   const vat = calcVat(gross);
   const withholding = calcWithholdingTax(gross);
@@ -94,15 +99,14 @@ export function calculateFullCommission(input: CommissionInput): CommissionBreak
 export function calcMonthlyAmortization(
   loanAmount: number,
   annualRate: number,
-  termYears: number
+  termYears: number,
 ): number {
   if (loanAmount <= 0 || termYears <= 0) return 0;
   const monthlyRate = annualRate / 100 / 12;
   const numPayments = termYears * 12;
   if (monthlyRate <= 0) return loanAmount / numPayments;
   return (
-    loanAmount *
-    (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+    (loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments))) /
     (Math.pow(1 + monthlyRate, numPayments) - 1)
   );
 }

@@ -1,28 +1,35 @@
-import { useState, useMemo } from 'react';
-import Calendar from 'react-calendar';
-import { useAuth } from '@/context/AuthContext';
-import { useCollection } from '@/hooks/useFirestore';
-import { Viewing, TaskItem, Deal, VaultDocument, CalendarEvent } from '@/types';
-import { getAggregatedEvents, getEventsForDay, EVENT_COLORS } from '@/services/calendarService';
-import { formatDateTime, cn } from '@/lib/utils';
-import 'react-calendar/dist/Calendar.css';
+import { useState, useMemo } from "react";
+import Calendar from "react-calendar";
+import { useAuth } from "@/context/AuthContext";
+import { useCollection } from "@/hooks/useFirestore";
+import { Viewing, TaskItem, Deal, VaultDocument, CalendarEvent } from "@/types";
+import {
+  getAggregatedEvents,
+  getEventsForDay,
+  EVENT_COLORS,
+} from "@/services/calendarService";
+import { formatDateTime, cn } from "@/lib/utils";
+import "react-calendar/dist/Calendar.css";
 
 type ValuePiece = Date | null;
 type CalendarValue = ValuePiece | [ValuePiece, ValuePiece];
 
 const TYPE_LABELS: Record<string, string> = {
-  viewing: 'Viewing',
-  task: 'Task',
-  'deal-milestone': 'Deal',
-  'document-expiry': 'Document',
+  viewing: "Viewing",
+  task: "Task",
+  "deal-milestone": "Deal",
+  "document-expiry": "Document",
 };
 
 export default function UnifiedCalendar() {
   const { userProfile } = useAuth();
-  const { data: viewings } = useCollection<Viewing>('viewings', []);
-  const { data: tasks } = useCollection<TaskItem>('tasks', []);
-  const { data: deals } = useCollection<Deal>('deals', []);
-  const { data: documents } = useCollection<VaultDocument>('vaultDocuments', []);
+  const { data: viewings } = useCollection<Viewing>("viewings", []);
+  const { data: tasks } = useCollection<TaskItem>("tasks", []);
+  const { data: deals } = useCollection<Deal>("deals", []);
+  const { data: documents } = useCollection<VaultDocument>(
+    "vaultDocuments",
+    [],
+  );
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -53,22 +60,22 @@ export default function UnifiedCalendar() {
   }, [allEvents]);
 
   const tileContent = ({ date, view }: { date: Date; view: string }) => {
-    if (view !== 'month') return null;
+    if (view !== "month") return null;
     const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
     const types = eventTypeMap[key];
     if (!types || types.size === 0) return null;
     const colors: Record<string, string> = {
-      viewing: 'bg-blue-500',
-      task: 'bg-orange-500',
-      'deal-milestone': 'bg-green-500',
-      'document-expiry': 'bg-red-500',
+      viewing: "bg-blue-500",
+      task: "bg-orange-500",
+      "deal-milestone": "bg-green-500",
+      "document-expiry": "bg-red-500",
     };
     return (
       <div className="flex justify-center gap-0.5 mt-0.5">
         {Array.from(types).map((t) => (
           <span
             key={t}
-            className={`inline-block h-1.5 w-1.5 rounded-full ${colors[t] || 'bg-gray-400'}`}
+            className={`inline-block h-1.5 w-1.5 rounded-full ${colors[t] || "bg-gray-400"}`}
           />
         ))}
       </div>
@@ -138,7 +145,10 @@ export default function UnifiedCalendar() {
         <div className="flex flex-wrap gap-3 text-xs">
           {Object.entries(EVENT_COLORS).map(([type, color]) => (
             <div key={type} className="flex items-center gap-1.5">
-              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
+              <span
+                className="inline-block h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: color }}
+              />
               <span className="capitalize text-muted-foreground">
                 {TYPE_LABELS[type] || type}
               </span>
@@ -157,11 +167,11 @@ export default function UnifiedCalendar() {
                 key={ev.id}
                 href={ev.sourceUrl}
                 className={cn(
-                  'block rounded-lg border-l-4 bg-card p-3 hover:bg-muted/50 transition-colors',
-                  ev.type === 'viewing' && 'border-l-blue-500',
-                  ev.type === 'task' && 'border-l-orange-500',
-                  ev.type === 'deal-milestone' && 'border-l-green-500',
-                  ev.type === 'document-expiry' && 'border-l-red-500',
+                  "block rounded-lg border-l-4 bg-card p-3 hover:bg-muted/50 transition-colors",
+                  ev.type === "viewing" && "border-l-blue-500",
+                  ev.type === "task" && "border-l-orange-500",
+                  ev.type === "deal-milestone" && "border-l-green-500",
+                  ev.type === "document-expiry" && "border-l-red-500",
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -178,7 +188,7 @@ export default function UnifiedCalendar() {
                 ) : (
                   <p className="text-xs text-muted-foreground mt-1">
                     {formatDateTime(ev.start)}
-                    {ev.end ? ` - ${formatDateTime(ev.end)}` : ''}
+                    {ev.end ? ` - ${formatDateTime(ev.end)}` : ""}
                   </p>
                 )}
               </a>

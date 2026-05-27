@@ -1,6 +1,13 @@
-import { createDoc } from '@/hooks/useFirestore';
+import { createDoc } from "@/hooks/useFirestore";
 
-export type NotificationType = 'lead' | 'viewing' | 'commission' | 'task' | 'mention' | 'deal' | 'general';
+export type NotificationType =
+  | "lead"
+  | "viewing"
+  | "commission"
+  | "task"
+  | "mention"
+  | "deal"
+  | "general";
 
 export interface CreateNotificationInput {
   userId: string;
@@ -18,8 +25,10 @@ export interface CreateNotificationInput {
  * Used for in-app notifications. For FCM push, the client-side
  * messaging service listens to the notifications collection.
  */
-export async function createNotification(input: CreateNotificationInput): Promise<string> {
-  return createDoc('notifications', {
+export async function createNotification(
+  input: CreateNotificationInput,
+): Promise<string> {
+  return createDoc("notifications", {
     userId: input.userId,
     type: input.type,
     title: input.title,
@@ -38,12 +47,12 @@ export async function notifyUsers(
   type: NotificationType,
   title: string,
   body: string,
-  data?: { link?: string; relatedId?: string }
+  data?: { link?: string; relatedId?: string },
 ): Promise<string[]> {
   return Promise.all(
     userIds.map((userId) =>
-      createNotification({ userId, type, title, body, data })
-    )
+      createNotification({ userId, type, title, body, data }),
+    ),
   );
 }
 
@@ -55,7 +64,7 @@ export async function notifyBroker(
   type: NotificationType,
   title: string,
   body: string,
-  data?: { link?: string; relatedId?: string }
+  data?: { link?: string; relatedId?: string },
 ): Promise<string> {
   return createNotification({ userId: brokerId, type, title, body, data });
 }
@@ -68,7 +77,7 @@ export async function notifyAgent(
   type: NotificationType,
   title: string,
   body: string,
-  data?: { link?: string; relatedId?: string }
+  data?: { link?: string; relatedId?: string },
 ): Promise<string> {
   return createNotification({ userId: agentId, type, title, body, data });
 }

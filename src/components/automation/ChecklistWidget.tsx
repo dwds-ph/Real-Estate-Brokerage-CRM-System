@@ -1,27 +1,33 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { ChecklistInstance, ChecklistTemplate } from '@/types';
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { ChecklistInstance, ChecklistTemplate } from "@/types";
 import {
   fetchChecklistTemplates,
   fetchChecklistInstances,
   createChecklistInstance,
   updateChecklistInstance,
-} from '@/services/checklistService';
+} from "@/services/checklistService";
 
 interface Props {
-  scopeType: 'lead' | 'listing' | 'deal';
+  scopeType: "lead" | "listing" | "deal";
   scopeId: string;
   compact?: boolean;
 }
 
-export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) {
+export default function ChecklistWidget({
+  scopeType,
+  scopeId,
+  compact,
+}: Props) {
   const { userProfile } = useAuth();
   const [templates, setTemplates] = useState<ChecklistTemplate[]>([]);
   const [instances, setInstances] = useState<ChecklistInstance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
+    null,
+  );
   const [creating, setCreating] = useState(false);
 
   const loadData = useCallback(async () => {
@@ -35,7 +41,7 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
       setTemplates(tpls.filter((t) => t.scope === scopeType));
       setInstances(insts);
     } catch (err) {
-      setError('Failed to load checklists');
+      setError("Failed to load checklists");
       console.error(err);
     } finally {
       setLoading(false);
@@ -79,7 +85,8 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
       idx === itemIndex ? { ...item, done: !item.done } : item,
     );
     const doneCount = newItems.filter((i) => i.done).length;
-    const progress = newItems.length > 0 ? Math.round((doneCount / newItems.length) * 100) : 0;
+    const progress =
+      newItems.length > 0 ? Math.round((doneCount / newItems.length) * 100) : 0;
 
     try {
       await updateChecklistInstance(instanceId, { items: newItems, progress });
@@ -104,8 +111,12 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
           instances.map((inst) => (
             <div key={inst.id} className="space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium truncate">{inst.templateName}</span>
-                <span className="text-[10px] text-muted-foreground">{inst.progress}%</span>
+                <span className="text-xs font-medium truncate">
+                  {inst.templateName}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {inst.progress}%
+                </span>
               </div>
               <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                 <div
@@ -128,7 +139,7 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
           onClick={() => setShowPicker(!showPicker)}
           className="text-xs text-primary hover:underline"
         >
-          {showPicker ? 'Cancel' : '+ Add Checklist'}
+          {showPicker ? "Cancel" : "+ Add Checklist"}
         </button>
       </div>
 
@@ -138,7 +149,7 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
       {showPicker && (
         <div className="mb-4 p-3 rounded-lg bg-muted/50 space-y-2">
           <select
-            value={selectedTemplateId || ''}
+            value={selectedTemplateId || ""}
             onChange={(e) => setSelectedTemplateId(e.target.value || null)}
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
           >
@@ -154,7 +165,7 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
             disabled={!selectedTemplateId || creating}
             className="w-full rounded-lg bg-primary px-3 py-1.5 text-xs text-primary-foreground disabled:opacity-50"
           >
-            {creating ? 'Adding...' : 'Add Checklist'}
+            {creating ? "Adding..." : "Add Checklist"}
           </button>
         </div>
       )}
@@ -176,7 +187,9 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
               <div key={inst.id} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium">{inst.templateName}</h3>
-                  <span className="text-xs text-muted-foreground">{inst.progress}%</span>
+                  <span className="text-xs text-muted-foreground">
+                    {inst.progress}%
+                  </span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                   <div
@@ -184,7 +197,9 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
                     style={{ width: `${inst.progress}%` }}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground">{doneCount}/{inst.items.length} done</p>
+                <p className="text-xs text-muted-foreground">
+                  {doneCount}/{inst.items.length} done
+                </p>
                 <div className="space-y-1.5">
                   {inst.items.map((item, idx) => (
                     <label
@@ -198,10 +213,12 @@ export default function ChecklistWidget({ scopeType, scopeId, compact }: Props) 
                         className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                       />
                       <span
-                        className={`text-sm ${item.done ? 'line-through text-muted-foreground' : ''}`}
+                        className={`text-sm ${item.done ? "line-through text-muted-foreground" : ""}`}
                       >
                         {item.label}
-                        {item.required && <span className="text-red-500 ml-1">*</span>}
+                        {item.required && (
+                          <span className="text-red-500 ml-1">*</span>
+                        )}
                       </span>
                     </label>
                   ))}

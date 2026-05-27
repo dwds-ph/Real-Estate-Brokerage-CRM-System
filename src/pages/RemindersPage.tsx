@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface ReminderPrefs {
   followUpInactiveLeads: boolean;
@@ -9,7 +9,7 @@ interface ReminderPrefs {
   documentExpiryDays: number;
 }
 
-const STORAGE_KEY = 'smart-reminder-prefs';
+const STORAGE_KEY = "smart-reminder-prefs";
 
 function loadPrefs(): ReminderPrefs {
   try {
@@ -72,20 +72,23 @@ export default function RemindersPage() {
           <div>
             <p className="text-sm font-medium">Follow up with inactive leads</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Remind you to reach out to leads who haven't been contacted recently
+              Remind you to reach out to leads who haven't been contacted
+              recently
             </p>
           </div>
           <button
-            onClick={() => toggle('followUpInactiveLeads')}
+            onClick={() => toggle("followUpInactiveLeads")}
             className={cn(
-              'inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ml-4',
-              prefs.followUpInactiveLeads ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600',
+              "inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ml-4",
+              prefs.followUpInactiveLeads
+                ? "bg-primary"
+                : "bg-gray-300 dark:bg-gray-600",
             )}
           >
             <span
               className={cn(
-                'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
-                prefs.followUpInactiveLeads ? 'translate-x-6' : 'translate-x-1',
+                "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                prefs.followUpInactiveLeads ? "translate-x-6" : "translate-x-1",
               )}
             />
           </button>
@@ -99,16 +102,20 @@ export default function RemindersPage() {
             </p>
           </div>
           <button
-            onClick={() => toggle('viewingFeedbackReminders')}
+            onClick={() => toggle("viewingFeedbackReminders")}
             className={cn(
-              'inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ml-4',
-              prefs.viewingFeedbackReminders ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600',
+              "inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ml-4",
+              prefs.viewingFeedbackReminders
+                ? "bg-primary"
+                : "bg-gray-300 dark:bg-gray-600",
             )}
           >
             <span
               className={cn(
-                'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
-                prefs.viewingFeedbackReminders ? 'translate-x-6' : 'translate-x-1',
+                "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                prefs.viewingFeedbackReminders
+                  ? "translate-x-6"
+                  : "translate-x-1",
               )}
             />
           </button>
@@ -122,16 +129,18 @@ export default function RemindersPage() {
             </p>
           </div>
           <button
-            onClick={() => toggle('documentExpiryAlerts')}
+            onClick={() => toggle("documentExpiryAlerts")}
             className={cn(
-              'inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ml-4',
-              prefs.documentExpiryAlerts ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600',
+              "inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ml-4",
+              prefs.documentExpiryAlerts
+                ? "bg-primary"
+                : "bg-gray-300 dark:bg-gray-600",
             )}
           >
             <span
               className={cn(
-                'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
-                prefs.documentExpiryAlerts ? 'translate-x-6' : 'translate-x-1',
+                "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                prefs.documentExpiryAlerts ? "translate-x-6" : "translate-x-1",
               )}
             />
           </button>
@@ -151,7 +160,9 @@ export default function RemindersPage() {
             min={1}
             max={30}
             value={prefs.leadReminderDays}
-            onChange={(e) => handleChange('leadReminderDays', parseInt(e.target.value) || 3)}
+            onChange={(e) =>
+              handleChange("leadReminderDays", parseInt(e.target.value) || 3)
+            }
             className="w-24 rounded-lg border bg-background px-3 py-2 text-sm"
           />
           <p className="text-xs text-muted-foreground mt-1">
@@ -168,7 +179,9 @@ export default function RemindersPage() {
             min={1}
             max={30}
             value={prefs.documentExpiryDays}
-            onChange={(e) => handleChange('documentExpiryDays', parseInt(e.target.value) || 7)}
+            onChange={(e) =>
+              handleChange("documentExpiryDays", parseInt(e.target.value) || 7)
+            }
             className="w-24 rounded-lg border bg-background px-3 py-2 text-sm"
           />
           <p className="text-xs text-muted-foreground mt-1">
@@ -178,7 +191,9 @@ export default function RemindersPage() {
       </div>
 
       {saved && (
-        <p className="text-sm text-green-600 dark:text-green-400">Preferences saved!</p>
+        <p className="text-sm text-green-600 dark:text-green-400">
+          Preferences saved!
+        </p>
       )}
 
       <button

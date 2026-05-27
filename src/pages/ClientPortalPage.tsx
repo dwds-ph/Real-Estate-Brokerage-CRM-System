@@ -1,14 +1,18 @@
-import { useParams } from 'react-router-dom';
-import { useDoc } from '@/hooks/useFirestore';
-import { Lead } from '@/types';
-import { formatDate, getLeadStatusColor, cn } from '@/lib/utils';
+import { useParams } from "react-router-dom";
+import { useDoc } from "@/hooks/useFirestore";
+import { Lead } from "@/types";
+import { formatDate, getLeadStatusColor, cn } from "@/lib/utils";
 
 export default function ClientPortalPage() {
   const { leadToken } = useParams();
-  const { data: lead, loading } = useDoc<Lead>('leads', leadToken);
+  const { data: lead, loading } = useDoc<Lead>("leads", leadToken);
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
   }
 
   if (!lead) {
@@ -16,7 +20,9 @@ export default function ClientPortalPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold">Not Found</h1>
-          <p className="text-muted-foreground">This link is invalid or expired.</p>
+          <p className="text-muted-foreground">
+            This link is invalid or expired.
+          </p>
         </div>
       </div>
     );
@@ -38,7 +44,14 @@ export default function ClientPortalPage() {
           <div className="rounded-lg bg-muted p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Status</span>
-              <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', getLeadStatusColor(lead.status))}>{lead.status}</span>
+              <span
+                className={cn(
+                  "rounded-full px-2 py-0.5 text-xs font-medium",
+                  getLeadStatusColor(lead.status),
+                )}
+              >
+                {lead.status}
+              </span>
             </div>
             {lead.propertyInterest && (
               <div className="flex justify-between text-sm">
@@ -66,21 +79,27 @@ export default function ClientPortalPage() {
                 <span className="text-2xl">📅</span>
                 <div>
                   <p className="text-sm font-medium">Schedule a Viewing</p>
-                  <p className="text-xs text-muted-foreground">Contact your agent to set a property viewing</p>
+                  <p className="text-xs text-muted-foreground">
+                    Contact your agent to set a property viewing
+                  </p>
                 </div>
               </div>
               <div className="rounded-lg border p-4 flex items-center gap-3">
                 <span className="text-2xl">💰</span>
                 <div>
                   <p className="text-sm font-medium">Financing Options</p>
-                  <p className="text-xs text-muted-foreground">Ask about Pag-IBIG and bank financing</p>
+                  <p className="text-xs text-muted-foreground">
+                    Ask about Pag-IBIG and bank financing
+                  </p>
                 </div>
               </div>
               <div className="rounded-lg border p-4 flex items-center gap-3">
                 <span className="text-2xl">📋</span>
                 <div>
                   <p className="text-sm font-medium">Property Documents</p>
-                  <p className="text-xs text-muted-foreground">Your agent will guide you through requirements</p>
+                  <p className="text-xs text-muted-foreground">
+                    Your agent will guide you through requirements
+                  </p>
                 </div>
               </div>
             </div>

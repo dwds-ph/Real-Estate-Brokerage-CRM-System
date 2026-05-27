@@ -5,21 +5,21 @@ import {
   TaskItem,
   Deal,
   VaultDocument,
-} from '@/types';
+} from "@/types";
 
 type DocWithId<T> = T & { id: string };
 
 const EVENT_COLORS: Record<CalendarEventType, string> = {
-  viewing: '#3b82f6',
-  task: '#f97316',
-  'deal-milestone': '#22c55e',
-  'document-expiry': '#ef4444',
+  viewing: "#3b82f6",
+  task: "#f97316",
+  "deal-milestone": "#22c55e",
+  "document-expiry": "#ef4444",
 };
 
 function viewingToEvent(v: DocWithId<Viewing>): CalendarEvent {
   return {
     id: `viewing-${v.id}`,
-    type: 'viewing',
+    type: "viewing",
     title: `Viewing: ${v.leadId} @ ${v.listingId}`,
     start: v.scheduledAt,
     end: v.scheduledAt + 3600000, // 1 hour default
@@ -35,7 +35,7 @@ function taskToEvent(t: DocWithId<TaskItem>): CalendarEvent | null {
   if (!t.dueDate) return null;
   return {
     id: `task-${t.id}`,
-    type: 'task',
+    type: "task",
     title: t.title,
     start: t.dueDate,
     end: undefined,
@@ -51,28 +51,28 @@ function dealToEvents(d: DocWithId<Deal>): CalendarEvent[] {
   const events: CalendarEvent[] = [];
   events.push({
     id: `deal-created-${d.id}`,
-    type: 'deal-milestone',
+    type: "deal-milestone",
     title: `Deal Created: ${d.clientName}`,
     start: d.createdAt,
     end: undefined,
     allDay: true,
     sourceId: d.id,
     sourceUrl: `/deals`,
-    color: EVENT_COLORS['deal-milestone'],
+    color: EVENT_COLORS["deal-milestone"],
     metadata: { status: d.status, price: d.dealPrice },
   });
-  if (d.status === 'closed' && d.updatedAt) {
+  if (d.status === "closed" && d.updatedAt) {
     events.push({
       id: `deal-closed-${d.id}`,
-      type: 'deal-milestone',
+      type: "deal-milestone",
       title: `Deal Closed: ${d.clientName}`,
       start: d.updatedAt,
       end: undefined,
       allDay: true,
       sourceId: d.id,
       sourceUrl: `/deals`,
-      color: EVENT_COLORS['deal-milestone'],
-      metadata: { status: 'closed', price: d.dealPrice },
+      color: EVENT_COLORS["deal-milestone"],
+      metadata: { status: "closed", price: d.dealPrice },
     });
   }
   return events;
@@ -82,14 +82,14 @@ function docToEvent(doc: DocWithId<VaultDocument>): CalendarEvent | null {
   if (!doc.expiryDate) return null;
   return {
     id: `doc-expiry-${doc.id}`,
-    type: 'document-expiry',
+    type: "document-expiry",
     title: `Document Expiry: ${doc.name}`,
     start: doc.expiryDate,
     end: undefined,
     allDay: true,
     sourceId: doc.id,
     sourceUrl: `/vault`,
-    color: EVENT_COLORS['document-expiry'],
+    color: EVENT_COLORS["document-expiry"],
     metadata: { category: doc.category },
   };
 }
@@ -126,7 +126,10 @@ export function getAggregatedEvents(
   return events;
 }
 
-export function getEventsForDay(events: CalendarEvent[], day: Date): CalendarEvent[] {
+export function getEventsForDay(
+  events: CalendarEvent[],
+  day: Date,
+): CalendarEvent[] {
   const dayStart = new Date(day);
   dayStart.setHours(0, 0, 0, 0);
   const dayEnd = new Date(day);

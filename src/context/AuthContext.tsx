@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import {
   User,
   onAuthStateChanged,
@@ -8,17 +14,23 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   sendPasswordResetEmail,
-} from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
-import { AppUser } from '@/types';
+} from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+import { AppUser } from "@/types";
 
 interface AuthContextType {
   user: User | null;
   userProfile: AppUser | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, role: string, displayName: string, brokerId?: string) => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    role: string,
+    displayName: string,
+    brokerId?: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -33,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (uid: string) => {
-    const docSnap = await getDoc(doc(db, 'users', uid));
+    const docSnap = await getDoc(doc(db, "users", uid));
     if (docSnap.exists()) {
       setUserProfile(docSnap.data() as AppUser);
     }
@@ -56,18 +68,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signInWithEmailAndPassword(auth, email, password);
   };
 
-  const register = async (email: string, password: string, role: string, displayName: string, brokerId?: string) => {
+  const register = async (
+    email: string,
+    password: string,
+    role: string,
+    displayName: string,
+    brokerId?: string,
+  ) => {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const userDoc: AppUser = {
       id: cred.user.uid,
-      role: role as AppUser['role'],
+      role: role as AppUser["role"],
       brokerId,
       displayName,
       email,
       isActive: true,
       createdAt: Date.now(),
     };
-    await setDoc(doc(db, 'users', cred.user.uid), userDoc);
+    await setDoc(doc(db, "users", cred.user.uid), userDoc);
   };
 
   const logout = async () => {
@@ -89,7 +107,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, userProfile, loading, login, register, logout, loginWithGoogle, resetPassword, refreshProfile }}
+      value={{
+        user,
+        userProfile,
+        loading,
+        login,
+        register,
+        logout,
+        loginWithGoogle,
+        resetPassword,
+        refreshProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -98,6 +126,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 }

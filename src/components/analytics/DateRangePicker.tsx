@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 interface DateRange {
   from: string;
@@ -11,44 +11,63 @@ interface DateRangePickerProps {
 }
 
 const PRESETS = [
-  { label: 'This Month', getValue: () => getMonthRange() },
-  { label: 'Last Month', getValue: () => getLastMonthRange() },
-  { label: 'Last 90 Days', getValue: () => get90DayRange() },
-  { label: 'This Year', getValue: () => getYearRange() },
-  { label: 'All Time', getValue: () => ({ from: '2000-01-01', to: new Date().toISOString().split('T')[0] }) },
+  { label: "This Month", getValue: () => getMonthRange() },
+  { label: "Last Month", getValue: () => getLastMonthRange() },
+  { label: "Last 90 Days", getValue: () => get90DayRange() },
+  { label: "This Year", getValue: () => getYearRange() },
+  {
+    label: "All Time",
+    getValue: () => ({
+      from: "2000-01-01",
+      to: new Date().toISOString().split("T")[0],
+    }),
+  },
 ];
 
 function getMonthRange(): DateRange {
   const now = new Date();
-  const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+  const from = new Date(now.getFullYear(), now.getMonth(), 1)
+    .toISOString()
+    .split("T")[0];
+  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    .toISOString()
+    .split("T")[0];
   return { from, to };
 }
 
 function getLastMonthRange(): DateRange {
   const now = new Date();
-  const from = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0];
-  const to = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split('T')[0];
+  const from = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    .toISOString()
+    .split("T")[0];
+  const to = new Date(now.getFullYear(), now.getMonth(), 0)
+    .toISOString()
+    .split("T")[0];
   return { from, to };
 }
 
 function get90DayRange(): DateRange {
-  const to = new Date().toISOString().split('T')[0];
-  const from = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const to = new Date().toISOString().split("T")[0];
+  const from = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
   return { from, to };
 }
 
 function getYearRange(): DateRange {
   const now = new Date();
-  const from = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0];
-  const to = now.toISOString().split('T')[0];
+  const from = new Date(now.getFullYear(), 0, 1).toISOString().split("T")[0];
+  const to = now.toISOString().split("T")[0];
   return { from, to };
 }
 
-export default function DateRangePicker({ value, onChange }: DateRangePickerProps) {
+export default function DateRangePicker({
+  value,
+  onChange,
+}: DateRangePickerProps) {
   const [showPresets, setShowPresets] = useState(false);
 
-  const handlePreset = (preset: typeof PRESETS[number]) => {
+  const handlePreset = (preset: (typeof PRESETS)[number]) => {
     onChange(preset.getValue());
     setShowPresets(false);
   };

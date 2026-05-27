@@ -1,8 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { uploadVaultFile, createVaultDocument, UploadProgress, getCategoryInfo, DOCUMENT_CATEGORIES, formatFileSize } from '@/services/documentVault';
-import { DocumentCategory } from '@/types';
-import { cn } from '@/lib/utils';
+import { useState, useRef, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import {
+  uploadVaultFile,
+  createVaultDocument,
+  UploadProgress,
+  getCategoryInfo,
+  DOCUMENT_CATEGORIES,
+  formatFileSize,
+} from "@/services/documentVault";
+import { DocumentCategory } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface DocumentUploadProps {
   open: boolean;
@@ -22,29 +29,31 @@ export default function DocumentUpload({
   prefillStage,
 }: DocumentUploadProps) {
   const { userProfile } = useAuth();
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState<DocumentCategory>('miscellaneous');
-  const [dealId, setDealId] = useState(prefillDealId || '');
-  const [listingId, setListingId] = useState(prefillListingId || '');
-  const [stage, setStage] = useState(prefillStage || '');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [notes, setNotes] = useState('');
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState<DocumentCategory>("miscellaneous");
+  const [dealId, setDealId] = useState(prefillDealId || "");
+  const [listingId, setListingId] = useState(prefillListingId || "");
+  const [stage, setStage] = useState(prefillStage || "");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [notes, setNotes] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
       setTimeout(() => {
-        setName('');
-        setCategory('miscellaneous');
-        setDealId(prefillDealId || '');
-        setListingId(prefillListingId || '');
-        setStage(prefillStage || '');
-        setExpiryDate('');
-        setNotes('');
+        setName("");
+        setCategory("miscellaneous");
+        setDealId(prefillDealId || "");
+        setListingId(prefillListingId || "");
+        setStage(prefillStage || "");
+        setExpiryDate("");
+        setNotes("");
         setFile(null);
         setUploading(false);
         setUploadProgress(null);
@@ -59,7 +68,7 @@ export default function DocumentUpload({
       setFile(selected);
       if (!name) {
         // Auto-fill name from filename (without extension)
-        setName(selected.name.replace(/\.[^/.]+$/, ''));
+        setName(selected.name.replace(/\.[^/.]+$/, ""));
       }
     }
   };
@@ -72,11 +81,17 @@ export default function DocumentUpload({
     setUploading(true);
 
     try {
-      const fileUrl = await uploadVaultFile(file, userProfile.id, (progress) => {
-        setUploadProgress(progress);
-      });
+      const fileUrl = await uploadVaultFile(
+        file,
+        userProfile.id,
+        (progress) => {
+          setUploadProgress(progress);
+        },
+      );
 
-      const expiryTimestamp = expiryDate ? new Date(expiryDate).getTime() : undefined;
+      const expiryTimestamp = expiryDate
+        ? new Date(expiryDate).getTime()
+        : undefined;
 
       await createVaultDocument({
         dealId: dealId || undefined,
@@ -84,7 +99,7 @@ export default function DocumentUpload({
         stage: stage || undefined,
         name,
         fileUrl,
-        fileType: file.type || 'application/octet-stream',
+        fileType: file.type || "application/octet-stream",
         fileSize: file.size,
         category,
         uploadedBy: userProfile.id,
@@ -96,7 +111,7 @@ export default function DocumentUpload({
       onSuccess();
       onClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Upload failed';
+      const message = err instanceof Error ? err.message : "Upload failed";
       setError(message);
     } finally {
       setUploading(false);
@@ -132,13 +147,17 @@ export default function DocumentUpload({
               required
             />
             {file && (
-              <p className="mt-1 text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {formatFileSize(file.size)}
+              </p>
             )}
           </div>
 
           {/* Name */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Document Name *</label>
+            <label className="mb-1 block text-sm font-medium">
+              Document Name *
+            </label>
             <input
               type="text"
               value={name}
@@ -165,7 +184,7 @@ export default function DocumentUpload({
             </select>
             <span
               className={cn(
-                'mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium',
+                "mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium",
                 catInfo.color,
               )}
             >
@@ -186,7 +205,9 @@ export default function DocumentUpload({
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">Listing ID</label>
+              <label className="mb-1 block text-sm font-medium">
+                Listing ID
+              </label>
               <input
                 type="text"
                 value={listingId}
@@ -210,7 +231,9 @@ export default function DocumentUpload({
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">Expiry Date</label>
+              <label className="mb-1 block text-sm font-medium">
+                Expiry Date
+              </label>
               <input
                 type="date"
                 value={expiryDate}
@@ -238,7 +261,7 @@ export default function DocumentUpload({
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>Uploading... {uploadProgress.progress}%</span>
                 <span>
-                  {formatFileSize(uploadProgress.bytesTransferred)} /{' '}
+                  {formatFileSize(uploadProgress.bytesTransferred)} /{" "}
                   {formatFileSize(uploadProgress.totalBytes)}
                 </span>
               </div>
@@ -273,7 +296,7 @@ export default function DocumentUpload({
               className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               disabled={uploading || !file || !name}
             >
-              {uploading ? 'Uploading...' : 'Upload'}
+              {uploading ? "Uploading..." : "Upload"}
             </button>
           </div>
         </form>

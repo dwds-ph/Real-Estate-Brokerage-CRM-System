@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface SkeletonProps {
   className?: string;
@@ -11,7 +11,7 @@ function SkeletonBlock({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        'animate-pulse rounded-md bg-gray-200 dark:bg-gray-700',
+        "animate-pulse rounded-md bg-gray-200 dark:bg-gray-700",
         className,
       )}
     />
@@ -23,7 +23,7 @@ function SkeletonBlock({ className }: SkeletonProps) {
  */
 export function SkeletonCard({ className }: SkeletonProps) {
   return (
-    <div className={cn('rounded-lg border bg-card p-4 space-y-3', className)}>
+    <div className={cn("rounded-lg border bg-card p-4 space-y-3", className)}>
       <div className="flex items-center gap-3">
         <SkeletonBlock className="h-10 w-10 rounded-full" />
         <div className="space-y-2 flex-1">
@@ -49,7 +49,7 @@ export function SkeletonTableRow({ cols = 4 }: { cols?: number }) {
     <tr className="border-b">
       {Array.from({ length: cols }).map((_, i) => (
         <td key={i} className="py-3 px-2">
-          <SkeletonBlock className={cn('h-4', i === 0 ? 'w-3/4' : 'w-1/2')} />
+          <SkeletonBlock className={cn("h-4", i === 0 ? "w-3/4" : "w-1/2")} />
         </td>
       ))}
     </tr>
@@ -59,7 +59,13 @@ export function SkeletonTableRow({ cols = 4 }: { cols?: number }) {
 /**
  * Table skeleton — full table with header and rows.
  */
-export function SkeletonTable({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
+export function SkeletonTable({
+  rows = 5,
+  cols = 4,
+}: {
+  rows?: number;
+  cols?: number;
+}) {
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
       <table className="w-full">

@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
-import { Lead, Deal, AppUser } from '@/types';
-import { formatCurrency } from '@/lib/utils';
+import { useMemo, useState } from "react";
+import { Lead, Deal, AppUser } from "@/types";
+import { formatCurrency } from "@/lib/utils";
 
 interface AgentStats {
   agentId: string;
@@ -21,7 +21,14 @@ interface AgentPerformanceBoardProps {
   isBroker?: boolean;
 }
 
-type SortKey = keyof Pick<AgentStats, 'agentName' | 'leadsAcquired' | 'dealsClosed' | 'commissionEarned' | 'conversionRate'>;
+type SortKey = keyof Pick<
+  AgentStats,
+  | "agentName"
+  | "leadsAcquired"
+  | "dealsClosed"
+  | "commissionEarned"
+  | "conversionRate"
+>;
 
 function SortHeader({
   label,
@@ -44,7 +51,7 @@ function SortHeader({
       <div className="flex items-center gap-1">
         {label}
         {currentSortKey === sk && (
-          <span className="text-primary">{sortAsc ? '↑' : '↓'}</span>
+          <span className="text-primary">{sortAsc ? "↑" : "↓"}</span>
         )}
       </div>
     </th>
@@ -59,7 +66,7 @@ export default function AgentPerformanceBoard({
   currentUserId,
   isBroker,
 }: AgentPerformanceBoardProps) {
-  const [sortKey, setSortKey] = useState<SortKey>('dealsClosed');
+  const [sortKey, setSortKey] = useState<SortKey>("dealsClosed");
   const [sortAsc, setSortAsc] = useState(false);
 
   const stats = useMemo(() => {
@@ -92,21 +99,23 @@ export default function AgentPerformanceBoard({
     });
 
     // Count deals and commission per agent
-    const closedDeals = deals.filter((d) => d.status === 'closed');
+    const closedDeals = deals.filter((d) => d.status === "closed");
     closedDeals.forEach((deal) => {
       const agentId = deal.createdBy;
       if (agentId && agentStats.has(agentId)) {
         const s = agentStats.get(agentId)!;
         s.dealsClosed++;
-        s.commissionEarned += deal.commission?.agentShare || (deal.dealPrice * 0.03 * 0.5);
+        s.commissionEarned +=
+          deal.commission?.agentShare || deal.dealPrice * 0.03 * 0.5;
       }
     });
 
     // Calculate derived metrics
     agentStats.forEach((s) => {
-      s.conversionRate = s.leadsAcquired > 0
-        ? Math.round((s.dealsClosed / s.leadsAcquired) * 100)
-        : 0;
+      s.conversionRate =
+        s.leadsAcquired > 0
+          ? Math.round((s.dealsClosed / s.leadsAcquired) * 100)
+          : 0;
       s.avgResponseTime = 45; // placeholder — real data would come from communication log
     });
 
@@ -114,16 +123,19 @@ export default function AgentPerformanceBoard({
   }, [leads, deals, agents, currentUserId, isBroker]);
 
   // Filter for agent view
-  const visibleStats = isBroker ? stats : stats.filter((s) => s.agentId === currentUserId);
+  const visibleStats = isBroker
+    ? stats
+    : stats.filter((s) => s.agentId === currentUserId);
 
   // Sorting
   const sorted = useMemo(() => {
     return [...visibleStats].sort((a, b) => {
       const aVal = a[sortKey];
       const bVal = b[sortKey];
-      const cmp = typeof aVal === 'string'
-        ? (aVal as string).localeCompare(bVal as string)
-        : (aVal as number) - (bVal as number);
+      const cmp =
+        typeof aVal === "string"
+          ? (aVal as string).localeCompare(bVal as string)
+          : (aVal as number) - (bVal as number);
       return sortAsc ? cmp : -cmp;
     });
   }, [visibleStats, sortKey, sortAsc]);
@@ -158,11 +170,41 @@ export default function AgentPerformanceBoard({
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b">
-            <SortHeader label="Agent" sortKey="agentName" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
-            <SortHeader label="Leads" sortKey="leadsAcquired" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
-            <SortHeader label="Deals Closed" sortKey="dealsClosed" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
-            <SortHeader label="Commission" sortKey="commissionEarned" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
-            <SortHeader label="Conversion Rate" sortKey="conversionRate" currentSortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+            <SortHeader
+              label="Agent"
+              sortKey="agentName"
+              currentSortKey={sortKey}
+              sortAsc={sortAsc}
+              onSort={handleSort}
+            />
+            <SortHeader
+              label="Leads"
+              sortKey="leadsAcquired"
+              currentSortKey={sortKey}
+              sortAsc={sortAsc}
+              onSort={handleSort}
+            />
+            <SortHeader
+              label="Deals Closed"
+              sortKey="dealsClosed"
+              currentSortKey={sortKey}
+              sortAsc={sortAsc}
+              onSort={handleSort}
+            />
+            <SortHeader
+              label="Commission"
+              sortKey="commissionEarned"
+              currentSortKey={sortKey}
+              sortAsc={sortAsc}
+              onSort={handleSort}
+            />
+            <SortHeader
+              label="Conversion Rate"
+              sortKey="conversionRate"
+              currentSortKey={sortKey}
+              sortAsc={sortAsc}
+              onSort={handleSort}
+            />
             <th className="px-3 py-2 text-xs font-medium text-muted-foreground text-right">
               Avg Response
             </th>
@@ -170,7 +212,10 @@ export default function AgentPerformanceBoard({
         </thead>
         <tbody>
           {sorted.map((s) => (
-            <tr key={s.agentId} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
+            <tr
+              key={s.agentId}
+              className="border-b last:border-0 hover:bg-muted/50 transition-colors"
+            >
               <td className="px-3 py-3 font-medium">{s.agentName}</td>
               <td className="px-3 py-3">{s.leadsAcquired}</td>
               <td className="px-3 py-3">
@@ -178,7 +223,9 @@ export default function AgentPerformanceBoard({
                   {s.dealsClosed}
                 </span>
               </td>
-              <td className="px-3 py-3 font-medium">{formatCurrency(s.commissionEarned)}</td>
+              <td className="px-3 py-3 font-medium">
+                {formatCurrency(s.commissionEarned)}
+              </td>
               <td className="px-3 py-3">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-20 rounded-full bg-muted overflow-hidden">
@@ -187,7 +234,9 @@ export default function AgentPerformanceBoard({
                       style={{ width: `${Math.min(s.conversionRate, 100)}%` }}
                     />
                   </div>
-                  <span className="text-xs font-medium">{s.conversionRate}%</span>
+                  <span className="text-xs font-medium">
+                    {s.conversionRate}%
+                  </span>
                 </div>
               </td>
               <td className="px-3 py-3 text-right text-muted-foreground">

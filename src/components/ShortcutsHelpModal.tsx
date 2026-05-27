@@ -1,4 +1,4 @@
-import { ShortcutDef } from '@/hooks/useKeyboardShortcuts';
+import { ShortcutDef } from "@/hooks/useKeyboardShortcuts";
 
 interface ShortcutsHelpModalProps {
   open: boolean;
@@ -6,7 +6,11 @@ interface ShortcutsHelpModalProps {
   shortcuts: ShortcutDef[];
 }
 
-export default function ShortcutsHelpModal({ open, onClose, shortcuts }: ShortcutsHelpModalProps) {
+export default function ShortcutsHelpModal({
+  open,
+  onClose,
+  shortcuts,
+}: ShortcutsHelpModalProps) {
   if (!open) return null;
 
   return (
@@ -23,16 +27,23 @@ export default function ShortcutsHelpModal({ open, onClose, shortcuts }: Shortcu
         </div>
         <div className="space-y-2">
           {shortcuts.map((s, i) => (
-            <div key={i} className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2">
+            <div
+              key={i}
+              className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2"
+            >
               <span className="text-sm">{s.description}</span>
               <kbd className="rounded border bg-background px-2 py-0.5 text-xs font-mono">
-                {s.keys.join(' + ')}
+                {s.keys.join(" + ")}
               </kbd>
             </div>
           ))}
         </div>
         <p className="text-xs text-muted-foreground mt-4 text-center">
-          Press <kbd className="rounded border bg-background px-1 text-xs font-mono">?</kbd> to toggle this help
+          Press{" "}
+          <kbd className="rounded border bg-background px-1 text-xs font-mono">
+            ?
+          </kbd>{" "}
+          to toggle this help
         </p>
       </div>
     </div>

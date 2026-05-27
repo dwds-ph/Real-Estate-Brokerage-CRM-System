@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import { useTheme } from '@/context/ThemeContext';
-import NotificationBell from '@/components/notifications/NotificationBell';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
+import NotificationBell from "@/components/notifications/NotificationBell";
+import { cn } from "@/lib/utils";
 
 const navItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: '📊' },
-  { to: '/leads', label: 'Leads', icon: '👥' },
-  { to: '/deals', label: 'Deals', icon: '🏆' },
-  { to: '/listings', label: 'Listings', icon: '🏠' },
-  { to: '/viewings', label: 'Viewings', icon: '📅' },
-  { to: '/commissions', label: 'Commissions', icon: '💰' },
-  { to: '/tasks', label: 'Tasks', icon: '✅' },
-  { to: '/agents', label: 'Agents', icon: '👤' },
-  { to: '/offices', label: 'Offices', icon: '🏢' },
-  { to: '/expenses', label: 'Expenses', icon: '💳' },
-  { to: '/ph-tools', label: 'PH Tools', icon: '🇵🇭' },
-  { to: '/vault', label: 'Vault', icon: '📁' },
-  { to: '/mortgages', label: 'Mortgages', icon: '🏦' },
-  { to: '/analytics', label: 'Analytics', icon: '📈' },
-  { to: '/calendar', label: 'Calendar', icon: '📅' },
-  { to: '/checklist-templates', label: 'Checklists', icon: '✅' },
-  { to: '/activity', label: 'Activity', icon: '🔄' },
+  { to: "/dashboard", label: "Dashboard", icon: "📊" },
+  { to: "/leads", label: "Leads", icon: "👥" },
+  { to: "/deals", label: "Deals", icon: "🏆" },
+  { to: "/listings", label: "Listings", icon: "🏠" },
+  { to: "/viewings", label: "Viewings", icon: "📅" },
+  { to: "/commissions", label: "Commissions", icon: "💰" },
+  { to: "/tasks", label: "Tasks", icon: "✅" },
+  { to: "/agents", label: "Agents", icon: "👤" },
+  { to: "/offices", label: "Offices", icon: "🏢" },
+  { to: "/expenses", label: "Expenses", icon: "💳" },
+  { to: "/ph-tools", label: "PH Tools", icon: "🇵🇭" },
+  { to: "/vault", label: "Vault", icon: "📁" },
+  { to: "/mortgages", label: "Mortgages", icon: "🏦" },
+  { to: "/analytics", label: "Analytics", icon: "📈" },
+  { to: "/calendar", label: "Calendar", icon: "📅" },
+  { to: "/checklist-templates", label: "Checklists", icon: "✅" },
+  { to: "/activity", label: "Activity", icon: "🔄" },
 ];
 export default function AppLayout() {
   const { userProfile, logout } = useAuth();
@@ -32,7 +32,7 @@ export default function AppLayout() {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -40,16 +40,20 @@ export default function AppLayout() {
       {/* Sidebar */}
       <aside
         className={cn(
-          'flex flex-col border-r bg-card transition-all duration-300',
-          sidebarOpen ? 'w-56' : 'w-16'
+          "flex flex-col border-r bg-card transition-all duration-300",
+          sidebarOpen ? "w-56" : "w-16",
         )}
       >
         {/* Logo */}
         <div className="flex h-14 items-center gap-2 border-b px-4">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-            <span className="text-sm font-bold text-primary-foreground">RE</span>
+            <span className="text-sm font-bold text-primary-foreground">
+              RE
+            </span>
           </div>
-          {sidebarOpen && <span className="text-sm font-semibold">Real Estate CRM</span>}
+          {sidebarOpen && (
+            <span className="text-sm font-semibold">Real Estate CRM</span>
+          )}
         </div>
 
         {/* Navigation */}
@@ -60,10 +64,10 @@ export default function AppLayout() {
               to={item.to}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
                   isActive
-                    ? 'bg-primary/10 text-primary font-medium'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )
               }
             >
@@ -76,7 +80,7 @@ export default function AppLayout() {
         {/* Bottom */}
         <div className="border-t p-2 space-y-1">
           <button
-            onClick={() => navigate('/settings')}
+            onClick={() => navigate("/settings")}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <span className="text-lg">⚙️</span>
@@ -86,8 +90,8 @@ export default function AppLayout() {
             onClick={toggleTheme}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
-            <span className="text-lg">{theme === 'dark' ? '☀️' : '🌙'}</span>
-            {sidebarOpen && <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>}
+            <span className="text-lg">{theme === "dark" ? "☀️" : "🌙"}</span>
+            {sidebarOpen && <span>{theme === "dark" ? "Light" : "Dark"}</span>}
           </button>
           <button
             onClick={handleLogout}
@@ -99,8 +103,12 @@ export default function AppLayout() {
 
           {sidebarOpen && userProfile && (
             <div className="px-3 py-2">
-              <p className="text-xs font-medium truncate">{userProfile.displayName}</p>
-              <p className="text-xs text-muted-foreground capitalize">{userProfile.role}</p>
+              <p className="text-xs font-medium truncate">
+                {userProfile.displayName}
+              </p>
+              <p className="text-xs text-muted-foreground capitalize">
+                {userProfile.role}
+              </p>
             </div>
           )}
         </div>
@@ -110,7 +118,7 @@ export default function AppLayout() {
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="absolute bottom-4 left-4 hidden rounded-full border bg-background p-1 text-xs lg:block"
         >
-          {sidebarOpen ? '◀' : '▶'}
+          {sidebarOpen ? "◀" : "▶"}
         </button>
       </aside>
 

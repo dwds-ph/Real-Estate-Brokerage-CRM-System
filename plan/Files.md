@@ -1,0 +1,93 @@
+# Project Files
+
+Generated: Wed May 27 05:52:46 UTC 2026
+
+## TypeScript & TSX Files
+
+- `src/App.tsx`
+- `src/components/Analytics.tsx`
+- `src/components/ErrorBoundary.tsx`
+- `src/components/ErrorState.tsx`
+- `src/components/OnboardingTooltip.tsx`
+- `src/components/ShortcutsHelpModal.tsx`
+- `src/components/Skeleton.tsx`
+- `src/components/analytics/AgentPerformanceBoard.tsx`
+- `src/components/analytics/ConversionFunnel.tsx`
+- `src/components/analytics/DateRangePicker.tsx`
+- `src/components/analytics/ExpenseVsCommission.tsx`
+- `src/components/analytics/ListingPerformance.tsx`
+- `src/components/analytics/SourceAnalytics.tsx`
+- `src/components/auth/ProtectedRoute.tsx`
+- `src/components/automation/ActivityFeed.tsx`
+- `src/components/automation/ChecklistWidget.tsx`
+- `src/components/automation/CommTemplateManager.tsx`
+- `src/components/automation/LeadRoutingRules.tsx`
+- `src/components/automation/QuickLog.tsx`
+- `src/components/automation/ReferralDashboard.tsx`
+- `src/components/automation/ReferralForm.tsx`
+- `src/components/calendar/QuickCreate.tsx`
+- `src/components/calendar/SmartReminders.tsx`
+- `src/components/calendar/UnifiedCalendar.tsx`
+- `src/components/documents/DocumentList.tsx`
+- `src/components/documents/DocumentRequestModal.tsx`
+- `src/components/documents/DocumentUpload.tsx`
+- `src/components/layout/AppLayout.tsx`
+- `src/components/map/PropertyMap.tsx`
+- `src/components/mortgage/MortgageForm.tsx`
+- `src/components/mortgage/MortgageTracker.tsx`
+- `src/components/notifications/NotificationBell.tsx`
+- `src/context/AuthContext.tsx`
+- `src/context/ThemeContext.tsx`
+- `src/hooks/useFirestore.ts`
+- `src/hooks/useKeyboardShortcuts.test.ts`
+- `src/hooks/useKeyboardShortcuts.ts`
+- `src/lib/commission.test.ts`
+- `src/lib/commission.ts`
+- `src/lib/firebase.ts`
+- `src/lib/test-setup.ts`
+- `src/lib/utils.test.ts`
+- `src/lib/utils.ts`
+- `src/main.tsx`
+- `src/pages/ActivityPage.tsx`
+- `src/pages/AgentsPage.tsx`
+- `src/pages/AnalyticsPage.tsx`
+- `src/pages/BrochurePage.tsx`
+- `src/pages/CalendarPage.tsx`
+- `src/pages/ChecklistTemplatesPage.tsx`
+- `src/pages/ClientPortalPage.tsx`
+- `src/pages/CommissionsPage.tsx`
+- `src/pages/DashboardPage.tsx`
+- `src/pages/DealsPage.tsx`
+- `src/pages/ExpensesPage.tsx`
+- `src/pages/LeadDetailPage.tsx`
+- `src/pages/LeadsPage.tsx`
+- `src/pages/ListingDetailPage.tsx`
+- `src/pages/ListingsPage.tsx`
+- `src/pages/LoginPage.tsx`
+- `src/pages/MortgagePage.tsx`
+- `src/pages/NotificationPreferencesPage.tsx`
+- `src/pages/NotificationsPage.tsx`
+- `src/pages/OfficesPage.tsx`
+- `src/pages/OnboardingPage.tsx`
+- `src/pages/PhToolsPage.tsx`
+- `src/pages/RemindersPage.tsx`
+- `src/pages/SettingsPage.tsx`
+- `src/pages/TasksPage.tsx`
+- `src/pages/VaultPage.tsx`
+- `src/pages/ViewingsPage.tsx`
+- `src/services/calendarService.ts`
+- `src/services/checklistService.ts`
+- `src/services/commTemplates.ts`
+- `src/services/documentVault.ts`
+- `src/services/fcm.ts`
+- `src/services/geocoding.ts`
+- `src/services/leadRoutingService.ts`
+- `src/services/mortgageService.ts`
+- `src/services/notifications.test.ts`
+- `src/services/notifications.ts`
+- `src/services/officeService.ts`
+- `src/services/referralService.ts`
+- `src/types/index.ts`
+- `src/vite-env.d.ts`
+
+**Total: 85 files**

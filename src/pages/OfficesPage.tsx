@@ -1,25 +1,33 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { getOffices, createOffice, updateOffice, deleteOffice, getOfficeAgents } from '@/services/officeService';
-import { Office } from '@/types';
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import {
+  getOffices,
+  createOffice,
+  updateOffice,
+  deleteOffice,
+  getOfficeAgents,
+} from "@/services/officeService";
+import { Office } from "@/types";
 
 export default function OfficesPage() {
   const { userProfile } = useAuth();
-  const isBroker = userProfile?.role === 'broker';
+  const isBroker = userProfile?.role === "broker";
 
   const [offices, setOffices] = useState<Office[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Form state
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
   const [saving, setSaving] = useState(false);
 
   // Office agents map
-  const [officeAgents, setOfficeAgents] = useState<Record<string, { id: string; displayName: string; email: string }[]>>({});
+  const [officeAgents, setOfficeAgents] = useState<
+    Record<string, { id: string; displayName: string; email: string }[]>
+  >({});
   const [expandedOffice, setExpandedOffice] = useState<string | null>(null);
 
   const loadOffices = async () => {
@@ -30,7 +38,7 @@ export default function OfficesPage() {
       setOffices(data);
     } catch (err: unknown) {
       const fbErr = err as { message?: string };
-      setError(fbErr.message || 'Failed to load offices');
+      setError(fbErr.message || "Failed to load offices");
     } finally {
       setLoading(false);
     }
@@ -44,7 +52,7 @@ export default function OfficesPage() {
     e.preventDefault();
     if (!userProfile?.id) return;
     setSaving(true);
-    setError('');
+    setError("");
     try {
       if (editId) {
         await updateOffice(editId, { name, address } as Partial<Office>);
@@ -53,12 +61,12 @@ export default function OfficesPage() {
       }
       setShowForm(false);
       setEditId(null);
-      setName('');
-      setAddress('');
+      setName("");
+      setAddress("");
       await loadOffices();
     } catch (err: unknown) {
       const fbErr = err as { message?: string };
-      setError(fbErr.message || 'Failed to save office');
+      setError(fbErr.message || "Failed to save office");
     } finally {
       setSaving(false);
     }
@@ -72,13 +80,13 @@ export default function OfficesPage() {
   };
 
   const handleDelete = async (officeId: string) => {
-    if (!confirm('Are you sure you want to delete this office?')) return;
+    if (!confirm("Are you sure you want to delete this office?")) return;
     try {
       await deleteOffice(officeId);
       await loadOffices();
     } catch (err: unknown) {
       const fbErr = err as { message?: string };
-      setError(fbErr.message || 'Failed to delete office');
+      setError(fbErr.message || "Failed to delete office");
     }
   };
 
@@ -95,8 +103,9 @@ export default function OfficesPage() {
           ...prev,
           [officeId]: agents.map((a) => ({
             id: a.id as string,
-            displayName: (a as { displayName: string }).displayName || 'Unknown',
-            email: (a as { email: string }).email || '',
+            displayName:
+              (a as { displayName: string }).displayName || "Unknown",
+            email: (a as { email: string }).email || "",
           })),
         }));
       } catch {
@@ -110,7 +119,9 @@ export default function OfficesPage() {
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">Offices</h1>
         <div className="rounded-lg border bg-card p-8 text-center">
-          <p className="text-muted-foreground">Only brokers can manage offices.</p>
+          <p className="text-muted-foreground">
+            Only brokers can manage offices.
+          </p>
         </div>
       </div>
     );
@@ -127,21 +138,28 @@ export default function OfficesPage() {
           onClick={() => {
             setShowForm(!showForm);
             setEditId(null);
-            setName('');
-            setAddress('');
+            setName("");
+            setAddress("");
           }}
           className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
-          {showForm ? 'Cancel' : '+ Add Office'}
+          {showForm ? "Cancel" : "+ Add Office"}
         </button>
       </div>
 
       {/* Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-4 max-w-md">
-          <h3 className="font-semibold">{editId ? 'Edit Office' : 'New Office'}</h3>
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-lg border bg-card p-6 space-y-4 max-w-md"
+        >
+          <h3 className="font-semibold">
+            {editId ? "Edit Office" : "New Office"}
+          </h3>
           <div>
-            <label className="block text-sm font-medium mb-1">Office Name</label>
+            <label className="block text-sm font-medium mb-1">
+              Office Name
+            </label>
             <input
               type="text"
               required
@@ -168,7 +186,7 @@ export default function OfficesPage() {
             disabled={saving}
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
-            {saving ? 'Saving...' : editId ? 'Update Office' : 'Create Office'}
+            {saving ? "Saving..." : editId ? "Update Office" : "Create Office"}
           </button>
         </form>
       )}
@@ -180,7 +198,9 @@ export default function OfficesPage() {
         </div>
       ) : offices.length === 0 ? (
         <div className="rounded-lg border bg-card p-8 text-center">
-          <p className="text-muted-foreground">No offices yet. Create your first office!</p>
+          <p className="text-muted-foreground">
+            No offices yet. Create your first office!
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -189,12 +209,16 @@ export default function OfficesPage() {
               <div className="flex items-center justify-between p-4">
                 <div className="flex-1">
                   <h3 className="font-semibold">{office.name}</h3>
-                  <p className="text-sm text-muted-foreground">{office.address}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {office.address}
+                  </p>
                   <button
                     onClick={() => toggleAgents(office.id)}
                     className="text-xs text-primary hover:underline mt-1"
                   >
-                    {expandedOffice === office.id ? 'Hide agents' : 'View agents'}
+                    {expandedOffice === office.id
+                      ? "Hide agents"
+                      : "View agents"}
                   </button>
                 </div>
                 <div className="flex items-center gap-2">
@@ -214,21 +238,30 @@ export default function OfficesPage() {
               </div>
               {expandedOffice === office.id && (
                 <div className="border-t px-4 py-3">
-                  <p className="text-xs font-medium text-muted-foreground mb-2">Agents in this office</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    Agents in this office
+                  </p>
                   {officeAgents[office.id]?.length ? (
                     <div className="space-y-1">
                       {officeAgents[office.id].map((agent) => (
-                        <div key={agent.id} className="flex items-center gap-2 text-sm">
+                        <div
+                          key={agent.id}
+                          className="flex items-center gap-2 text-sm"
+                        >
                           <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
                             {agent.displayName.charAt(0).toUpperCase()}
                           </span>
                           <span>{agent.displayName}</span>
-                          <span className="text-xs text-muted-foreground">{agent.email}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {agent.email}
+                          </span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-muted-foreground">No agents assigned to this office.</p>
+                    <p className="text-xs text-muted-foreground">
+                      No agents assigned to this office.
+                    </p>
                   )}
                 </div>
               )}

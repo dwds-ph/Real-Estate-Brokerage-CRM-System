@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from "react";
 
 interface OnboardingTooltipProps {
   /** Unique key for this tooltip (stored in localStorage) */
@@ -8,14 +8,14 @@ interface OnboardingTooltipProps {
   /** The element this tooltip wraps */
   renderTrigger: (show: boolean) => ReactNode;
   /** Position of tooltip relative to trigger */
-  position?: 'top' | 'bottom' | 'left' | 'right';
+  position?: "top" | "bottom" | "left" | "right";
 }
 
 export default function OnboardingTooltip({
   tooltipKey,
   children,
   renderTrigger,
-  position = 'bottom',
+  position = "bottom",
 }: OnboardingTooltipProps) {
   const [show, setShow] = useState(false);
 
@@ -29,22 +29,24 @@ export default function OnboardingTooltip({
   }, [tooltipKey]);
 
   const dismiss = () => {
-    localStorage.setItem(`onboarding_${tooltipKey}`, 'dismissed');
+    localStorage.setItem(`onboarding_${tooltipKey}`, "dismissed");
     setShow(false);
   };
 
   const positionClasses: Record<string, string> = {
-    top: 'bottom-full mb-2',
-    bottom: 'top-full mt-2',
-    left: 'right-full mr-2',
-    right: 'left-full ml-2',
+    top: "bottom-full mb-2",
+    bottom: "top-full mt-2",
+    left: "right-full mr-2",
+    right: "left-full ml-2",
   };
 
   const arrowClasses: Record<string, string> = {
-    top: 'top-full left-1/2 -translate-x-1/2 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary',
-    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-l-4 border-r-4 border-b-4 border-transparent border-b-primary',
-    left: 'left-full top-1/2 -translate-y-1/2 border-t-4 border-b-4 border-l-4 border-transparent border-l-primary',
-    right: 'right-full top-1/2 -translate-y-1/2 border-t-4 border-b-4 border-r-4 border-transparent border-r-primary',
+    top: "top-full left-1/2 -translate-x-1/2 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary",
+    bottom:
+      "bottom-full left-1/2 -translate-x-1/2 border-l-4 border-r-4 border-b-4 border-transparent border-b-primary",
+    left: "left-full top-1/2 -translate-y-1/2 border-t-4 border-b-4 border-l-4 border-transparent border-l-primary",
+    right:
+      "right-full top-1/2 -translate-y-1/2 border-t-4 border-b-4 border-r-4 border-transparent border-r-primary",
   };
 
   return (

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { useAuth } from '@/context/AuthContext';
-import { db } from '@/lib/firebase';
-import { cn } from '@/lib/utils';
+import { useState, useEffect } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { useAuth } from "@/context/AuthContext";
+import { db } from "@/lib/firebase";
+import { cn } from "@/lib/utils";
 
 interface NotificationPreferences {
   inApp: Record<string, boolean>;
@@ -11,19 +11,27 @@ interface NotificationPreferences {
 }
 
 const NOTIFICATION_TYPES = [
-  { key: 'lead', label: 'Lead Updates', icon: '👥' },
-  { key: 'viewing', label: 'Viewing Reminders', icon: '📅' },
-  { key: 'commission', label: 'Commission Updates', icon: '💰' },
-  { key: 'task', label: 'Task Assignments', icon: '✅' },
-  { key: 'mention', label: '@Mentions', icon: '@' },
-  { key: 'deal', label: 'Deal Updates', icon: '🏆' },
-  { key: 'general', label: 'General', icon: '📢' },
+  { key: "lead", label: "Lead Updates", icon: "👥" },
+  { key: "viewing", label: "Viewing Reminders", icon: "📅" },
+  { key: "commission", label: "Commission Updates", icon: "💰" },
+  { key: "task", label: "Task Assignments", icon: "✅" },
+  { key: "mention", label: "@Mentions", icon: "@" },
+  { key: "deal", label: "Deal Updates", icon: "🏆" },
+  { key: "general", label: "General", icon: "📢" },
 ];
 
 const CHANNELS = [
-  { key: 'inApp', label: 'In-App', description: 'Notifications inside the app' },
-  { key: 'push', label: 'Push', description: 'Push notifications on your device' },
-  { key: 'email', label: 'Email', description: 'Email notifications' },
+  {
+    key: "inApp",
+    label: "In-App",
+    description: "Notifications inside the app",
+  },
+  {
+    key: "push",
+    label: "Push",
+    description: "Push notifications on your device",
+  },
+  { key: "email", label: "Email", description: "Email notifications" },
 ] as const;
 
 function defaultPrefs(): NotificationPreferences {
@@ -43,7 +51,9 @@ export default function NotificationPreferencesPage() {
     if (!userProfile?.id) return;
     const loadPrefs = async () => {
       try {
-        const snap = await getDoc(doc(db, 'notificationPreferences', userProfile.id));
+        const snap = await getDoc(
+          doc(db, "notificationPreferences", userProfile.id),
+        );
         if (snap.exists()) {
           setPrefs(snap.data() as NotificationPreferences);
         } else {
@@ -58,14 +68,17 @@ export default function NotificationPreferencesPage() {
     loadPrefs();
   }, [userProfile?.id]);
 
-  const toggle = (channel: 'inApp' | 'push' | 'email', key: string) => {
+  const toggle = (channel: "inApp" | "push" | "email", key: string) => {
     setPrefs((prev) => ({
       ...prev,
       [channel]: { ...prev[channel], [key]: !prev[channel][key] },
     }));
   };
 
-  const toggleChannelAll = (channel: 'inApp' | 'push' | 'email', value: boolean) => {
+  const toggleChannelAll = (
+    channel: "inApp" | "push" | "email",
+    value: boolean,
+  ) => {
     const updated: Record<string, boolean> = {};
     NOTIFICATION_TYPES.forEach((t) => (updated[t.key] = value));
     setPrefs((prev) => ({ ...prev, [channel]: updated }));
@@ -76,7 +89,7 @@ export default function NotificationPreferencesPage() {
     setSaving(true);
     setSaved(false);
     try {
-      await setDoc(doc(db, 'notificationPreferences', userProfile.id), prefs);
+      await setDoc(doc(db, "notificationPreferences", userProfile.id), prefs);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch {
@@ -98,7 +111,9 @@ export default function NotificationPreferencesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Notification Preferences</h1>
-        <p className="text-muted-foreground">Control how you receive notifications</p>
+        <p className="text-muted-foreground">
+          Control how you receive notifications
+        </p>
       </div>
 
       {/* Channel columns */}
@@ -110,7 +125,9 @@ export default function NotificationPreferencesPage() {
               {CHANNELS.map((ch) => (
                 <th key={ch.key} className="text-center py-3 px-2 font-medium">
                   <div>{ch.label}</div>
-                  <div className="text-xs text-muted-foreground font-normal">{ch.description}</div>
+                  <div className="text-xs text-muted-foreground font-normal">
+                    {ch.description}
+                  </div>
                 </th>
               ))}
             </tr>
@@ -127,14 +144,18 @@ export default function NotificationPreferencesPage() {
                     <button
                       onClick={() => toggle(ch.key, nt.key)}
                       className={cn(
-                        'inline-flex h-6 w-11 items-center rounded-full transition-colors',
-                        prefs[ch.key][nt.key] ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600',
+                        "inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                        prefs[ch.key][nt.key]
+                          ? "bg-primary"
+                          : "bg-gray-300 dark:bg-gray-600",
                       )}
                     >
                       <span
                         className={cn(
-                          'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
-                          prefs[ch.key][nt.key] ? 'translate-x-6' : 'translate-x-1',
+                          "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                          prefs[ch.key][nt.key]
+                            ? "translate-x-6"
+                            : "translate-x-1",
                         )}
                       />
                     </button>
@@ -149,7 +170,9 @@ export default function NotificationPreferencesPage() {
       {/* Summary toggles per channel */}
       <div className="grid gap-4 sm:grid-cols-3">
         {CHANNELS.map((ch) => {
-          const enabledCount = Object.values(prefs[ch.key]).filter(Boolean).length;
+          const enabledCount = Object.values(prefs[ch.key]).filter(
+            Boolean,
+          ).length;
           const total = NOTIFICATION_TYPES.length;
           const allOn = enabledCount === total;
           const allOff = enabledCount === 0;
@@ -165,8 +188,10 @@ export default function NotificationPreferencesPage() {
                 <button
                   onClick={() => toggleChannelAll(ch.key, true)}
                   className={cn(
-                    'rounded px-2 py-1 text-xs border',
-                    allOn ? 'bg-primary text-primary-foreground border-primary' : 'hover:bg-muted',
+                    "rounded px-2 py-1 text-xs border",
+                    allOn
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "hover:bg-muted",
                   )}
                 >
                   All
@@ -174,8 +199,10 @@ export default function NotificationPreferencesPage() {
                 <button
                   onClick={() => toggleChannelAll(ch.key, false)}
                   className={cn(
-                    'rounded px-2 py-1 text-xs border',
-                    allOff ? 'bg-destructive text-destructive-foreground border-destructive' : 'hover:bg-muted',
+                    "rounded px-2 py-1 text-xs border",
+                    allOff
+                      ? "bg-destructive text-destructive-foreground border-destructive"
+                      : "hover:bg-muted",
                   )}
                 >
                   None
@@ -187,7 +214,9 @@ export default function NotificationPreferencesPage() {
       </div>
 
       {saved && (
-        <p className="text-sm text-green-600 dark:text-green-400">Preferences saved!</p>
+        <p className="text-sm text-green-600 dark:text-green-400">
+          Preferences saved!
+        </p>
       )}
 
       <button
@@ -195,7 +224,7 @@ export default function NotificationPreferencesPage() {
         disabled={saving}
         className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
       >
-        {saving ? 'Saving...' : 'Save Preferences'}
+        {saving ? "Saving..." : "Save Preferences"}
       </button>
     </div>
   );

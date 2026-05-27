@@ -12,7 +12,7 @@ export default function LeadsPage() {
   const navigate = useNavigate();
   const { userProfile } = useAuth();
   const { data: leads, loading } = useLeads(userProfile?.id);
-  const { data: agents } = useCollection<AppUser>('users');
+  const { data: agents } = useCollection<AppUser>("users");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<LeadStatus | "all">("all");

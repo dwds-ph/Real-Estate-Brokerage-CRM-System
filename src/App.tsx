@@ -1,38 +1,38 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '@/context/AuthContext';
-import { ThemeProvider } from '@/context/ThemeContext';
-import { useFcmService } from '@/services/fcm';
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import ShortcutsHelpModal from '@/components/ShortcutsHelpModal';
-import LoginPage from '@/pages/LoginPage';
-import DashboardPage from '@/pages/DashboardPage';
-import LeadsPage from '@/pages/LeadsPage';
-import LeadDetailPage from '@/pages/LeadDetailPage';
-import ListingsPage from '@/pages/ListingsPage';
-import ListingDetailPage from '@/pages/ListingDetailPage';
-import DealsPage from '@/pages/DealsPage';
-import ViewingsPage from '@/pages/ViewingsPage';
-import CommissionsPage from '@/pages/CommissionsPage';
-import TasksPage from '@/pages/TasksPage';
-import AgentsPage from '@/pages/AgentsPage';
-import SettingsPage from '@/pages/SettingsPage';
-import OfficesPage from '@/pages/OfficesPage';
-import NotificationPreferencesPage from '@/pages/NotificationPreferencesPage';
-import CalendarPage from '@/pages/CalendarPage';
-import RemindersPage from '@/pages/RemindersPage';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import OnboardingPage from '@/pages/OnboardingPage';
-import AppLayout from '@/components/layout/AppLayout';
-import BrochurePage from '@/pages/BrochurePage';
-import ClientPortalPage from '@/pages/ClientPortalPage';
-import ExpensesPage from '@/pages/ExpensesPage';
-import PhToolsPage from '@/pages/PhToolsPage';
-import NotificationsPage from '@/pages/NotificationsPage';
-import VaultPage from '@/pages/VaultPage';
-import MortgagePage from '@/pages/MortgagePage';
-import AnalyticsPage from '@/pages/AnalyticsPage';
-import ChecklistTemplatesPage from '@/pages/ChecklistTemplatesPage';
-import ActivityPage from '@/pages/ActivityPage';
+import { Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { useFcmService } from "@/services/fcm";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import ShortcutsHelpModal from "@/components/ShortcutsHelpModal";
+import LoginPage from "@/pages/LoginPage";
+import DashboardPage from "@/pages/DashboardPage";
+import LeadsPage from "@/pages/LeadsPage";
+import LeadDetailPage from "@/pages/LeadDetailPage";
+import ListingsPage from "@/pages/ListingsPage";
+import ListingDetailPage from "@/pages/ListingDetailPage";
+import DealsPage from "@/pages/DealsPage";
+import ViewingsPage from "@/pages/ViewingsPage";
+import CommissionsPage from "@/pages/CommissionsPage";
+import TasksPage from "@/pages/TasksPage";
+import AgentsPage from "@/pages/AgentsPage";
+import SettingsPage from "@/pages/SettingsPage";
+import OfficesPage from "@/pages/OfficesPage";
+import NotificationPreferencesPage from "@/pages/NotificationPreferencesPage";
+import CalendarPage from "@/pages/CalendarPage";
+import RemindersPage from "@/pages/RemindersPage";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import OnboardingPage from "@/pages/OnboardingPage";
+import AppLayout from "@/components/layout/AppLayout";
+import BrochurePage from "@/pages/BrochurePage";
+import ClientPortalPage from "@/pages/ClientPortalPage";
+import ExpensesPage from "@/pages/ExpensesPage";
+import PhToolsPage from "@/pages/PhToolsPage";
+import NotificationsPage from "@/pages/NotificationsPage";
+import VaultPage from "@/pages/VaultPage";
+import MortgagePage from "@/pages/MortgagePage";
+import AnalyticsPage from "@/pages/AnalyticsPage";
+import ChecklistTemplatesPage from "@/pages/ChecklistTemplatesPage";
+import ActivityPage from "@/pages/ActivityPage";
 
 function AppContent() {
   useFcmService();
@@ -41,7 +41,13 @@ function AppContent() {
 
 function AppKeyboardShortcuts() {
   const { helpOpen, setHelpOpen, shortcuts } = useKeyboardShortcuts();
-  return <ShortcutsHelpModal open={helpOpen} onClose={() => setHelpOpen(false)} shortcuts={shortcuts} />;
+  return (
+    <ShortcutsHelpModal
+      open={helpOpen}
+      onClose={() => setHelpOpen(false)}
+      shortcuts={shortcuts}
+    />
+  );
 }
 
 function App() {
@@ -78,9 +84,15 @@ function App() {
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/reminders" element={<RemindersPage />} />
               <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/checklist-templates" element={<ChecklistTemplatesPage />} />
+              <Route
+                path="/checklist-templates"
+                element={<ChecklistTemplatesPage />}
+              />
               <Route path="/activity" element={<ActivityPage />} />
-              <Route path="/settings/notifications" element={<NotificationPreferencesPage />} />
+              <Route
+                path="/settings/notifications"
+                element={<NotificationPreferencesPage />}
+              />
             </Route>
           </Route>
         </Routes>

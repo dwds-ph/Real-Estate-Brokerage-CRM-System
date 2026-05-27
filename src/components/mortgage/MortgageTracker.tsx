@@ -1,7 +1,12 @@
-import { useState } from 'react';
-import { Mortgage, MortgageStage } from '@/types';
-import { advanceMortgageStage, updateStageNotes, MORTGAGE_STAGES, STAGE_ORDER } from '@/services/mortgageService';
-import { formatDate, cn } from '@/lib/utils';
+import { useState } from "react";
+import { Mortgage, MortgageStage } from "@/types";
+import {
+  advanceMortgageStage,
+  updateStageNotes,
+  MORTGAGE_STAGES,
+  STAGE_ORDER,
+} from "@/services/mortgageService";
+import { formatDate, cn } from "@/lib/utils";
 
 interface MortgageTrackerProps {
   mortgage: Mortgage;
@@ -10,25 +15,31 @@ interface MortgageTrackerProps {
 }
 
 const STAGE_ICONS: Record<MortgageStage, string> = {
-  'application': '📋',
-  'bank-evaluation': '🔍',
-  'bir-docs': '📄',
-  'rod': '🏛️',
-  'loan-release': '💰',
+  application: "📋",
+  "bank-evaluation": "🔍",
+  "bir-docs": "📄",
+  rod: "🏛️",
+  "loan-release": "💰",
 };
 
-export default function MortgageTracker({ mortgage, onUpdate, compact }: MortgageTrackerProps) {
+export default function MortgageTracker({
+  mortgage,
+  onUpdate,
+  compact,
+}: MortgageTrackerProps) {
   const [advancing, setAdvancing] = useState(false);
   const [editingNotes, setEditingNotes] = useState<MortgageStage | null>(null);
-  const [notesText, setNotesText] = useState('');
+  const [notesText, setNotesText] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const currentIndex = STAGE_ORDER.indexOf(mortgage.currentStage);
-  const isComplete = mortgage.status === 'approved' || mortgage.status === 'rejected';
+  const isComplete =
+    mortgage.status === "approved" || mortgage.status === "rejected";
 
   const handleAdvance = async () => {
     if (isComplete || advancing) return;
-    if (!window.confirm(`Advance to next stage "${getNextStageLabel()}"?`)) return;
+    if (!window.confirm(`Advance to next stage "${getNextStageLabel()}"?`))
+      return;
 
     setAdvancing(true);
     setError(null);
@@ -36,7 +47,8 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
       await advanceMortgageStage(mortgage.id, mortgage);
       onUpdate?.();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to advance stage';
+      const message =
+        err instanceof Error ? err.message : "Failed to advance stage";
       setError(message);
     } finally {
       setAdvancing(false);
@@ -45,8 +57,10 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
 
   const getNextStageLabel = (): string => {
     const nextIndex = currentIndex + 1;
-    if (nextIndex >= STAGE_ORDER.length) return 'Complete';
-    return MORTGAGE_STAGES.find((s) => s.key === STAGE_ORDER[nextIndex])?.label || '';
+    if (nextIndex >= STAGE_ORDER.length) return "Complete";
+    return (
+      MORTGAGE_STAGES.find((s) => s.key === STAGE_ORDER[nextIndex])?.label || ""
+    );
   };
 
   const handleNotesSave = async (stageKey: MortgageStage) => {
@@ -55,7 +69,7 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
       setEditingNotes(null);
       onUpdate?.();
     } catch {
-      setError('Failed to save notes');
+      setError("Failed to save notes");
     }
   };
 
@@ -64,7 +78,7 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
     if (!stage) return null;
 
     const isActive = stageKey === mortgage.currentStage;
-    const isDone = stage.status === 'done';
+    const isDone = stage.status === "done";
     const stageInfo = MORTGAGE_STAGES.find((s) => s.key === stageKey);
     const isPassed = index <= currentIndex;
 
@@ -72,30 +86,33 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
       <div
         key={stageKey}
         className={cn(
-          'flex items-start gap-3 rounded-lg border p-3 transition-colors',
-          isActive && !isComplete && 'border-primary bg-primary/5',
-          isDone && 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30',
-          !isPassed && !isDone && 'opacity-50',
-          compact && 'p-2',
+          "flex items-start gap-3 rounded-lg border p-3 transition-colors",
+          isActive && !isComplete && "border-primary bg-primary/5",
+          isDone &&
+            "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30",
+          !isPassed && !isDone && "opacity-50",
+          compact && "p-2",
         )}
       >
         {/* Stage icon + connector */}
         <div className="flex flex-col items-center">
           <div
             className={cn(
-              'flex h-8 w-8 items-center justify-center rounded-full text-sm',
-              isDone && 'bg-green-500 text-white',
-              isActive && !isDone && 'bg-primary text-primary-foreground ring-2 ring-primary/30',
-              !isPassed && !isDone && 'bg-muted text-muted-foreground',
+              "flex h-8 w-8 items-center justify-center rounded-full text-sm",
+              isDone && "bg-green-500 text-white",
+              isActive &&
+                !isDone &&
+                "bg-primary text-primary-foreground ring-2 ring-primary/30",
+              !isPassed && !isDone && "bg-muted text-muted-foreground",
             )}
           >
-            {isDone ? '✓' : STAGE_ICONS[stageKey]}
+            {isDone ? "✓" : STAGE_ICONS[stageKey]}
           </div>
           {index < STAGE_ORDER.length - 1 && (
             <div
               className={cn(
-                'mt-1 h-8 w-0.5',
-                isDone ? 'bg-green-400' : 'bg-border',
+                "mt-1 h-8 w-0.5",
+                isDone ? "bg-green-400" : "bg-border",
               )}
             />
           )}
@@ -105,22 +122,31 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <p className={cn('text-sm font-medium', compact && 'text-xs')}>
+              <p className={cn("text-sm font-medium", compact && "text-xs")}>
                 {stageInfo?.label || stageKey}
               </p>
               {stageInfo?.description && !compact && (
-                <p className="text-xs text-muted-foreground">{stageInfo.description}</p>
+                <p className="text-xs text-muted-foreground">
+                  {stageInfo.description}
+                </p>
               )}
             </div>
             <span
               className={cn(
-                'whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium',
-                stage.status === 'done' && 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
-                stage.status === 'in-progress' && 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
-                stage.status === 'pending' && 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
+                "whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium",
+                stage.status === "done" &&
+                  "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200",
+                stage.status === "in-progress" &&
+                  "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200",
+                stage.status === "pending" &&
+                  "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400",
               )}
             >
-              {stage.status === 'in-progress' ? 'In Progress' : stage.status === 'done' ? 'Done' : 'Pending'}
+              {stage.status === "in-progress"
+                ? "In Progress"
+                : stage.status === "done"
+                  ? "Done"
+                  : "Pending"}
             </span>
           </div>
 
@@ -169,12 +195,12 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
               {isActive && !isComplete && (
                 <button
                   onClick={() => {
-                    setNotesText(stage.notes || '');
+                    setNotesText(stage.notes || "");
                     setEditingNotes(stageKey);
                   }}
                   className="mt-1 text-[10px] text-primary hover:underline"
                 >
-                  {stage.notes ? 'Edit Notes' : '+ Add Notes'}
+                  {stage.notes ? "Edit Notes" : "+ Add Notes"}
                 </button>
               )}
             </>
@@ -193,13 +219,17 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
             <h3 className="text-sm font-semibold">Mortgage Progress</h3>
             <span
               className={cn(
-                'rounded-full px-2 py-0.5 text-[10px] font-medium',
-                mortgage.status === 'ongoing' && 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
-                mortgage.status === 'approved' && 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
-                mortgage.status === 'rejected' && 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
+                "rounded-full px-2 py-0.5 text-[10px] font-medium",
+                mortgage.status === "ongoing" &&
+                  "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200",
+                mortgage.status === "approved" &&
+                  "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200",
+                mortgage.status === "rejected" &&
+                  "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200",
               )}
             >
-              {mortgage.status.charAt(0).toUpperCase() + mortgage.status.slice(1)}
+              {mortgage.status.charAt(0).toUpperCase() +
+                mortgage.status.slice(1)}
             </span>
           </div>
 
@@ -211,7 +241,9 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
             <div className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
               <div
                 className="h-full rounded-full bg-primary transition-all"
-                style={{ width: `${((currentIndex + 1) / STAGE_ORDER.length) * 100}%` }}
+                style={{
+                  width: `${((currentIndex + 1) / STAGE_ORDER.length) * 100}%`,
+                }}
               />
             </div>
           </div>
@@ -238,7 +270,7 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
             disabled={advancing}
             className="rounded-lg bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
-            {advancing ? 'Advancing...' : `Advance to ${getNextStageLabel()}`}
+            {advancing ? "Advancing..." : `Advance to ${getNextStageLabel()}`}
           </button>
         </div>
       )}
@@ -249,7 +281,7 @@ export default function MortgageTracker({ mortgage, onUpdate, compact }: Mortgag
           disabled={advancing}
           className="w-full rounded-lg bg-primary px-3 py-1 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
         >
-          {advancing ? 'Advancing...' : `Advance ➜ ${getNextStageLabel()}`}
+          {advancing ? "Advancing..." : `Advance ➜ ${getNextStageLabel()}`}
         </button>
       )}
     </div>

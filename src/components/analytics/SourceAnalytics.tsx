@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 import {
   PieChart,
   Pie,
@@ -11,24 +11,30 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-} from 'recharts';
-import { Lead } from '@/types';
+} from "recharts";
+import { Lead } from "@/types";
 
-const SOURCE_CONFIG: Record<string, { label: string; icon: string; color: string }> = {
-  facebook: { label: 'Facebook', icon: '📘', color: '#1877F2' },
-  manual: { label: 'Manual', icon: '✍️', color: '#6B7280' },
-  referral: { label: 'Referral', icon: '🤝', color: '#10B981' },
-  'walk-in': { label: 'Walk-in', icon: '🚶', color: '#F59E0B' },
+const SOURCE_CONFIG: Record<
+  string,
+  { label: string; icon: string; color: string }
+> = {
+  facebook: { label: "Facebook", icon: "📘", color: "#1877F2" },
+  manual: { label: "Manual", icon: "✍️", color: "#6B7280" },
+  referral: { label: "Referral", icon: "🤝", color: "#10B981" },
+  "walk-in": { label: "Walk-in", icon: "🚶", color: "#F59E0B" },
 };
 
-const SOURCES = ['facebook', 'manual', 'referral', 'walk-in'] as const;
+const SOURCES = ["facebook", "manual", "referral", "walk-in"] as const;
 
 interface SourceAnalyticsProps {
   leads: Lead[];
   loading?: boolean;
 }
 
-export default function SourceAnalytics({ leads, loading }: SourceAnalyticsProps) {
+export default function SourceAnalytics({
+  leads,
+  loading,
+}: SourceAnalyticsProps) {
   const sourceData = useMemo(() => {
     const total = leads.length;
     if (total === 0) return [];
@@ -36,7 +42,7 @@ export default function SourceAnalytics({ leads, loading }: SourceAnalyticsProps
     return SOURCES.map((source) => {
       const sourceLeads = leads.filter((l) => l.source === source);
       const count = sourceLeads.length;
-      const closed = sourceLeads.filter((l) => l.status === 'closed').length;
+      const closed = sourceLeads.filter((l) => l.status === "closed").length;
       const conversionRate = count > 0 ? Math.round((closed / count) * 100) : 0;
       const config = SOURCE_CONFIG[source];
 
@@ -92,9 +98,9 @@ export default function SourceAnalytics({ leads, loading }: SourceAnalyticsProps
               </Pie>
               <Tooltip
                 contentStyle={{
-                  borderRadius: '8px',
-                  border: '1px solid hsl(var(--border))',
-                  background: 'hsl(var(--card))',
+                  borderRadius: "8px",
+                  border: "1px solid hsl(var(--border))",
+                  background: "hsl(var(--card))",
                 }}
                 formatter={(value, name) => [`${value}`, name]}
               />
@@ -110,18 +116,26 @@ export default function SourceAnalytics({ leads, loading }: SourceAnalyticsProps
               data={sourceData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="hsl(var(--border))"
+              />
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} unit="%" domain={[0, 100]} />
               <Tooltip
                 contentStyle={{
-                  borderRadius: '8px',
-                  border: '1px solid hsl(var(--border))',
-                  background: 'hsl(var(--card))',
+                  borderRadius: "8px",
+                  border: "1px solid hsl(var(--border))",
+                  background: "hsl(var(--card))",
                 }}
-                formatter={(value: unknown) => [`${value}%`, 'Conversion Rate']}
+                formatter={(value: unknown) => [`${value}%`, "Conversion Rate"]}
               />
-              <Bar dataKey="conversionRate" name="Conversion Rate" radius={[4, 4, 0, 0]} maxBarSize={50}>
+              <Bar
+                dataKey="conversionRate"
+                name="Conversion Rate"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={50}
+              >
                 {sourceData.map((entry) => (
                   <Cell key={entry.name} fill={entry.color} />
                 ))}
@@ -137,15 +151,26 @@ export default function SourceAnalytics({ leads, loading }: SourceAnalyticsProps
           <thead>
             <tr className="border-b text-left">
               <th className="pb-2 font-medium text-muted-foreground">Source</th>
-              <th className="pb-2 font-medium text-muted-foreground text-right">Total Leads</th>
-              <th className="pb-2 font-medium text-muted-foreground text-right">% of Total</th>
-              <th className="pb-2 font-medium text-muted-foreground text-right">Closed Deals</th>
-              <th className="pb-2 font-medium text-muted-foreground text-right">Conversion Rate</th>
+              <th className="pb-2 font-medium text-muted-foreground text-right">
+                Total Leads
+              </th>
+              <th className="pb-2 font-medium text-muted-foreground text-right">
+                % of Total
+              </th>
+              <th className="pb-2 font-medium text-muted-foreground text-right">
+                Closed Deals
+              </th>
+              <th className="pb-2 font-medium text-muted-foreground text-right">
+                Conversion Rate
+              </th>
             </tr>
           </thead>
           <tbody>
             {sourceData.map((s) => (
-              <tr key={s.name} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
+              <tr
+                key={s.name}
+                className="border-b last:border-0 hover:bg-muted/50 transition-colors"
+              >
                 <td className="py-2">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{s.icon}</span>
@@ -153,8 +178,12 @@ export default function SourceAnalytics({ leads, loading }: SourceAnalyticsProps
                   </div>
                 </td>
                 <td className="py-2 text-right font-semibold">{s.value}</td>
-                <td className="py-2 text-right text-muted-foreground">{s.percent}%</td>
-                <td className="py-2 text-right text-green-600 font-medium">{s.closed}</td>
+                <td className="py-2 text-right text-muted-foreground">
+                  {s.percent}%
+                </td>
+                <td className="py-2 text-right text-green-600 font-medium">
+                  {s.closed}
+                </td>
                 <td className="py-2 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <div className="h-2 w-16 rounded-full bg-muted overflow-hidden">
@@ -166,7 +195,9 @@ export default function SourceAnalytics({ leads, loading }: SourceAnalyticsProps
                         }}
                       />
                     </div>
-                    <span className="text-xs font-medium">{s.conversionRate}%</span>
+                    <span className="text-xs font-medium">
+                      {s.conversionRate}%
+                    </span>
                   </div>
                 </td>
               </tr>

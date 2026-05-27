@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { useAuth } from '@/context/AuthContext';
-import { createNotification } from '@/services/notifications';
+import { useEffect, useRef } from "react";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
+import { createNotification } from "@/services/notifications";
 
-const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY || '';
+const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY || "";
 
 /**
  * Hook that handles FCM token registration and foreground message handling.
@@ -22,15 +22,15 @@ export function useFcmService() {
       try {
         const messaging = getMessaging();
         const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-          console.warn('FCM: Notification permission not granted');
+        if (permission !== "granted") {
+          console.warn("FCM: Notification permission not granted");
           return;
         }
 
         const token = await getToken(messaging, { vapidKey: VAPID_KEY });
 
         // Store FCM token on user doc
-        const userRef = doc(db, 'users', user.uid);
+        const userRef = doc(db, "users", user.uid);
         await updateDoc(userRef, {
           fcmTokens: arrayUnion(token),
         });
@@ -39,20 +39,20 @@ export function useFcmService() {
 
         // Listen for foreground messages
         onMessage(messaging, (payload) => {
-          console.log('FCM foreground message:', payload);
+          console.log("FCM foreground message:", payload);
           if (payload.notification) {
             // Create an in-app notification for foreground messages
             createNotification({
               userId: user.uid,
-              type: 'general',
-              title: payload.notification.title || 'New Notification',
-              body: payload.notification.body || '',
+              type: "general",
+              title: payload.notification.title || "New Notification",
+              body: payload.notification.body || "",
               data: {},
             });
           }
         });
       } catch (err) {
-        console.warn('FCM init error:', err);
+        console.warn("FCM init error:", err);
         // FCM may not be available in all environments — that's ok
       }
     };
@@ -69,4 +69,4 @@ export function useFcmService() {
  * For true push without Cloud Functions, the client must
  * be in the foreground or Service Worker handles it.
  */
-export { createNotification } from '@/services/notifications';
+export { createNotification } from "@/services/notifications";

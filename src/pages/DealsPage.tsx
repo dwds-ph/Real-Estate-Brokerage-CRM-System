@@ -1,42 +1,46 @@
-import { useState, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import { useLeads, useCollection, updateDocById } from '@/hooks/useFirestore';
-import { Lead, LeadStatus, Deal, Mortgage } from '@/types';
-import { formatCurrency, timeAgo, getScoreColor, cn } from '@/lib/utils';
-import MortgageTracker from '@/components/mortgage/MortgageTracker';
-import MortgageForm from '@/components/mortgage/MortgageForm';
-import ReferralForm from '@/components/automation/ReferralForm';
-import ReferralDashboard from '@/components/automation/ReferralDashboard';
-import ChecklistWidget from '@/components/automation/ChecklistWidget';
+import { useState, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { useLeads, useCollection, updateDocById } from "@/hooks/useFirestore";
+import { Lead, LeadStatus, Deal, Mortgage } from "@/types";
+import { formatCurrency, timeAgo, getScoreColor, cn } from "@/lib/utils";
+import MortgageTracker from "@/components/mortgage/MortgageTracker";
+import MortgageForm from "@/components/mortgage/MortgageForm";
+import ReferralForm from "@/components/automation/ReferralForm";
+import ReferralDashboard from "@/components/automation/ReferralDashboard";
+import ChecklistWidget from "@/components/automation/ChecklistWidget";
 
 const COLUMNS: { status: LeadStatus; label: string; color: string }[] = [
-  { status: 'new', label: 'New', color: 'border-t-blue-500' },
-  { status: 'contacted', label: 'Contacted', color: 'border-t-yellow-500' },
-  { status: 'viewed', label: 'Viewed', color: 'border-t-purple-500' },
-  { status: 'negotiating', label: 'Negotiating', color: 'border-t-orange-500' },
-  { status: 'closed', label: 'Closed', color: 'border-t-green-500' },
-  { status: 'lost', label: 'Lost', color: 'border-t-red-500' },
+  { status: "new", label: "New", color: "border-t-blue-500" },
+  { status: "contacted", label: "Contacted", color: "border-t-yellow-500" },
+  { status: "viewed", label: "Viewed", color: "border-t-purple-500" },
+  { status: "negotiating", label: "Negotiating", color: "border-t-orange-500" },
+  { status: "closed", label: "Closed", color: "border-t-green-500" },
+  { status: "lost", label: "Lost", color: "border-t-red-500" },
 ];
 
 export default function DealsPage() {
   const navigate = useNavigate();
   const { userProfile } = useAuth();
   const { data: allLeads, loading } = useLeads(userProfile?.id);
-  const { data: allDeals } = useCollection<Deal>('deals');
-  const { data: allMortgages } = useCollection<Mortgage>('mortgages');
+  const { data: allDeals } = useCollection<Deal>("deals");
+  const { data: allMortgages } = useCollection<Mortgage>("mortgages");
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [mortgageExpanded, setMortgageExpanded] = useState(false);
-  const [expandedMortgageDeal, setExpandedMortgageDeal] = useState<string | null>(null);
+  const [expandedMortgageDeal, setExpandedMortgageDeal] = useState<
+    string | null
+  >(null);
   const [showMortgageForm, setShowMortgageForm] = useState(false);
-  const [selectedDealId, setSelectedDealId] = useState<string | undefined>(undefined);
+  const [selectedDealId, setSelectedDealId] = useState<string | undefined>(
+    undefined,
+  );
   const [referralExpanded, setReferralExpanded] = useState(false);
   const [referralDealId, setReferralDealId] = useState<string | null>(null);
   const [showReferralForm, setShowReferralForm] = useState(false);
   const [checklistExpanded, setChecklistExpanded] = useState(false);
   const [checklistDealId, setChecklistDealId] = useState<string | null>(null);
 
-  const isBroker = userProfile?.role === 'broker';
+  const isBroker = userProfile?.role === "broker";
 
   // Map mortgages to deals
   const dealsWithMortgages = useMemo(() => {
@@ -50,7 +54,9 @@ export default function DealsPage() {
 
   // Deals without mortgages (for "add mortgage" quick actions)
   const dealsWithoutMortgages = useMemo(() => {
-    return allDeals.filter((deal) => !allMortgages.some((m) => m.dealId === deal.id));
+    return allDeals.filter(
+      (deal) => !allMortgages.some((m) => m.dealId === deal.id),
+    );
   }, [allDeals, allMortgages]);
 
   const handleDragStart = (leadId: string) => {
@@ -62,14 +68,14 @@ export default function DealsPage() {
       if (!draggingId) return;
       const now = Date.now();
       const lead = allLeads.find((l) => l.id === draggingId) as Lead;
-      await updateDocById('leads', draggingId, {
+      await updateDocById("leads", draggingId, {
         status: newStatus,
         activityTimeline: [
           ...(lead?.activityTimeline || []),
           {
             action: `Moved to ${newStatus}`,
             timestamp: now,
-            by: userProfile?.displayName || 'Unknown',
+            by: userProfile?.displayName || "Unknown",
           },
         ],
       });
@@ -99,7 +105,7 @@ export default function DealsPage() {
           </p>
         </div>
         <button
-          onClick={() => navigate('/leads')}
+          onClick={() => navigate("/leads")}
           className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
           + New Lead
@@ -116,9 +122,9 @@ export default function DealsPage() {
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => handleDrop(col.status)}
               className={cn(
-                'rounded-lg border bg-card/50 min-h-[400px] flex flex-col',
+                "rounded-lg border bg-card/50 min-h-[400px] flex flex-col",
                 col.color,
-                'border-t-2',
+                "border-t-2",
               )}
             >
               {/* Column Header */}
@@ -149,23 +155,23 @@ export default function DealsPage() {
                       onDragStart={() => handleDragStart(lead.id)}
                       onClick={() => navigate(`/leads/${lead.id}`)}
                       className={cn(
-                        'rounded-lg border bg-card p-3 cursor-grab active:cursor-grabbing hover:shadow-sm transition-shadow',
-                        draggingId === lead.id && 'opacity-50',
+                        "rounded-lg border bg-card p-3 cursor-grab active:cursor-grabbing hover:shadow-sm transition-shadow",
+                        draggingId === lead.id && "opacity-50",
                       )}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <p className="text-sm font-medium">{lead.name}</p>
                         <span
                           className={cn(
-                            'text-xs font-medium',
+                            "text-xs font-medium",
                             getScoreColor(lead.score),
                           )}
                         >
-                          {lead.score === 'hot'
-                            ? '🔥'
-                            : lead.score === 'warm'
-                              ? '👋'
-                              : '❄️'}
+                          {lead.score === "hot"
+                            ? "🔥"
+                            : lead.score === "warm"
+                              ? "👋"
+                              : "❄️"}
                         </span>
                       </div>
                       <div className="space-y-1">
@@ -230,7 +236,7 @@ export default function DealsPage() {
             </span>
           </div>
           <span className="text-muted-foreground text-sm">
-            {mortgageExpanded ? '▲' : '▼'}
+            {mortgageExpanded ? "▲" : "▼"}
           </span>
         </button>
 
@@ -238,11 +244,12 @@ export default function DealsPage() {
         {mortgageExpanded && (
           <div className="border-t px-4 py-4 space-y-4">
             {/* Deals with mortgages */}
-            {dealsWithMortgages.length === 0 && dealsWithoutMortgages.length === 0 && (
-              <div className="py-8 text-center text-sm text-muted-foreground">
-                No deals created yet. Close a lead to create a deal first.
-              </div>
-            )}
+            {dealsWithMortgages.length === 0 &&
+              dealsWithoutMortgages.length === 0 && (
+                <div className="py-8 text-center text-sm text-muted-foreground">
+                  No deals created yet. Close a lead to create a deal first.
+                </div>
+              )}
 
             {dealsWithMortgages.length > 0 && (
               <div className="space-y-3">
@@ -250,7 +257,10 @@ export default function DealsPage() {
                   Deals with Mortgages
                 </h3>
                 {dealsWithMortgages.map(({ deal, mortgages }) => (
-                  <div key={deal.id} className="rounded-lg border overflow-hidden">
+                  <div
+                    key={deal.id}
+                    className="rounded-lg border overflow-hidden"
+                  >
                     {/* Deal header */}
                     <button
                       onClick={() =>
@@ -276,20 +286,20 @@ export default function DealsPage() {
                           <span
                             key={m.id}
                             className={cn(
-                              'rounded-full px-2 py-0.5 text-[10px] font-medium',
-                              m.status === 'ongoing' &&
-                                'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
-                              m.status === 'approved' &&
-                                'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
-                              m.status === 'rejected' &&
-                                'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
+                              "rounded-full px-2 py-0.5 text-[10px] font-medium",
+                              m.status === "ongoing" &&
+                                "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200",
+                              m.status === "approved" &&
+                                "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200",
+                              m.status === "rejected" &&
+                                "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200",
                             )}
                           >
                             {m.bankName}: {m.status}
                           </span>
                         ))}
                         <span className="text-muted-foreground text-sm">
-                          {expandedMortgageDeal === deal.id ? '▲' : '▼'}
+                          {expandedMortgageDeal === deal.id ? "▲" : "▼"}
                         </span>
                       </div>
                     </button>
@@ -348,7 +358,7 @@ export default function DealsPage() {
             {/* View all link */}
             <div className="text-center pt-2">
               <button
-                onClick={() => navigate('/mortgages')}
+                onClick={() => navigate("/mortgages")}
                 className="text-sm text-primary hover:underline"
               >
                 View All Mortgages →
@@ -382,7 +392,7 @@ export default function DealsPage() {
             <h2 className="text-lg font-semibold">Referral Tracking</h2>
           </div>
           <span className="text-muted-foreground text-sm">
-            {referralExpanded ? '▲' : '▼'}
+            {referralExpanded ? "▲" : "▼"}
           </span>
         </button>
 
@@ -393,10 +403,12 @@ export default function DealsPage() {
 
             {/* Quick referral form */}
             <div className="space-y-2">
-              <h3 className="text-sm font-medium text-muted-foreground">Add Referral to a Deal</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Add Referral to a Deal
+              </h3>
               {showReferralForm ? (
                 <ReferralForm
-                  dealId={referralDealId || allDeals[0]?.id || ''}
+                  dealId={referralDealId || allDeals[0]?.id || ""}
                   onSuccess={() => setShowReferralForm(false)}
                   onClose={() => setShowReferralForm(false)}
                 />
@@ -437,7 +449,7 @@ export default function DealsPage() {
             <h2 className="text-lg font-semibold">Deal Checklists</h2>
           </div>
           <span className="text-muted-foreground text-sm">
-            {checklistExpanded ? '▲' : '▼'}
+            {checklistExpanded ? "▲" : "▼"}
           </span>
         </button>
 
@@ -450,24 +462,31 @@ export default function DealsPage() {
             ) : (
               <div className="space-y-3">
                 {allDeals.map((deal) => (
-                  <div key={deal.id} className="rounded-lg border overflow-hidden">
+                  <div
+                    key={deal.id}
+                    className="rounded-lg border overflow-hidden"
+                  >
                     <button
                       onClick={() =>
-                        setChecklistDealId(checklistDealId === deal.id ? null : deal.id)
+                        setChecklistDealId(
+                          checklistDealId === deal.id ? null : deal.id,
+                        )
                       }
                       className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span>🏆</span>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium truncate">{deal.clientName}</p>
+                          <p className="text-sm font-medium truncate">
+                            {deal.clientName}
+                          </p>
                           <p className="text-xs text-muted-foreground truncate">
                             {formatCurrency(deal.dealPrice)} · {deal.status}
                           </p>
                         </div>
                       </div>
                       <span className="text-muted-foreground text-sm">
-                        {checklistDealId === deal.id ? '▲' : '▼'}
+                        {checklistDealId === deal.id ? "▲" : "▼"}
                       </span>
                     </button>
 
@@ -482,7 +501,7 @@ export default function DealsPage() {
             )}
             <div className="text-center pt-2">
               <button
-                onClick={() => navigate('/checklist-templates')}
+                onClick={() => navigate("/checklist-templates")}
                 className="text-sm text-primary hover:underline"
               >
                 Manage Checklist Templates →

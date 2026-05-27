@@ -1,8 +1,8 @@
 // ─── Geocoding Service ─────────────────────────────────────────────
 // Uses OpenStreetMap/Nominatim free API with rate limiting + sessionStorage caching
 
-const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org/search';
-const CACHE_PREFIX = 'geocode_';
+const NOMINATIM_BASE = "https://nominatim.openstreetmap.org/search";
+const CACHE_PREFIX = "geocode_";
 
 interface NominatimResult {
   lat: string;
@@ -23,7 +23,9 @@ let lastRequestTime = 0;
 const MIN_INTERVAL_MS = 1100;
 
 function getCacheKey(address: string): string {
-  return CACHE_PREFIX + address.toLowerCase().replace(/\s+/g, '_').slice(0, 200);
+  return (
+    CACHE_PREFIX + address.toLowerCase().replace(/\s+/g, "_").slice(0, 200)
+  );
 }
 
 function getFromCache(address: string): GeocodedPoint | null {
@@ -50,7 +52,9 @@ async function rateLimit(): Promise<void> {
   const now = Date.now();
   const elapsed = now - lastRequestTime;
   if (elapsed < MIN_INTERVAL_MS) {
-    await new Promise((resolve) => setTimeout(resolve, MIN_INTERVAL_MS - elapsed));
+    await new Promise((resolve) =>
+      setTimeout(resolve, MIN_INTERVAL_MS - elapsed),
+    );
   }
   lastRequestTime = Date.now();
 }
@@ -59,7 +63,9 @@ async function rateLimit(): Promise<void> {
  * Geocode a full address string to lat/lng using Nominatim.
  * Results are cached in sessionStorage to minimize API calls.
  */
-export async function geocodeAddress(address: string): Promise<GeocodedPoint | null> {
+export async function geocodeAddress(
+  address: string,
+): Promise<GeocodedPoint | null> {
   if (!address || address.trim().length === 0) return null;
 
   // Check cache first
@@ -70,19 +76,21 @@ export async function geocodeAddress(address: string): Promise<GeocodedPoint | n
     await rateLimit();
 
     const url = new URL(NOMINATIM_BASE);
-    url.searchParams.set('q', address);
-    url.searchParams.set('format', 'json');
-    url.searchParams.set('limit', '1');
-    url.searchParams.set('addressdetails', '0');
+    url.searchParams.set("q", address);
+    url.searchParams.set("format", "json");
+    url.searchParams.set("limit", "1");
+    url.searchParams.set("addressdetails", "0");
 
     const res = await fetch(url.toString(), {
       headers: {
-        'User-Agent': 'RealEstateCRM/1.0 (brokerage-internal)',
+        "User-Agent": "RealEstateCRM/1.0 (brokerage-internal)",
       },
     });
 
     if (!res.ok) {
-      console.warn(`Nominatim geocoding failed: ${res.status} for "${address}"`);
+      console.warn(
+        `Nominatim geocoding failed: ${res.status} for "${address}"`,
+      );
       return null;
     }
 
@@ -105,7 +113,7 @@ export async function geocodeAddress(address: string): Promise<GeocodedPoint | n
 
     return point;
   } catch (err) {
-    console.error('Geocoding error:', err);
+    console.error("Geocoding error:", err);
     return null;
   }
 }
@@ -138,6 +146,6 @@ export function buildAddressString(
   city: string,
   province: string,
 ): string {
-  const parts = [address, city, province, 'Philippines'].filter(Boolean);
-  return parts.join(', ');
+  const parts = [address, city, province, "Philippines"].filter(Boolean);
+  return parts.join(", ");
 }

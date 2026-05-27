@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { useCollection } from '@/hooks/useFirestore';
-import { Lead, Viewing, VaultDocument } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { useMemo, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useCollection } from "@/hooks/useFirestore";
+import { Lead, Viewing, VaultDocument } from "@/types";
+import { formatDate } from "@/lib/utils";
 
 interface SmartReminder {
   id: string;
-  type: 'follow-up' | 'feedback' | 'document-expiry';
+  type: "follow-up" | "feedback" | "document-expiry";
   title: string;
   description: string;
   sourceUrl: string;
@@ -14,7 +14,7 @@ interface SmartReminder {
   color: string;
 }
 
-const DISMISSED_KEY = 'smart-reminders-dismissed';
+const DISMISSED_KEY = "smart-reminders-dismissed";
 
 function getDismissed(): Set<string> {
   try {
@@ -32,9 +32,12 @@ function saveDismissed(ids: Set<string>) {
 
 export default function SmartReminders() {
   const { userProfile } = useAuth();
-  const { data: leads } = useCollection<Lead>('leads', []);
-  const { data: viewings } = useCollection<Viewing>('viewings', []);
-  const { data: documents } = useCollection<VaultDocument>('vaultDocuments', []);
+  const { data: leads } = useCollection<Lead>("leads", []);
+  const { data: viewings } = useCollection<Viewing>("viewings", []);
+  const { data: documents } = useCollection<VaultDocument>(
+    "vaultDocuments",
+    [],
+  );
 
   const [dismissed, setDismissed] = useState<Set<string>>(getDismissed);
   const [now] = useState(() => Date.now());
@@ -47,30 +50,36 @@ export default function SmartReminders() {
     for (const lead of leads as (Lead & { id: string })[]) {
       if (!lead.assignedTo || lead.assignedTo !== userProfile?.id) continue;
       const lastActivity = lead.updatedAt || lead.createdAt;
-      if (now - lastActivity > threeDays && lead.status !== 'closed' && lead.status !== 'lost') {
+      if (
+        now - lastActivity > threeDays &&
+        lead.status !== "closed" &&
+        lead.status !== "lost"
+      ) {
         list.push({
           id: `followup-${lead.id}`,
-          type: 'follow-up',
+          type: "follow-up",
           title: `Follow up with ${lead.name}`,
           description: `Lead has been inactive since ${formatDate(lastActivity)}`,
           sourceUrl: `/leads/${lead.id}`,
-          icon: '👤',
-          color: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
+          icon: "👤",
+          color:
+            "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
         });
       }
     }
 
     // Viewings done with no feedback
     for (const viewing of viewings as (Viewing & { id: string })[]) {
-      if (viewing.status === 'done' && !viewing.feedback) {
+      if (viewing.status === "done" && !viewing.feedback) {
         list.push({
           id: `feedback-${viewing.id}`,
-          type: 'feedback',
+          type: "feedback",
           title: `Collect feedback for viewing`,
           description: `Viewing on ${formatDate(viewing.scheduledAt)} has no feedback recorded`,
           sourceUrl: `/viewings`,
-          icon: '📋',
-          color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
+          icon: "📋",
+          color:
+            "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
         });
       }
     }
@@ -78,15 +87,19 @@ export default function SmartReminders() {
     // Documents expiring in < 7 days
     const sevenDays = 7 * 24 * 60 * 60 * 1000;
     for (const doc of documents as (VaultDocument & { id: string })[]) {
-      if (doc.expiryDate && doc.expiryDate - now < sevenDays && doc.expiryDate > now) {
+      if (
+        doc.expiryDate &&
+        doc.expiryDate - now < sevenDays &&
+        doc.expiryDate > now
+      ) {
         list.push({
           id: `doc-expiry-${doc.id}`,
-          type: 'document-expiry',
+          type: "document-expiry",
           title: `Document "${doc.name}" expiring soon`,
           description: `Expires on ${formatDate(doc.expiryDate)}`,
           sourceUrl: `/vault`,
-          icon: '📄',
-          color: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
+          icon: "📄",
+          color: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
         });
       }
     }
@@ -150,8 +163,18 @@ export default function SmartReminders() {
               className="shrink-0 rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Dismiss"
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>

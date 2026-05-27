@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { useCollection } from '@/hooks/useFirestore';
-import { createDocumentRequest } from '@/services/documentVault';
-import { AppUser } from '@/types';
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useCollection } from "@/hooks/useFirestore";
+import { createDocumentRequest } from "@/services/documentVault";
+import { AppUser } from "@/types";
 
 interface DocumentRequestModalProps {
   open: boolean;
@@ -19,24 +19,22 @@ export default function DocumentRequestModal({
 }: DocumentRequestModalProps) {
   const { userProfile } = useAuth();
   const { data: agents, loading: agentsLoading } = useCollection<AppUser>(
-    'users',
-    userProfile?.role === 'broker'
-      ? []
-      : [],
+    "users",
+    userProfile?.role === "broker" ? [] : [],
   );
 
-  const [toUserId, setToUserId] = useState('');
-  const [dealId, setDealId] = useState(prefillDealId || '');
-  const [description, setDescription] = useState('');
+  const [toUserId, setToUserId] = useState("");
+  const [dealId, setDealId] = useState(prefillDealId || "");
+  const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
       setTimeout(() => {
-        setToUserId('');
-        setDealId(prefillDealId || '');
-        setDescription('');
+        setToUserId("");
+        setDealId(prefillDealId || "");
+        setDescription("");
         setError(null);
         setSubmitting(false);
       }, 0);
@@ -44,13 +42,15 @@ export default function DocumentRequestModal({
   }, [open, prefillDealId]);
 
   // Filter to show only agents (not the current user)
-  const availableAgents = agents.filter((a) => a.id !== userProfile?.id && a.role !== 'broker');
-  const broker = agents.find((a) => a.role === 'broker');
+  const availableAgents = agents.filter(
+    (a) => a.id !== userProfile?.id && a.role !== "broker",
+  );
+  const broker = agents.find((a) => a.role === "broker");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!toUserId || !description || !userProfile) {
-      setError('Please fill in all required fields');
+      setError("Please fill in all required fields");
       return;
     }
 
@@ -67,7 +67,8 @@ export default function DocumentRequestModal({
       onSuccess();
       onClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to create request';
+      const message =
+        err instanceof Error ? err.message : "Failed to create request";
       setError(message);
     } finally {
       setSubmitting(false);
@@ -92,7 +93,9 @@ export default function DocumentRequestModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Request To */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Request From *</label>
+            <label className="mb-1 block text-sm font-medium">
+              Request From *
+            </label>
             <select
               value={toUserId}
               onChange={(e) => setToUserId(e.target.value)}
@@ -100,7 +103,7 @@ export default function DocumentRequestModal({
               required
             >
               <option value="">Select an agent...</option>
-              {userProfile?.role === 'agent' && broker && (
+              {userProfile?.role === "agent" && broker && (
                 <optgroup label="Broker">
                   <option value={broker.id}>
                     {broker.displayName} (Broker)
@@ -108,10 +111,15 @@ export default function DocumentRequestModal({
                 </optgroup>
               )}
               {availableAgents.length > 0 && (
-                <optgroup label={userProfile?.role === 'broker' ? 'Agents' : 'Other Agents'}>
+                <optgroup
+                  label={
+                    userProfile?.role === "broker" ? "Agents" : "Other Agents"
+                  }
+                >
                   {availableAgents.map((agent) => (
                     <option key={agent.id} value={agent.id}>
-                      {agent.displayName} {agent.role !== 'agent' ? `(${agent.role})` : ''}
+                      {agent.displayName}{" "}
+                      {agent.role !== "agent" ? `(${agent.role})` : ""}
                     </option>
                   ))}
                 </optgroup>
@@ -137,7 +145,9 @@ export default function DocumentRequestModal({
 
           {/* Description */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Description *</label>
+            <label className="mb-1 block text-sm font-medium">
+              Description *
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -170,7 +180,7 @@ export default function DocumentRequestModal({
               className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               disabled={submitting || !toUserId || !description}
             >
-              {submitting ? 'Sending...' : 'Send Request'}
+              {submitting ? "Sending..." : "Send Request"}
             </button>
           </div>
         </form>

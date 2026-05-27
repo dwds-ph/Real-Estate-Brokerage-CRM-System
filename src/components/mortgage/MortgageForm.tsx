@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
-import { createMortgage, updateMortgage, BANKS } from '@/services/mortgageService';
-import { Mortgage } from '@/types';
-import { formatCurrency } from '@/lib/utils';
+import { useState, useEffect } from "react";
+import {
+  createMortgage,
+  updateMortgage,
+  BANKS,
+} from "@/services/mortgageService";
+import { Mortgage } from "@/types";
+import { formatCurrency } from "@/lib/utils";
 
 interface MortgageFormProps {
   open: boolean;
@@ -18,10 +22,10 @@ export default function MortgageForm({
   dealId,
   existingMortgage,
 }: MortgageFormProps) {
-  const [bankId, setBankId] = useState('bpi');
-  const [bankName, setBankName] = useState('BPI');
-  const [loanAmount, setLoanAmount] = useState('');
-  const [notes, setNotes] = useState('');
+  const [bankId, setBankId] = useState("bpi");
+  const [bankName, setBankName] = useState("BPI");
+  const [loanAmount, setLoanAmount] = useState("");
+  const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,12 +36,12 @@ export default function MortgageForm({
           setBankId(existingMortgage.bankId);
           setBankName(existingMortgage.bankName);
           setLoanAmount(existingMortgage.loanAmount.toString());
-          setNotes('');
+          setNotes("");
         } else {
-          setBankId('bpi');
-          setBankName('BPI');
-          setLoanAmount('');
-          setNotes('');
+          setBankId("bpi");
+          setBankName("BPI");
+          setLoanAmount("");
+          setNotes("");
         }
         setError(null);
         setSaving(false);
@@ -55,7 +59,7 @@ export default function MortgageForm({
     e.preventDefault();
     if (!dealId && !existingMortgage) return;
     if (!loanAmount || isNaN(Number(loanAmount)) || Number(loanAmount) <= 0) {
-      setError('Please enter a valid loan amount');
+      setError("Please enter a valid loan amount");
       return;
     }
 
@@ -80,7 +84,8 @@ export default function MortgageForm({
       onSuccess();
       onClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to save mortgage';
+      const message =
+        err instanceof Error ? err.message : "Failed to save mortgage";
       setError(message);
     } finally {
       setSaving(false);
@@ -96,7 +101,7 @@ export default function MortgageForm({
       <div className="w-full max-w-md rounded-xl border bg-card p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">
-            {existingMortgage ? 'Edit Mortgage' : 'New Mortgage'}
+            {existingMortgage ? "Edit Mortgage" : "New Mortgage"}
           </h2>
           <button
             onClick={onClose}
@@ -118,8 +123,8 @@ export default function MortgageForm({
                   onClick={() => handleBankChange(bank.id)}
                   className={`rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
                     bankId === bank.id
-                      ? 'border-primary bg-primary/5 text-primary font-medium'
-                      : 'hover:bg-muted'
+                      ? "border-primary bg-primary/5 text-primary font-medium"
+                      : "hover:bg-muted"
                   }`}
                 >
                   <span className="block text-sm font-medium">{bank.name}</span>
@@ -135,7 +140,7 @@ export default function MortgageForm({
           {selectedBank && (
             <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
               <p>
-                <strong>{selectedBank.name}</strong> — Estimated timeline:{' '}
+                <strong>{selectedBank.name}</strong> — Estimated timeline:{" "}
                 {selectedBank.estimatedTimelineDays} days
               </p>
               <p>Typical rate: {selectedBank.typicalRate}</p>
@@ -144,7 +149,9 @@ export default function MortgageForm({
 
           {/* Loan Amount */}
           <div>
-            <label className="mb-1 block text-sm font-medium">Loan Amount (₱)</label>
+            <label className="mb-1 block text-sm font-medium">
+              Loan Amount (₱)
+            </label>
             <input
               type="number"
               value={loanAmount}
@@ -154,11 +161,13 @@ export default function MortgageForm({
               min={0}
               required
             />
-            {loanAmount && !isNaN(Number(loanAmount)) && Number(loanAmount) > 0 && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                {formatCurrency(Number(loanAmount))}
-              </p>
-            )}
+            {loanAmount &&
+              !isNaN(Number(loanAmount)) &&
+              Number(loanAmount) > 0 && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {formatCurrency(Number(loanAmount))}
+                </p>
+              )}
           </div>
 
           {/* Notes */}
@@ -195,7 +204,11 @@ export default function MortgageForm({
               className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               disabled={saving || !loanAmount}
             >
-              {saving ? 'Saving...' : existingMortgage ? 'Update' : 'Create Mortgage'}
+              {saving
+                ? "Saving..."
+                : existingMortgage
+                  ? "Update"
+                  : "Create Mortgage"}
             </button>
           </div>
         </form>
