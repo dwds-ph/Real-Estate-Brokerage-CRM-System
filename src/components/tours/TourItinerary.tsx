@@ -28,7 +28,11 @@ export default function TourItinerary({
   const completedStops = tour.stops.filter((s) => s.feedback).length;
 
   const handleStatusChange = async (status: string) => {
-    if (status === "in-progress" || status === "completed" || status === "cancelled") {
+    if (
+      status === "in-progress" ||
+      status === "completed" ||
+      status === "cancelled"
+    ) {
       await updateTourStatus(tour.id, status);
     }
   };

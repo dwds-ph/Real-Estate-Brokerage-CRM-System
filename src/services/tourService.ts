@@ -28,21 +28,15 @@ export function subscribeToursForAgent(
 
   const q = query(collection(db, "tours"), ...constraints);
   return onSnapshot(q, (snapshot) => {
-    const tours = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Tour,
-    );
+    const tours = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Tour);
     callback(tours);
   });
 }
 
-export function subscribeToursForBroker(
-  callback: (tours: Tour[]) => void,
-) {
+export function subscribeToursForBroker(callback: (tours: Tour[]) => void) {
   const q = query(collection(db, "tours"), orderBy("scheduledDate", "desc"));
   return onSnapshot(q, (snapshot) => {
-    const tours = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Tour,
-    );
+    const tours = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Tour);
     callback(tours);
   });
 }
@@ -57,9 +51,7 @@ export function subscribeToursByStatus(
   ];
   const q = query(collection(db, "tours"), ...constraints);
   return onSnapshot(q, (snapshot) => {
-    const tours = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Tour,
-    );
+    const tours = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Tour);
     callback(tours);
   });
 }
@@ -101,8 +93,7 @@ export async function updateTourStatus(tourId: string, status: TourStatus) {
 export function getTourStatusColor(status: string): string {
   const colors: Record<string, string> = {
     draft: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-    confirmed:
-      "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+    confirmed: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
     "in-progress":
       "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
     completed:
@@ -138,12 +129,8 @@ export function formatDuration(minutes: number): string {
   return `${hrs}h ${mins}m`;
 }
 
-export function generateGoogleMapsUrl(
-  stops: Tour["stops"],
-): string {
+export function generateGoogleMapsUrl(stops: Tour["stops"]): string {
   if (stops.length === 0) return "";
-  const addresses = stops.map((s) =>
-    encodeURIComponent(s.listingAddress),
-  );
+  const addresses = stops.map((s) => encodeURIComponent(s.listingAddress));
   return `https://www.google.com/maps/dir/${addresses.join("/")}`;
 }

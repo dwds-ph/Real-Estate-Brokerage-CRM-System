@@ -478,7 +478,12 @@ export interface AchievementBadge {
 
 // ─── Phase 5: Property Tour Builder ──────────────────────────────────
 
-export type TourStatus = "draft" | "confirmed" | "in-progress" | "completed" | "cancelled";
+export type TourStatus =
+  | "draft"
+  | "confirmed"
+  | "in-progress"
+  | "completed"
+  | "cancelled";
 
 export interface TourStop {
   id: string;
@@ -510,6 +515,34 @@ export interface Tour {
   status: TourStatus;
   notes?: string;
   stops: TourStop[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+// ─── Phase 6: License Expiry Tracker ────────────────────────────────
+
+export type LicenseType =
+  | "prc"
+  | "broker-license"
+  | "bir-accreditation"
+  | "hlurb"
+  | "other";
+export type LicenseStatus = "active" | "expiring-soon" | "expired" | "renewed";
+
+export interface License {
+  id: string;
+  agentId: string;
+  agentName: string;
+  type: LicenseType;
+  licenseNumber: string;
+  issuingBody: string;
+  issueDate: number;
+  expiryDate: number;
+  status: LicenseStatus;
+  renewedLicenseId?: string;
+  notes?: string;
+  documentUrl?: string;
+  createdBy: string;
   createdAt: number;
   updatedAt: number;
 }

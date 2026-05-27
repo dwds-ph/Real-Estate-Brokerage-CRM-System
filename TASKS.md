@@ -140,6 +140,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ lint ✓ build ✓
 
 **Files created:**
+
 - `src/types/index.ts` — Tour, TourStop, TourStatus types
 - `src/services/tourService.ts`
 - `src/components/tours/TourBuilder.tsx`
@@ -151,6 +152,34 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `src/pages/ToursPage.tsx`
 - `src/App.tsx` / `src/components/layout/AppLayout.tsx` — routing + nav
 - `firestore.rules` — tours collection
+
+---
+
+## ✅ Phase 6: 🆔 License Expiry Tracker — COMPLETE
+
+**Goal:** Track PRC licenses, broker accreditations, BIR registrations, and HLURB licenses with expiry monitoring, renewal status, and compliance dashboard.
+
+### Tasks
+
+- [x] **6.1** Define `License`, `LicenseType`, `LicenseStatus` types in `src/types/index.ts`
+- [x] **6.2** Create `src/services/licenseService.ts` — CRUD + real-time listeners + expiry calculations (active/expiring-soon/expired/renewed)
+- [x] **6.3** Create `LicenseList.tsx` — list with status badges, expiry countdown, agent grouping, edit/delete actions
+- [x] **6.4** Create `LicenseForm.tsx` — add/edit form with PH license types, issuing body auto-fill, date pickers
+- [x] **6.5** Create `LicenseDashboard.tsx` — summary cards (active/expiring/expired/renewed), compliance rate bar, urgent alerts
+- [x] **6.6** Add route `/licenses` + sidebar nav entry
+- [x] **6.7** Firestore rules for `licenses` collection
+- [x] **Validation:** typecheck ✓ lint ✓ build ✓
+
+**Files created:**
+- `src/types/index.ts` — License, LicenseType, LicenseStatus types
+- `src/services/licenseService.ts`
+- `src/components/licenses/LicenseList.tsx`
+- `src/components/licenses/LicenseForm.tsx`
+- `src/components/licenses/LicenseDashboard.tsx`
+- `src/components/licenses/index.ts`
+- `src/pages/LicensesPage.tsx`
+- `src/App.tsx` / `src/components/layout/AppLayout.tsx` — routing + nav
+- `firestore.rules` — licenses collection
 
 ---
 

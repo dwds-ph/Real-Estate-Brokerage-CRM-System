@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Tour } from "@/types";
-import { TourList, TourBuilder, TourItinerary, TourFeedback } from "@/components/tours";
+import {
+  TourList,
+  TourBuilder,
+  TourItinerary,
+  TourFeedback,
+} from "@/components/tours";
 
 type ViewState =
   | { type: "list" }
@@ -34,9 +39,7 @@ export default function ToursPage() {
           </div>
           <TourList
             onEditTour={(tour) => setView({ type: "builder", tour })}
-            onViewItinerary={(tour) =>
-              setView({ type: "itinerary", tour })
-            }
+            onViewItinerary={(tour) => setView({ type: "itinerary", tour })}
             refreshKey={refreshKey}
           />
         </div>
@@ -65,9 +68,7 @@ export default function ToursPage() {
               triggerRefresh();
               setView({ type: "list" });
             }}
-            onEdit={() =>
-              setView({ type: "builder", tour: view.tour })
-            }
+            onEdit={() => setView({ type: "builder", tour: view.tour })}
             onFeedback={(tour) => setView({ type: "feedback", tour })}
           />
         </div>
@@ -82,9 +83,7 @@ export default function ToursPage() {
               triggerRefresh();
               setView({ type: "itinerary", tour: updated });
             }}
-            onCancel={() =>
-              setView({ type: "itinerary", tour: view.tour })
-            }
+            onCancel={() => setView({ type: "itinerary", tour: view.tour })}
           />
         </div>
       );

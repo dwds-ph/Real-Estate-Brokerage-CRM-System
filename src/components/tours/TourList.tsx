@@ -99,22 +99,29 @@ export default function TourList({
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-1.5 flex-wrap">
-          {(["all", "in-progress", "confirmed", "draft", "completed", "cancelled"] as const).map(
-            (f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={cn(
-                  "rounded-full px-3 py-1 text-xs font-medium transition-colors",
-                  filter === f
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80",
-                )}
-              >
-                {f === "all" ? "All" : getTourStatusLabel(f)}
-              </button>
-            ),
-          )}
+          {(
+            [
+              "all",
+              "in-progress",
+              "confirmed",
+              "draft",
+              "completed",
+              "cancelled",
+            ] as const
+          ).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={cn(
+                "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                filter === f
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80",
+              )}
+            >
+              {f === "all" ? "All" : getTourStatusLabel(f)}
+            </button>
+          ))}
         </div>
         <input
           type="text"
@@ -174,7 +181,9 @@ export default function TourList({
                           <span>👤 {tour.clientName}</span>
                           <span>📅 {formatDate(tour.scheduledDate)}</span>
                           <span>🏠 {tour.stops.length} stops</span>
-                          <span>⏱ {formatDuration(getTotalTourDuration(tour.stops))}</span>
+                          <span>
+                            ⏱ {formatDuration(getTotalTourDuration(tour.stops))}
+                          </span>
                         </div>
                       </div>
                       <div className="flex gap-1 shrink-0">

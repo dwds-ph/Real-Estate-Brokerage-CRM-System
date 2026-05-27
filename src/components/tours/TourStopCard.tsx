@@ -64,8 +64,7 @@ export default function TourStopCard({
                 <span
                   className={cn("font-medium", {
                     "text-green-600": stop.feedback.interestLevel === "high",
-                    "text-yellow-600":
-                      stop.feedback.interestLevel === "medium",
+                    "text-yellow-600": stop.feedback.interestLevel === "medium",
                     "text-red-600": stop.feedback.interestLevel === "low",
                   })}
                 >

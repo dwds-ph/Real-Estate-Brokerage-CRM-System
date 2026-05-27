@@ -33,6 +33,7 @@ import MortgagePage from "@/pages/MortgagePage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import ChecklistTemplatesPage from "@/pages/ChecklistTemplatesPage";
 import ActivityPage from "@/pages/ActivityPage";
+import LicensesPage from "@/pages/LicensesPage";
 import ToursPage from "@/pages/ToursPage";
 import LeaderboardPage from "@/pages/LeaderboardPage";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
@@ -93,6 +94,7 @@ function App() {
                 element={<ChecklistTemplatesPage />}
               />
               <Route path="/activity" element={<ActivityPage />} />
+              <Route path="/licenses" element={<LicensesPage />} />
               <Route path="/tours" element={<ToursPage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route

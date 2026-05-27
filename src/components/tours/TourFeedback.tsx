@@ -36,7 +36,17 @@ export default function TourFeedback({
     setStops(
       stops.map((s) =>
         s.id === stopId
-          ? { ...s, feedback: { ...(s.feedback || { interestLevel: "medium", concerns: "", nextSteps: "" }), ...updates } }
+          ? {
+              ...s,
+              feedback: {
+                ...(s.feedback || {
+                  interestLevel: "medium",
+                  concerns: "",
+                  nextSteps: "",
+                }),
+                ...updates,
+              },
+            }
           : s,
       ),
     );
@@ -76,9 +86,7 @@ export default function TourFeedback({
     }
   }
 
-  const allFeedbackGiven = stops.every(
-    (s) => s.feedback?.interestLevel,
-  );
+  const allFeedbackGiven = stops.every((s) => s.feedback?.interestLevel);
 
   return (
     <div className="space-y-6">
@@ -185,9 +193,7 @@ export default function TourFeedback({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Next Steps
-            </label>
+            <label className="block text-sm font-medium mb-1">Next Steps</label>
             <input
               type="text"
               value={currentStop.feedback?.nextSteps || ""}

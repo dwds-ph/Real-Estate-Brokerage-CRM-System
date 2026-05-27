@@ -30,9 +30,7 @@ export default function TourBuilder({
 
   const [title, setTitle] = useState(tour?.title || "");
   const [clientName, setClientName] = useState(tour?.clientName || "");
-  const [clientContact, setClientContact] = useState(
-    tour?.clientContact || "",
-  );
+  const [clientContact, setClientContact] = useState(tour?.clientContact || "");
   const [clientEmail, setClientEmail] = useState(tour?.clientEmail || "");
   const [scheduledDate, setScheduledDate] = useState(
     tour ? dateToInput(tour.scheduledDate) : "",
@@ -94,8 +92,7 @@ export default function TourBuilder({
     setStops(
       stops.map((s, i) => {
         const scheduledTime = currentTime;
-        const driveTime =
-          i > 0 ? stops[i - 1].driveTime || 0 : 0;
+        const driveTime = i > 0 ? stops[i - 1].driveTime || 0 : 0;
         currentTime += (s.estimatedDuration + driveTime) * 60 * 1000;
         return {
           ...s,
@@ -114,9 +111,11 @@ export default function TourBuilder({
     const finalStops = stops.map((s, i) => ({
       ...s,
       driveTime: s.driveTime ?? (i > 0 ? 15 : 0),
-      scheduledTime: s.scheduledTime ?? (scheduledDate
-        ? new Date(scheduledDate).getTime() + i * 30 * 60 * 1000
-        : undefined),
+      scheduledTime:
+        s.scheduledTime ??
+        (scheduledDate
+          ? new Date(scheduledDate).getTime() + i * 30 * 60 * 1000
+          : undefined),
     }));
 
     try {
@@ -476,9 +475,7 @@ export default function TourBuilder({
             </div>
             <div>
               <span className="text-muted-foreground">Date:</span>{" "}
-              {scheduledDate
-                ? new Date(scheduledDate).toLocaleString()
-                : "—"}
+              {scheduledDate ? new Date(scheduledDate).toLocaleString() : "—"}
             </div>
             <div>
               <span className="text-muted-foreground">Stops:</span>{" "}
