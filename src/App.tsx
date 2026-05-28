@@ -6,6 +6,7 @@ import { useFcmService } from "@/services/fcm";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import ShortcutsHelpModal from "@/components/ShortcutsHelpModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ToastContainer } from "@/components/ui/Toast";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import AppLayout from "@/components/layout/AppLayout";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
@@ -59,6 +60,7 @@ const DocumentsPage = lazy(() => import("@/pages/DocumentsPage"));
 const CompliancePage = lazy(() => import("@/pages/CompliancePage"));
 const CMAPage = lazy(() => import("@/pages/CMAPage"));
 const SeedDataPage = lazy(() => import("@/pages/SeedDataPage"));
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
 function PageLoader() {
   return (
@@ -91,6 +93,7 @@ function App() {
         <OfflineIndicator />
         <AppContent />
         <AppKeyboardShortcuts />
+        <ToastContainer />
         <Suspense fallback={<PageLoader />}>
           <ErrorBoundary>
             <Routes>
@@ -153,6 +156,7 @@ function App() {
                   <Route path="/seed-data" element={<SeedDataPage />} />
                 </Route>
               </Route>
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </ErrorBoundary>
         </Suspense>
