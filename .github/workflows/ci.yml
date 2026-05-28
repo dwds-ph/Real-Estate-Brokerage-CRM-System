@@ -26,19 +26,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "yarn"
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: TypeScript type checking
-        run: npx tsc --noEmit
+        run: yarn typecheck
 
       - name: ESLint
-        run: npm run lint
+        run: yarn lint
 
       - name: Unit tests with coverage
-        run: npm run test -- --run --coverage
+        run: yarn test:coverage
 
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
@@ -60,13 +60,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "yarn"
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Build
-        run: npm run build
+        run: yarn build
 
   e2e:
     name: E2E Tests
@@ -81,16 +81,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "yarn"
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Install Playwright
-        run: npx playwright install --with-deps
+        run: yarn playwright install --with-deps
 
       - name: Run E2E tests
-        run: npm run e2e
+        run: yarn e2e
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
