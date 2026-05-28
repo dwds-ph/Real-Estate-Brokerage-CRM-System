@@ -98,12 +98,12 @@ export function useLeadsPage() {
           }
         }
         resetForm();
-      } catch (err) {
-        console.error("Failed to save lead:", err);
+      } catch (e) {
+        console.error("Failed to save lead:", e);
         toast(
           "error",
           "Failed to save lead",
-          err instanceof Error ? err.message : "Unknown error",
+          e instanceof Error ? e.message : "Unknown error",
         );
       }
     },
@@ -115,12 +115,8 @@ export function useLeadsPage() {
     try {
       await deleteDocById("leads", id);
       toast("success", "Lead deleted");
-    } catch (err) {
-      toast(
-        "error",
-        "Failed to delete lead",
-        err instanceof Error ? err.message : "Unknown error",
-      );
+    } catch {
+      toast("error", "Failed to delete lead");
     }
   };
 

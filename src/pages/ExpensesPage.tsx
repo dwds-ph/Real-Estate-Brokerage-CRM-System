@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCollection, createDoc, deleteDocById } from "@/hooks/useFirestore";
 import { Expense, ExpenseCategory } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { toast } from "@/components/ui/Toast";
 
 const CATEGORIES: { value: ExpenseCategory; label: string; icon: string }[] = [
   { value: "transportation", label: "Transportation", icon: "🚗" },
@@ -32,25 +33,35 @@ export default function ExpensesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userProfile) return;
-    await createDoc("expenses", {
-      ...form,
-      amount: Number(form.amount),
-      date: new Date(form.date).getTime(),
-      agentId: userProfile.id,
-      brokerId: userProfile.brokerId || userProfile.id,
-    });
-    setForm({
-      category: "transportation",
-      amount: "",
-      date: new Date().toISOString().split("T")[0],
-      note: "",
-    });
-    setShowForm(false);
+    try {
+      await createDoc("expenses", {
+        ...form,
+        amount: Number(form.amount),
+        date: new Date(form.date).getTime(),
+        agentId: userProfile.id,
+        brokerId: userProfile.brokerId || userProfile.id,
+      });
+      toast("success", "Expense added", `${form.category}: ₱${form.amount}`);
+      setForm({
+        category: "transportation",
+        amount: "",
+        date: new Date().toISOString().split("T")[0],
+        note: "",
+      });
+      setShowForm(false);
+    } catch {
+      toast("error", "Failed to add expense");
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this expense?")) return;
-    await deleteDocById("expenses", id);
+    try {
+      await deleteDocById("expenses", id);
+      toast("success", "Expense deleted");
+    } catch {
+      toast("error", "Failed to delete expense");
+    }
   };
 
   return (

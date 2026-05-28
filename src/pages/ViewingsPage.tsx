@@ -4,6 +4,7 @@ import { useCollection } from "@/hooks/useFirestore";
 import { createDoc, updateDocById } from "@/hooks/useFirestore";
 import { Viewing, ViewingStatus } from "@/types";
 import { formatDateTime, cn } from "@/lib/utils";
+import { toast } from "@/components/ui/Toast";
 
 export default function ViewingsPage() {
   const { userProfile } = useAuth();
@@ -20,20 +21,30 @@ export default function ViewingsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userProfile) return;
-    await createDoc("viewings", {
-      ...form,
-      scheduledAt: new Date(form.scheduledAt).getTime(),
-      agentId: userProfile.id,
-      status: "scheduled",
-      photos: [],
-      createdAt: Date.now(),
-    });
-    setShowForm(false);
-    setForm({ leadId: "", listingId: "", scheduledAt: "", notes: "" });
+    try {
+      await createDoc("viewings", {
+        ...form,
+        scheduledAt: new Date(form.scheduledAt).getTime(),
+        agentId: userProfile.id,
+        status: "scheduled",
+        photos: [],
+        createdAt: Date.now(),
+      });
+      toast("success", "Viewing scheduled");
+      setShowForm(false);
+      setForm({ leadId: "", listingId: "", scheduledAt: "", notes: "" });
+    } catch {
+      toast("error", "Failed to schedule viewing");
+    }
   };
 
   const handleStatusChange = async (id: string, status: ViewingStatus) => {
-    await updateDocById("viewings", id, { status });
+    try {
+      await updateDocById("viewings", id, { status });
+      toast("success", `Viewing ${status}`);
+    } catch {
+      toast("error", "Failed to update viewing");
+    }
   };
 
   const upcoming = viewings
