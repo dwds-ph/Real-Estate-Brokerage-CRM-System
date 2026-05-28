@@ -1,71 +1,40 @@
 #!/usr/bin/env bash
+# Real Estate CRM — Deploy Script
 set -euo pipefail
 
-echo "🚀 Real Estate CRM — Deploy Script"
-echo "==================================="
-echo ""
+echo "🚀 Deploying Real Estate CRM..."
 
-# ─── FIRST-TIME SETUP GUIDE ──────────────────────────────────────────
-# Before running this script for the first time:
-#
-#   1. Create a Firebase project in the console:
-#      https://console.firebase.google.com
-#
-#   2. Enable: Authentication (Email/Password), Firestore, Storage, Hosting
-#
-#   3. Get your Firebase config values from Project Settings → General → Web App
-#
-#   4. Create .env with those values (see .env.example):
-#      cp .env.example .env
-#      # Edit .env with your 6 Firebase config values
-#
-#   5. Link the project:
-#      firebase use --add
-#
-#   6. Optional: Generate a service account key for CI/CD:
-#      Project Settings → Service Accounts → Generate new private key
-#
-#   7. Run me!  ./deploy.sh
-# ──────────────────────────────────────────────────────────────────────
+# Check prerequisites
+command -v firebase >/dev/null 2>&1 || { echo "❌ Install firebase-tools: npm install -g firebase-tools"; exit 1; }
 
-# 1. Check prerequisites
-command -v firebase >/dev/null 2>&1 || { echo "❌ firebase-tools not found. Run: npm install -g firebase-tools"; exit 1; }
-
-# 2. Verify .firebaserc is configured
+# Read project from .firebaserc
 PROJECT_ID=$(grep -oP '"default"\s*:\s*"\K[^"]+' .firebaserc 2>/dev/null || echo "")
-if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" = "YOUR_FIREBASE_PROJECT_ID" ]; then
-  echo "⚠️  .firebaserc not configured. Run: firebase use --add"
-  echo "   Then edit .firebaserc to set your project ID."
-  echo "   Or set: export FIREBASE_PROJECT_ID=your-project-id"
-  echo ""
+if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" = "demo-crm" ]; then
+  echo "⚠️  .firebaserc not configured with a real project ID."
+  echo "   Edit .firebaserc or run: firebase use --add"
+  echo "   Or set: FIREBASE_PROJECT_ID=your-project-id ./deploy.sh"
   PROJECT_ID="${FIREBASE_PROJECT_ID:-}"
-  if [ -z "$PROJECT_ID" ]; then
-    echo "❌ No project ID found. Aborting."
-    exit 1
-  fi
+  [ -z "$PROJECT_ID" ] && { echo "❌ No project ID. Aborting."; exit 1; }
 fi
 
 echo "📁 Project: $PROJECT_ID"
-echo ""
 
-# 3. Build
-echo "🔨 Building SPA..."
+# Build
+echo "🔨 Building..."
 yarn build
 echo "✅ Build complete"
-echo ""
 
-# 4. Deploy Firestore rules + indexes + storage rules
-echo "📜 Deploying Firestore rules & indexes..."
+# Deploy Firestore rules + indexes + storage rules
+echo "📜 Deploying rules..."
 firebase deploy --only firestore:rules,firestore:indexes,storage:rules --project "$PROJECT_ID"
-echo "✅ Firestore & Storage rules deployed"
-echo ""
+echo "✅ Rules deployed"
 
-# 5. Deploy Hosting
-echo "🌐 Deploying to Firebase Hosting..."
+# Deploy Hosting
+echo "🌐 Deploying Hosting..."
 firebase deploy --only hosting --project "$PROJECT_ID"
 echo "✅ Hosting deployed"
-echo ""
 
+echo ""
 echo "🎉 Deployment complete!"
-echo "   App:    https://$PROJECT_ID.web.app"
-echo "   Seed:   https://$PROJECT_ID.web.app/seed-data"
+echo "   App: https://$PROJECT_ID.web.app"
+echo "   Seed: https://$PROJECT_ID.web.app/seed-data"
