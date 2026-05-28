@@ -22,7 +22,7 @@ export function subscribePayouts(
   callback: (payouts: Payout[]) => void,
   onError?: (error: string) => void,
 ): Unsubscribe {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
 
   const constraints: QueryConstraint[] = [
     where("brokerId", "==", brokerId),
@@ -36,7 +36,7 @@ export function subscribePendingPayouts(
   brokerId: string | undefined,
   callback: (payouts: Payout[]) => void,
 ): Unsubscribe {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
 
   const constraints: QueryConstraint[] = [
     where("brokerId", "==", brokerId),
@@ -60,12 +60,12 @@ export async function updatePayoutStatus(
 
   if (status === "approved") {
     updateData.approvedAt = Date.now();
-    if (userId) updateData.approvedBy = userId;
+    if (userId) {updateData.approvedBy = userId;}
   }
 
   if (status === "paid") {
     updateData.paidAt = Date.now();
-    if (userId) updateData.paidBy = userId;
+    if (userId) {updateData.paidBy = userId;}
   }
 
   await updateDocument(COLLECTIONS.PAYOUTS, payoutId, updateData as Partial<Payout>);
@@ -78,7 +78,7 @@ export async function bulkUpdatePayoutStatus(
   status: Payout["status"],
   userId?: string,
 ) {
-  if (payoutIds.length === 0) return;
+  if (payoutIds.length === 0) {return;}
 
   const batch = writeBatch(db);
   const now = Date.now();
@@ -92,12 +92,12 @@ export async function bulkUpdatePayoutStatus(
 
     if (status === "approved") {
       updateData.approvedAt = now;
-      if (userId) updateData.approvedBy = userId;
+      if (userId) {updateData.approvedBy = userId;}
     }
 
     if (status === "paid") {
       updateData.paidAt = now;
-      if (userId) updateData.paidBy = userId;
+      if (userId) {updateData.paidBy = userId;}
     }
 
     batch.update(ref, updateData);

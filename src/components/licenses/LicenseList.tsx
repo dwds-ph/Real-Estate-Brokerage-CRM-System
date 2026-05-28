@@ -114,8 +114,9 @@ export default function LicenseList({
                   </button>
                   <button
                     onClick={() => {
+                      // eslint-disable-next-line no-alert
                       if (window.confirm("Delete this license entry?"))
-                        onDelete(license.id);
+                        {onDelete(license.id);}
                     }}
                     className="rounded-md px-2 py-1 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                   >

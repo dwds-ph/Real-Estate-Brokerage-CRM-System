@@ -7,7 +7,7 @@ export function subscribeComplianceChecklists(
   callback?: (items: ComplianceChecklist[]) => void,
   onError?: (error: string) => void,
 ) {
-  if (!dealId) return () => {};
+  if (!dealId) {return () => {};}
   return subscribeToQuery<ComplianceChecklist>(
     COLLECTIONS.COMPLIANCE_CHECKLISTS,
     [where("dealId", "==", dealId), orderBy("createdAt", "desc")],

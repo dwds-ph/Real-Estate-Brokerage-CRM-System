@@ -16,7 +16,7 @@ const mockDeals = vi.fn();
 
 vi.mock("@/hooks/useFirestore", () => ({
   useCollection: vi.fn((collectionName: string) => {
-    if (collectionName === "deals") return { data: mockDeals(), loading: false, error: null };
+    if (collectionName === "deals") {return { data: mockDeals(), loading: false, error: null };}
     return { data: [], loading: false, error: null };
   }),
   createDoc: vi.fn(),

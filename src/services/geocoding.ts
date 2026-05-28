@@ -66,11 +66,11 @@ async function rateLimit(): Promise<void> {
 export async function geocodeAddress(
   address: string,
 ): Promise<GeocodedPoint | null> {
-  if (!address || address.trim().length === 0) return null;
+  if (!address || address.trim().length === 0) {return null;}
 
   // Check cache first
   const cached = getFromCache(address);
-  if (cached) return cached;
+  if (cached) {return cached;}
 
   try {
     await rateLimit();
@@ -88,6 +88,7 @@ export async function geocodeAddress(
     });
 
     if (!res.ok) {
+      // eslint-disable-next-line no-console
       console.warn(
         `Nominatim geocoding failed: ${res.status} for "${address}"`,
       );
@@ -97,6 +98,7 @@ export async function geocodeAddress(
     const results: NominatimResult[] = await res.json();
 
     if (!results || results.length === 0) {
+      // eslint-disable-next-line no-console
       console.warn(`No geocoding results for "${address}"`);
       return null;
     }
@@ -113,6 +115,7 @@ export async function geocodeAddress(
 
     return point;
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error("Geocoding error:", err);
     return null;
   }

@@ -64,7 +64,7 @@ export function snapshotToEntities<T extends FirestoreEntity>(
 export function snapshotToEntity<T extends FirestoreEntity>(
   docSnap: DocumentSnapshot<DocumentData, DocumentData>,
 ): T | null {
-  if (!docSnap.exists()) return null;
+  if (!docSnap.exists()) {return null;}
   return { id: docSnap.id, ...docSnap.data() } as unknown as T;
 }
 
@@ -89,6 +89,7 @@ export function subscribeToQuery<T extends FirestoreEntity>(
       onData(snapshotToEntities<T>(snapshot));
     },
     (err: FirestoreError) => {
+      // eslint-disable-next-line no-console
       console.error(`[firestore] subscribeToQuery(${collectionName}) error:`, err.message);
       onError?.(err.message);
     },
@@ -195,6 +196,7 @@ export async function firestoreOperation<T>(
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : "Unknown Firestore error";
+    // eslint-disable-next-line no-console
     console.error(`[firestore] ${context}:`, message);
     return [null, message];
   }

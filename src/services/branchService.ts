@@ -9,7 +9,7 @@ import {
 import type { Branch } from "@/types";
 
 export function subscribeBranches(brokerId: string | undefined, callback: (items: Branch[]) => void) {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
   return subscribeToQuery<Branch>(
     COLLECTIONS.BRANCHES,
     [where("brokerId", "==", brokerId), orderBy("name", "asc")],

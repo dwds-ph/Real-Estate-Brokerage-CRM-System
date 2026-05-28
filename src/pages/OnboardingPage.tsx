@@ -34,7 +34,7 @@ export default function OnboardingPage() {
   }
 
   const handleBrokerLookup = async () => {
-    if (!brokerCode) return;
+    if (!brokerCode) {return;}
     setBrokerLookupError("");
     try {
       const q = query(
@@ -59,7 +59,7 @@ export default function OnboardingPage() {
   };
 
   const handleFinish = async () => {
-    if (!user) return;
+    if (!user) {return;}
     setError("");
     setSaving(true);
     try {

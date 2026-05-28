@@ -5,7 +5,7 @@ import { Referral } from "@/types";
 
 export async function fetchReferrals(dealId?: string): Promise<Referral[]> {
   const constraints = [];
-  if (dealId) constraints.push(where("dealId", "==", dealId));
+  if (dealId) {constraints.push(where("dealId", "==", dealId));}
   constraints.push(orderBy("createdAt", "desc"));
   const q = query(collection(db, COLLECTIONS.REFERRALS), ...constraints);
   const snap = await getDocs(q);

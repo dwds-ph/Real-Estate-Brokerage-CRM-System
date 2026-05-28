@@ -15,12 +15,15 @@ initAnalytics();
 // ── Enable Firestore offline persistence ─────────────────────────────
 enableMultiTabIndexedDbPersistence(db).catch((err) => {
   if (err.code === "failed-precondition") {
+    // eslint-disable-next-line no-console
     console.warn(
       "[offline] Multiple tabs open — persistence in first tab only",
     );
   } else if (err.code === "unimplemented") {
+    // eslint-disable-next-line no-console
     console.warn("[offline] Browser doesn't support IndexedDB persistence");
   } else {
+    // eslint-disable-next-line no-console
     console.error("[offline] Failed to enable persistence:", err);
   }
 });

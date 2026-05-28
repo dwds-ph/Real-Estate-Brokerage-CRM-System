@@ -16,13 +16,14 @@ export function useFcmService() {
   const registered = useRef(false);
 
   useEffect(() => {
-    if (!user || !userProfile || registered.current) return;
+    if (!user || !userProfile || registered.current) {return;}
 
     const initFcm = async () => {
       try {
         const messaging = getMessaging();
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
+          // eslint-disable-next-line no-console
           console.warn("FCM: Notification permission not granted");
           return;
         }
@@ -39,6 +40,7 @@ export function useFcmService() {
 
         // Listen for foreground messages
         onMessage(messaging, (payload) => {
+          // eslint-disable-next-line no-console
           console.log("FCM foreground message:", payload);
           if (payload.notification) {
             // Create an in-app notification for foreground messages
@@ -52,6 +54,7 @@ export function useFcmService() {
           }
         });
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.warn("FCM init error:", err);
         // FCM may not be available in all environments — that's ok
       }

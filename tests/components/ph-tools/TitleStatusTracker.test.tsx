@@ -37,7 +37,7 @@ describe("TitleStatusTracker", () => {
   it("advances stage when clicking BIR stage button", () => {
     render(<TitleStatusTracker />);
     const birBtn = screen.getAllByText("BIR (CGT)")[0].previousElementSibling;
-    if (birBtn) fireEvent.click(birBtn);
+    if (birBtn) {fireEvent.click(birBtn);}
     expect(screen.getByText(/Pay 6% Capital Gains Tax/)).toBeInTheDocument();
   });
 
@@ -45,7 +45,7 @@ describe("TitleStatusTracker", () => {
     render(<TitleStatusTracker />);
     const allComplete = screen.getAllByText("Complete");
     const btn = allComplete[0].previousElementSibling;
-    if (btn) fireEvent.click(btn);
+    if (btn) {fireEvent.click(btn);}
     expect(screen.getByText(/All stages done/)).toBeInTheDocument();
   });
 

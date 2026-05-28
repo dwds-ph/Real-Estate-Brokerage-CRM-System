@@ -33,16 +33,16 @@ export default function LoginPage() {
     } catch (err: unknown) {
       const firebaseErr = err as { code?: string; message?: string };
       if (firebaseErr.code === "auth/user-not-found")
-        setError("No account found with this email");
+        {setError("No account found with this email");}
       else if (firebaseErr.code === "auth/wrong-password")
-        setError("Incorrect password");
+        {setError("Incorrect password");}
       else if (firebaseErr.code === "auth/email-already-in-use")
-        setError("An account with this email already exists");
+        {setError("An account with this email already exists");}
       else if (firebaseErr.code === "auth/weak-password")
-        setError("Password must be at least 6 characters");
+        {setError("Password must be at least 6 characters");}
       else if (firebaseErr.code === "auth/invalid-credential")
-        setError("Invalid email or password");
-      else setError(firebaseErr.message || "An error occurred");
+        {setError("Invalid email or password");}
+      else {setError(firebaseErr.message || "An error occurred");}
     } finally {
       setLoading(false);
     }

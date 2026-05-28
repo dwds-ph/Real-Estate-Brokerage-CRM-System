@@ -20,7 +20,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem("theme");
-    if (stored === "dark" || stored === "light") return stored;
+    if (stored === "dark" || stored === "light") {return stored;}
     return window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light";
@@ -59,6 +59,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  if (!context) {throw new Error("useTheme must be used within ThemeProvider");}
   return context;
 }

@@ -65,10 +65,10 @@ const MONTH = 2_592_000_000;
 
 export function timeAgo(timestamp: number): string {
   const diff = Date.now() - timestamp;
-  if (diff < MINUTE) return "just now";
-  if (diff < HOUR) return `${Math.floor(diff / MINUTE)}m ago`;
-  if (diff < DAY) return `${Math.floor(diff / HOUR)}h ago`;
-  if (diff < MONTH) return `${Math.floor(diff / DAY)}d ago`;
+  if (diff < MINUTE) {return "just now";}
+  if (diff < HOUR) {return `${Math.floor(diff / MINUTE)}m ago`;}
+  if (diff < DAY) {return `${Math.floor(diff / HOUR)}h ago`;}
+  if (diff < MONTH) {return `${Math.floor(diff / DAY)}d ago`;}
   return `${Math.floor(diff / MONTH)}mo ago`;
 }
 
@@ -129,8 +129,8 @@ export function formatPercent(value: number, decimals: number = 0): string {
  * Truncate a string with ellipsis.
  */
 export function truncate(str: string, maxLength: number): string {
-  if (str.length <= maxLength) return str;
-  return str.slice(0, maxLength) + "...";
+  if (str.length <= maxLength) {return str;}
+  return `${str.slice(0, maxLength)  }...`;
 }
 
 /**

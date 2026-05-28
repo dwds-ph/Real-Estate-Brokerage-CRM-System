@@ -28,7 +28,7 @@ export default function NotificationBell() {
 
   // Close on click outside
   useEffect(() => {
-    if (!open) return;
+    if (!open) {return;}
     const handler = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target.closest("[data-notification-bell]")) {
@@ -50,7 +50,7 @@ export default function NotificationBell() {
     );
   }, [myNotifications]);
 
-  if (loading) return null;
+  if (loading) {return null;}
 
   return (
     <div data-notification-bell className="relative">

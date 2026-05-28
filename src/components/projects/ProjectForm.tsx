@@ -63,7 +63,7 @@ export default function ProjectForm({
     value: string | number,
   ) => {
     const updated = phases.map((p, i) => {
-      if (i !== index) return p;
+      if (i !== index) {return p;}
       if (field.startsWith("price.")) {
         const key = field.split(".")[1];
         return { ...p, priceRange: { ...p.priceRange, [key]: Number(value) } };

@@ -27,10 +27,10 @@ export default function AdvancedAnalytics({ deals }: Props) {
 
   const byMonth: Record<string, { deals: number; commission: number }> = {};
   activeDeals.forEach((d) => {
-    if (!d.createdAt) return;
+    if (!d.createdAt) {return;}
     const dte = new Date(d.createdAt);
     const key = `${dte.getFullYear()}-${String(dte.getMonth() + 1).padStart(2, "0")}`;
-    if (!byMonth[key]) byMonth[key] = { deals: 0, commission: 0 };
+    if (!byMonth[key]) {byMonth[key] = { deals: 0, commission: 0 };}
     byMonth[key].deals++;
     byMonth[key].commission += d.commission || 0;
   });

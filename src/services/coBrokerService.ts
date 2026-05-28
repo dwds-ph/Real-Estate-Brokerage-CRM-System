@@ -3,7 +3,7 @@ import { subscribeToQuery, createDocument, updateDocument, deleteDocument, COLLE
 import type { CoBroker, CoBrokerDeal } from "@/types";
 
 export function subscribeCoBrokers(brokerId: string | undefined, callback: (items: CoBroker[]) => void) {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
   return subscribeToQuery<CoBroker>(
     COLLECTIONS.CO_BROKERS,
     [where("brokerId", "==", brokerId), orderBy("name", "asc")],
@@ -12,7 +12,7 @@ export function subscribeCoBrokers(brokerId: string | undefined, callback: (item
 }
 
 export function subscribeCoBrokerDeals(brokerId: string | undefined, callback: (items: CoBrokerDeal[]) => void) {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
   return subscribeToQuery<CoBrokerDeal>(
     COLLECTIONS.CO_BROKER_DEALS,
     [where("brokerId", "==", brokerId), orderBy("createdAt", "desc")],

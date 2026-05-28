@@ -74,7 +74,7 @@ export default function TourBuilder({
 
   function moveStop(index: number, direction: -1 | 1) {
     const newIndex = index + direction;
-    if (newIndex < 0 || newIndex >= stops.length) return;
+    if (newIndex < 0 || newIndex >= stops.length) {return;}
     const updated = [...stops];
     [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
     setStops(updated.map((s, i) => ({ ...s, order: i })));
@@ -85,7 +85,7 @@ export default function TourBuilder({
   }
 
   function setStopTimes() {
-    if (stops.length === 0 || !scheduledDate) return;
+    if (stops.length === 0 || !scheduledDate) {return;}
     const baseTime = new Date(scheduledDate).getTime();
     let currentTime = baseTime;
 
@@ -104,7 +104,7 @@ export default function TourBuilder({
   }
 
   async function handleSave() {
-    if (!userProfile || !clientName || !title || !scheduledDate) return;
+    if (!userProfile || !clientName || !title || !scheduledDate) {return;}
     setSaving(true);
 
     // Auto-set times if not set
@@ -181,7 +181,7 @@ export default function TourBuilder({
           <div key={s.key} className="flex items-center gap-2">
             <button
               onClick={() => {
-                if (i < currentIdx) setStep(s.key);
+                if (i < currentIdx) {setStep(s.key);}
               }}
               className={cn(
                 "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",

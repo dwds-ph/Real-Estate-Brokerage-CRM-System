@@ -65,7 +65,7 @@ export function PaymentForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile?.id || !amount || !dueDate) return;
+    if (!userProfile?.id || !amount || !dueDate) {return;}
 
     setSaving(true);
     try {
@@ -101,13 +101,14 @@ export function PaymentForm({
       onSuccess();
       onClose();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Failed to create payment:", err);
     } finally {
       setSaving(false);
     }
   };
 
-  if (!open) return null;
+  if (!open) {return null;}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

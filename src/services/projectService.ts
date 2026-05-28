@@ -141,16 +141,16 @@ export async function deleteMilestone(milestoneId: string) {
 // ─── Helpers ────────────────────────────────────────────────────────
 
 export function computeProjectStatus(project: Project): string {
-  if (project.status === "completed") return "completed";
-  if (project.status === "on-hold") return "on-hold";
+  if (project.status === "completed") {return "completed";}
+  if (project.status === "on-hold") {return "on-hold";}
 
   const soldUnits = project.totalUnits - project.availableUnits;
   const sellThroughRate =
     project.totalUnits > 0 ? soldUnits / project.totalUnits : 0;
 
   if (project.status === "pre-selling" && sellThroughRate > 0.7)
-    return "pre-selling-high-demand";
-  if (sellThroughRate >= 1) return "fully-sold";
+    {return "pre-selling-high-demand";}
+  if (sellThroughRate >= 1) {return "fully-sold";}
   return project.status;
 }
 
@@ -183,7 +183,7 @@ export function computePhaseSoldPercentage(phase: {
   totalUnits: number;
   availableUnits: number;
 }): number {
-  if (phase.totalUnits <= 0) return 0;
+  if (phase.totalUnits <= 0) {return 0;}
   return Math.round(
     ((phase.totalUnits - phase.availableUnits) / phase.totalUnits) * 100,
   );

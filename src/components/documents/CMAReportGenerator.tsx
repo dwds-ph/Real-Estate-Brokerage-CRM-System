@@ -50,7 +50,7 @@ export default function CMAReportGenerator({ onDone, onCancel }: Props) {
 
   // Load listings
   useState(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     onSnapshot(
       query(
         collection(db, "listings"),
@@ -72,7 +72,7 @@ export default function CMAReportGenerator({ onDone, onCancel }: Props) {
   };
 
   const handleGenerate = () => {
-    if (!subject) return;
+    if (!subject) {return;}
     const result = computeCMA({
       subject: {
         id: subject.id,
@@ -97,7 +97,7 @@ export default function CMAReportGenerator({ onDone, onCancel }: Props) {
   };
 
   const handleSave = async () => {
-    if (!generatedReport || !userProfile || !brokerId) return;
+    if (!generatedReport || !userProfile || !brokerId) {return;}
     setSaving(true);
     try {
       await addDoc(collection(db, "cmaReports"), {

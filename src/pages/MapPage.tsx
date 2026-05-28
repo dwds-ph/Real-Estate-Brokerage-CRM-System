@@ -61,11 +61,11 @@ export default function MapPage() {
           const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
           const withCoords = await Promise.all(
             items.map(async (l: MapListingData) => {
-              if (l._lat && l._lng) return l;
+              if (l._lat && l._lng) {return l;}
               const addr = l.address || l.location;
               if (addr) {
                 const coords = await geocodeAddress(addr);
-                if (coords) return { ...l, _lat: coords[0], _lng: coords[1] };
+                if (coords) {return { ...l, _lat: coords[0], _lng: coords[1] };}
               }
               return l;
             }),

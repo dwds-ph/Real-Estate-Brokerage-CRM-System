@@ -134,7 +134,7 @@ export function getNextStage(
   currentStage: MortgageStage,
 ): MortgageStage | null {
   const currentIndex = STAGE_ORDER.indexOf(currentStage);
-  if (currentIndex < 0 || currentIndex >= STAGE_ORDER.length - 1) return null;
+  if (currentIndex < 0 || currentIndex >= STAGE_ORDER.length - 1) {return null;}
   return STAGE_ORDER[currentIndex + 1];
 }
 
@@ -142,7 +142,7 @@ export function getPreviousStage(
   currentStage: MortgageStage,
 ): MortgageStage | null {
   const currentIndex = STAGE_ORDER.indexOf(currentStage);
-  if (currentIndex <= 0) return null;
+  if (currentIndex <= 0) {return null;}
   return STAGE_ORDER[currentIndex - 1];
 }
 
@@ -152,7 +152,7 @@ export async function advanceMortgageStage(
   notes?: string,
 ): Promise<void> {
   const nextStageKey = getNextStage(currentMortgage.currentStage);
-  if (!nextStageKey) throw new Error("Already at the final stage");
+  if (!nextStageKey) {throw new Error("Already at the final stage");}
 
   const now = Date.now();
   const updatedStages = currentMortgage.stages.map((stage) => {

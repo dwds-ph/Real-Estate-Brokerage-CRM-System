@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Mock } from "vitest";
 import {
   subscribePayouts,
   subscribePendingPayouts,
@@ -51,7 +50,7 @@ function makeMockSnapshot(
   };
 }
 
-function samplePayout(overrides: Partial<Payout> = {}): Payout {
+function _samplePayout(overrides: Partial<Payout> = {}): Payout {
   return {
     id: "payout-1",
     dealId: "deal-1",

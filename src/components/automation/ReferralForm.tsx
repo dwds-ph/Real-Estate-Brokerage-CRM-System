@@ -19,7 +19,7 @@ export default function ReferralForm({ dealId, onSuccess, onClose }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile || !referrerName.trim() || !referralFee) return;
+    if (!userProfile || !referrerName.trim() || !referralFee) {return;}
     setSaving(true);
     setError(null);
     try {
@@ -37,6 +37,7 @@ export default function ReferralForm({ dealId, onSuccess, onClose }: Props) {
       onSuccess?.();
     } catch (err) {
       setError("Failed to save referral");
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setSaving(false);

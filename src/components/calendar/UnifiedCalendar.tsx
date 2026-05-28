@@ -34,7 +34,7 @@ export default function UnifiedCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const allEvents = useMemo<CalendarEvent[]>(() => {
-    if (!userProfile?.id) return [];
+    if (!userProfile?.id) {return [];}
     return getAggregatedEvents(
       viewings as (Viewing & { id: string })[],
       tasks as (TaskItem & { id: string })[],
@@ -53,17 +53,17 @@ export default function UnifiedCalendar() {
     for (const ev of allEvents) {
       const d = new Date(ev.start);
       const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-      if (!map[key]) map[key] = new Set();
+      if (!map[key]) {map[key] = new Set();}
       map[key].add(ev.type);
     }
     return map;
   }, [allEvents]);
 
   const tileContent = ({ date, view }: { date: Date; view: string }) => {
-    if (view !== "month") return null;
+    if (view !== "month") {return null;}
     const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
     const types = eventTypeMap[key];
-    if (!types || types.size === 0) return null;
+    if (!types || types.size === 0) {return null;}
     const colors: Record<string, string> = {
       viewing: "bg-blue-500",
       task: "bg-orange-500",

@@ -18,7 +18,7 @@ export default function ActivityPage() {
   const filtered = activities
     .filter((a) => filter === "all" || a.action?.toLowerCase().includes(filter))
     .filter((a) => {
-      if (!search) return true;
+      if (!search) {return true;}
       const s = search.toLowerCase();
       return (
         a.action?.toLowerCase().includes(s) ||
@@ -34,12 +34,12 @@ export default function ActivityPage() {
 
   const getActionIcon = (action: string): string => {
     const a = action?.toLowerCase() || "";
-    if (a.includes("create") || a.includes("added")) return "➕";
+    if (a.includes("create") || a.includes("added")) {return "➕";}
     if (a.includes("update") || a.includes("changed") || a.includes("moved"))
-      return "✏️";
-    if (a.includes("delete") || a.includes("removed")) return "🗑️";
+      {return "✏️";}
+    if (a.includes("delete") || a.includes("removed")) {return "🗑️";}
     if (a.includes("call") || a.includes("text") || a.includes("logged"))
-      return "📝";
+      {return "📝";}
     return "🔄";
   };
 

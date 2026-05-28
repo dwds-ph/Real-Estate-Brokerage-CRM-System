@@ -31,30 +31,30 @@ export interface FieldRule<T> {
 // ─── Validators ────────────────────────────────────────────────────
 
 export function validateRequired(value: unknown, fieldName: string): string | null {
-  if (value === undefined || value === null) return `${fieldName} is required`;
+  if (value === undefined || value === null) {return `${fieldName} is required`;}
   if (typeof value === "string" && value.trim().length === 0)
-    return `${fieldName} is required`;
+    {return `${fieldName} is required`;}
   return null;
 }
 
 export function validateEmail(email: string): string | null {
-  if (!email) return null; // not required, use validateRequired separately
+  if (!email) {return null;} // not required, use validateRequired separately
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return "Invalid email address";
+  if (!emailRegex.test(email)) {return "Invalid email address";}
   return null;
 }
 
 export function validatePhone(phone: string): string | null {
-  if (!phone) return null;
+  if (!phone) {return null;}
   // Philippine mobile: +63 or 09 prefix
   const phoneRegex = /^(\+63|0)[0-9]{10}$/;
   if (!phoneRegex.test(phone.replace(/[\s-]/g, "")))
-    return "Invalid phone number (use +63 or 09 format)";
+    {return "Invalid phone number (use +63 or 09 format)";}
   return null;
 }
 
 export function validateUrl(url: string): string | null {
-  if (!url) return null;
+  if (!url) {return null;}
   try {
     new URL(url);
     return null;
@@ -68,17 +68,17 @@ export function validateNumber(
   fieldName: string,
   rules?: Pick<FieldRule<number>, "min" | "max">,
 ): string | null {
-  if (typeof value !== "number" || isNaN(value)) return `${fieldName} must be a valid number`;
+  if (typeof value !== "number" || isNaN(value)) {return `${fieldName} must be a valid number`;}
   if (rules?.min !== undefined && value < rules.min)
-    return `${fieldName} must be at least ${rules.min}`;
+    {return `${fieldName} must be at least ${rules.min}`;}
   if (rules?.max !== undefined && value > rules.max)
-    return `${fieldName} must be at most ${rules.max}`;
+    {return `${fieldName} must be at most ${rules.max}`;}
   return null;
 }
 
 export function validateDate(timestamp: number, fieldName: string): string | null {
   if (typeof timestamp !== "number" || isNaN(timestamp) || timestamp <= 0)
-    return `${fieldName} must be a valid date`;
+    {return `${fieldName} must be a valid date`;}
   return null;
 }
 
@@ -95,7 +95,7 @@ export function validateObject<T extends Record<string, unknown>>(
   const errors: ValidationError[] = [];
 
   for (const [field, rule] of Object.entries(rules)) {
-    if (!rule) continue;
+    if (!rule) {continue;}
     const value = obj[field];
 
     // Required check
@@ -107,7 +107,7 @@ export function validateObject<T extends Record<string, unknown>>(
       }
     }
 
-    if (value === undefined || value === null) continue;
+    if (value === undefined || value === null) {continue;}
 
     // String rules
     if (typeof value === "string") {
@@ -137,13 +137,13 @@ export function validateObject<T extends Record<string, unknown>>(
         min: rule.min as number | undefined,
         max: rule.max as number | undefined,
       });
-      if (numErr) errors.push({ field, message: numErr });
+      if (numErr) {errors.push({ field, message: numErr });}
     }
 
     // Custom validation
     if (rule.custom) {
       const customErr = rule.custom(value);
-      if (customErr) errors.push({ field, message: customErr });
+      if (customErr) {errors.push({ field, message: customErr });}
     }
   }
 

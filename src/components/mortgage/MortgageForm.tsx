@@ -57,7 +57,7 @@ export default function MortgageForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!dealId && !existingMortgage) return;
+    if (!dealId && !existingMortgage) {return;}
     if (!loanAmount || isNaN(Number(loanAmount)) || Number(loanAmount) <= 0) {
       setError("Please enter a valid loan amount");
       return;
@@ -92,7 +92,7 @@ export default function MortgageForm({
     }
   };
 
-  if (!open) return null;
+  if (!open) {return null;}
 
   const selectedBank = BANKS.find((b) => b.id === bankId);
 

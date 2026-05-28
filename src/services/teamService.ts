@@ -9,7 +9,7 @@ import {
 import type { AgentTeam } from "@/types";
 
 export function subscribeTeams(brokerId: string | undefined, callback: (items: AgentTeam[]) => void) {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
   return subscribeToQuery<AgentTeam>(
     COLLECTIONS.TEAMS,
     [where("brokerId", "==", brokerId), orderBy("name", "asc")],

@@ -47,21 +47,25 @@ function createEntry(
 }
 
 function logToConsole(entry: LogEntry): void {
-  if (!shouldLog(entry.level)) return;
+  if (!shouldLog(entry.level)) {return;}
 
   const formatted = formatLog(entry);
 
   switch (entry.level) {
     case "error":
+      // eslint-disable-next-line no-console
       console.error(formatted, entry.data ?? "");
       break;
     case "warn":
+      // eslint-disable-next-line no-console
       console.warn(formatted, entry.data ?? "");
       break;
     case "info":
+      // eslint-disable-next-line no-console
       console.info(formatted, entry.data ?? "");
       break;
     case "debug":
+      // eslint-disable-next-line no-console
       console.debug(formatted, entry.data ?? "");
       break;
   }

@@ -29,7 +29,7 @@ export default function DocumentsPage() {
   const [listingsError, setListingsError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     const unsub = onSnapshot(
       query(
         collection(db, "listings"),
@@ -46,7 +46,7 @@ export default function DocumentsPage() {
   }, [brokerId]);
 
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
     setError(null);
     const unsub = subscribePropertyDocuments(
@@ -69,7 +69,7 @@ export default function DocumentsPage() {
     expiryDate: string;
     notes: string;
   }) => {
-    if (!data.file || !userProfile || !brokerId) return;
+    if (!data.file || !userProfile || !brokerId) {return;}
     setSaving(true);
     try {
       const path = `propertyDocuments/${brokerId}/${Date.now()}_${data.file.name}`;

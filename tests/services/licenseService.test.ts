@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { Mock } from "vitest";
 import {
   subscribeLicensesForAgent,
   subscribeAllLicenses,
@@ -16,7 +15,7 @@ import {
   getLicenseStatusLabel,
   computeStatusForAll,
 } from "@/services/licenseService";
-import type { License, LicenseStatus, LicenseType } from "@/types";
+import type { License, LicenseType } from "@/types";
 
 // ─── Mock firebase/firestore ─────────────────────────────────────────
 

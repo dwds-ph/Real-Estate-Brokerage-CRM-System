@@ -42,6 +42,7 @@ export default function ChecklistWidget({
       setInstances(insts);
     } catch (err) {
       setError("Failed to load checklists");
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setLoading(false);
@@ -53,9 +54,9 @@ export default function ChecklistWidget({
   }, [loadData]);
 
   const handleAddChecklist = async () => {
-    if (!selectedTemplateId || !userProfile) return;
+    if (!selectedTemplateId || !userProfile) {return;}
     const template = templates.find((t) => t.id === selectedTemplateId);
-    if (!template) return;
+    if (!template) {return;}
 
     setCreating(true);
     try {
@@ -71,6 +72,7 @@ export default function ChecklistWidget({
       setShowPicker(false);
       await loadData();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setCreating(false);
@@ -79,7 +81,7 @@ export default function ChecklistWidget({
 
   const handleToggleItem = async (instanceId: string, itemIndex: number) => {
     const instance = instances.find((i) => i.id === instanceId);
-    if (!instance) return;
+    if (!instance) {return;}
 
     const newItems = instance.items.map((item, idx) =>
       idx === itemIndex ? { ...item, done: !item.done } : item,
@@ -92,6 +94,7 @@ export default function ChecklistWidget({
       await updateChecklistInstance(instanceId, { items: newItems, progress });
       await loadData();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };

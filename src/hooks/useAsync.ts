@@ -88,10 +88,12 @@ export function useAsync<T>(
         onError?.(error);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
+  }, [...deps]);
 
-  executeRef.current = execute;
+  useEffect(() => {
+    executeRef.current = execute;
+  }, [execute]);
 
   useEffect(() => {
     if (immediate) {
@@ -100,7 +102,7 @@ export function useAsync<T>(
     return () => {
       // Cleanup if needed
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [execute, immediate]);
 
   return {

@@ -32,6 +32,7 @@ export default function ChecklistTemplatesPage() {
       setTemplates(data);
     } catch (err) {
       setError("Failed to load templates");
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setLoading(false);
@@ -85,7 +86,7 @@ export default function ChecklistTemplatesPage() {
       !form.name.trim() ||
       form.items.some((item) => !item.label.trim())
     )
-      return;
+      {return;}
     setSaving(true);
     try {
       const data = {
@@ -108,6 +109,7 @@ export default function ChecklistTemplatesPage() {
       resetForm();
       await loadTemplates();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setSaving(false);
@@ -116,15 +118,17 @@ export default function ChecklistTemplatesPage() {
 
   const handleDelete = async (id: string) => {
     if (
+      // eslint-disable-next-line no-alert
       !confirm(
         "Delete this checklist template? It will not affect existing instances.",
       )
     )
-      return;
+      {return;}
     try {
       await deleteChecklistTemplate(id);
       await loadTemplates();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };

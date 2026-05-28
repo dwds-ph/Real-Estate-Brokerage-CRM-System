@@ -74,10 +74,10 @@ function isGaReady(): boolean {
  */
 export function initAnalytics(): void {
   const gaId = getMeasurementId();
-  if (!gaId) return;
+  if (!gaId) {return;}
 
   // Prevent double-initialisation
-  if (document.querySelector(`script[data-ga-init="${gaId}"]`)) return;
+  if (document.querySelector(`script[data-ga-init="${gaId}"]`)) {return;}
 
   // First script: load gtag.js
   const gtagScript = document.createElement("script");
@@ -102,7 +102,7 @@ export function initAnalytics(): void {
  * @param path The current URL path, e.g. "/leads" or "/deals/abc123".
  */
 export function logPageView(path: string): void {
-  if (!isGaReady()) return;
+  if (!isGaReady()) {return;}
 
   try {
     window.gtag!("event", "page_view", {
@@ -129,7 +129,7 @@ export function logEvent(
   eventName: AnalyticsEventName,
   params?: AnalyticsEventParams,
 ): void {
-  if (!isGaReady()) return;
+  if (!isGaReady()) {return;}
 
   try {
     window.gtag!("event", eventName, params ?? {});

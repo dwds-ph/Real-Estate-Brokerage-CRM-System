@@ -14,7 +14,7 @@ export function inHouseDefaults() {
 
 export function computeAmortization(input: LoanInput): AmortizationRow[] {
   const principal = input.propertyPrice - input.downPayment;
-  if (principal <= 0 || input.loanTerm <= 0 || input.annualRate <= 0) return [];
+  if (principal <= 0 || input.loanTerm <= 0 || input.annualRate <= 0) {return [];}
 
   const monthlyRate = input.annualRate / 100 / 12;
   const months = input.loanTerm * 12;
@@ -35,7 +35,7 @@ export function computeAmortization(input: LoanInput): AmortizationRow[] {
       interest,
       endingBalance: balance,
     });
-    if (balance <= 0) break;
+    if (balance <= 0) {break;}
   }
   return rows;
 }

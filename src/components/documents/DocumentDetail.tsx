@@ -19,7 +19,7 @@ export function DocumentDetail({
 }: DocumentDetailProps) {
   const [now] = useState(() => Date.now());
 
-  if (!selectedDoc) return null;
+  if (!selectedDoc) {return null;}
 
   return (
     <div className="space-y-4">

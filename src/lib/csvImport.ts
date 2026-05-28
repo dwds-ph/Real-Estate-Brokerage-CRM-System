@@ -85,7 +85,7 @@ export function parseCSV(text: string): string[][] {
         current.push(field.trim());
         field = "";
       } else if (char === "\n" || (char === "\r" && next === "\n")) {
-        if (char === "\r") i++;
+        if (char === "\r") {i++;}
         current.push(field.trim());
         field = "";
         if (current.length > 0 && current.some((c) => c.length > 0)) {

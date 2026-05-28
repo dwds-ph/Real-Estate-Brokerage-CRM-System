@@ -209,6 +209,7 @@ export default function ProjectPhaseManager({
   );
 
   const removePhase = useCallback((id: string) => {
+    // eslint-disable-next-line no-alert
     if (window.confirm("Remove this phase?")) {
       setPhases((prev) => prev.filter((p) => p.id !== id));
     }

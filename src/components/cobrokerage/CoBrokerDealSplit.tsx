@@ -18,7 +18,7 @@ export default function CoBrokerDealSplit({ brokers, deals, onSave, onCancel }: 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!broker) return;
+    if (!broker) {return;}
     onSave({
       coBrokerId,
       coBrokerName: broker.name,

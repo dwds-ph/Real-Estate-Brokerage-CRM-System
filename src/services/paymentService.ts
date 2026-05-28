@@ -18,7 +18,7 @@ export function subscribePaymentsForDeal(
   dealId: string | undefined,
   callback: (payments: Payment[]) => void,
 ) {
-  if (!dealId) return () => {};
+  if (!dealId) {return () => {};}
 
   const constraints: QueryConstraint[] = [
     where("dealId", "==", dealId),

@@ -32,7 +32,7 @@ function viewingToEvent(v: DocWithId<Viewing>): CalendarEvent {
 }
 
 function taskToEvent(t: DocWithId<TaskItem>): CalendarEvent | null {
-  if (!t.dueDate) return null;
+  if (!t.dueDate) {return null;}
   return {
     id: `task-${t.id}`,
     type: "task",
@@ -79,7 +79,7 @@ function dealToEvents(d: DocWithId<Deal>): CalendarEvent[] {
 }
 
 function docToEvent(doc: DocWithId<VaultDocument>): CalendarEvent | null {
-  if (!doc.expiryDate) return null;
+  if (!doc.expiryDate) {return null;}
   return {
     id: `doc-expiry-${doc.id}`,
     type: "document-expiry",
@@ -108,7 +108,7 @@ export function getAggregatedEvents(
 
   for (const t of tasks) {
     const ev = taskToEvent(t);
-    if (ev) events.push(ev);
+    if (ev) {events.push(ev);}
   }
 
   for (const d of deals) {
@@ -117,7 +117,7 @@ export function getAggregatedEvents(
 
   for (const doc of documents) {
     const ev = docToEvent(doc);
-    if (ev) events.push(ev);
+    if (ev) {events.push(ev);}
   }
 
   // Sort by start time ascending

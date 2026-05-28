@@ -5,7 +5,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 
 export function subscribePropertyDocuments(brokerId: string | undefined, listingId?: string, callback?: (items: PropertyDocument[]) => void) {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
   return subscribeToQuery<PropertyDocument>(
     COLLECTIONS.PROPERTY_DOCUMENTS,
     listingId

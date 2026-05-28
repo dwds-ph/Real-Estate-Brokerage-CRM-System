@@ -48,7 +48,7 @@ export default function NotificationPreferencesPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    if (!userProfile?.id) return;
+    if (!userProfile?.id) {return;}
     const loadPrefs = async () => {
       try {
         const snap = await getDoc(
@@ -85,7 +85,7 @@ export default function NotificationPreferencesPage() {
   };
 
   const handleSave = async () => {
-    if (!userProfile?.id) return;
+    if (!userProfile?.id) {return;}
     setSaving(true);
     setSaved(false);
     try {

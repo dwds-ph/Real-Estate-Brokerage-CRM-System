@@ -56,14 +56,14 @@ function SplitBar({ breakdown }: { breakdown: CommissionBreakdown }) {
   }
 
   const total = segments.reduce((sum, s) => sum + s.value, 0);
-  if (total === 0) return null;
+  if (total === 0) {return null;}
 
   return (
     <div className="space-y-2">
       <div className="flex h-5 w-full overflow-hidden rounded-full bg-muted">
         {segments.map((seg) => {
           const pct = (seg.value / total) * 100;
-          if (pct < 1) return null;
+          if (pct < 1) {return null;}
           return (
             <div
               key={seg.label}

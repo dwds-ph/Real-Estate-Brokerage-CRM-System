@@ -24,7 +24,7 @@ export default function ProjectDetail() {
   const [activeTab, setActiveTab] = useState<Tab>("phases");
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {return;}
     const unsub = subscribeUnits(id, (data) => setUnits(data));
     return () => unsub();
   }, [id]);

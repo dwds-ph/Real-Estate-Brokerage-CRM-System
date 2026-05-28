@@ -101,10 +101,10 @@ export function calcMonthlyAmortization(
   annualRate: number,
   termYears: number,
 ): number {
-  if (loanAmount <= 0 || termYears <= 0) return 0;
+  if (loanAmount <= 0 || termYears <= 0) {return 0;}
   const monthlyRate = annualRate / 100 / 12;
   const numPayments = termYears * 12;
-  if (monthlyRate <= 0) return loanAmount / numPayments;
+  if (monthlyRate <= 0) {return loanAmount / numPayments;}
   return (
     (loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments))) /
     (Math.pow(1 + monthlyRate, numPayments) - 1)

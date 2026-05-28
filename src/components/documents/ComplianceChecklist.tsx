@@ -33,7 +33,7 @@ export default function ComplianceChecklist({ items, onToggle, onUpdateNotes, re
       {/* Grouped Items */}
       {(Object.keys(categoryLabels) as (keyof typeof categoryLabels)[]).map((cat) => {
         const catItems = grouped[cat];
-        if (catItems.length === 0) return null;
+        if (catItems.length === 0) {return null;}
         return (
           <div key={cat} className="space-y-1">
             <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{categoryLabels[cat]}</h4>

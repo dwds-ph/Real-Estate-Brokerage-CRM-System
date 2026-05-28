@@ -34,12 +34,12 @@ export default function ActivityFeed({ compact }: ActivityFeedProps) {
 
   const getActionIcon = (action: string): string => {
     const a = action?.toLowerCase() || "";
-    if (a.includes("create") || a.includes("added")) return "➕";
+    if (a.includes("create") || a.includes("added")) {return "➕";}
     if (a.includes("update") || a.includes("changed") || a.includes("moved"))
-      return "✏️";
-    if (a.includes("delete") || a.includes("removed")) return "🗑️";
+      {return "✏️";}
+    if (a.includes("delete") || a.includes("removed")) {return "🗑️";}
     if (a.includes("call") || a.includes("text") || a.includes("logged"))
-      return "📝";
+      {return "📝";}
     return "🔄";
   };
 

@@ -44,7 +44,7 @@ export default function DocumentUpload({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {return;}
     const timer = setTimeout(() => {
       setFile(null);
       setForm({
@@ -66,10 +66,10 @@ export default function DocumentUpload({
   const handleFileSelect = (selected: File) => {
     setFile(selected);
     if (!form.name)
-      setForm((prev) => ({
+      {setForm((prev) => ({
         ...prev,
         name: selected.name.replace(/\.[^/.]+$/, ""),
-      }));
+      }));}
   };
 
   const handleFormChange = (field: keyof DocumentFormData, value: string) => {
@@ -78,7 +78,7 @@ export default function DocumentUpload({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !userProfile) return;
+    if (!file || !userProfile) {return;}
     setError(null);
     setUploading(true);
     try {
@@ -110,7 +110,7 @@ export default function DocumentUpload({
     }
   };
 
-  if (!open) return null;
+  if (!open) {return null;}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

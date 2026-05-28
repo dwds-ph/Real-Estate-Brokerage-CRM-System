@@ -78,7 +78,7 @@ function ProjectList({
   const filtered = useMemo(
     () =>
       projects.filter((p) => {
-        if (statusFilter !== "all" && p.status !== statusFilter) return false;
+        if (statusFilter !== "all" && p.status !== statusFilter) {return false;}
         if (debouncedSearch) {
           const q = debouncedSearch.toLowerCase();
           if (
@@ -86,7 +86,7 @@ function ProjectList({
             !p.developer.toLowerCase().includes(q) &&
             !p.location.city.toLowerCase().includes(q)
           )
-            return false;
+            {return false;}
         }
         return true;
       }),

@@ -31,7 +31,7 @@ export default function OfficesPage() {
   const [expandedOffice, setExpandedOffice] = useState<string | null>(null);
 
   const loadOffices = async () => {
-    if (!userProfile?.id) return;
+    if (!userProfile?.id) {return;}
     try {
       const data = await getOffices(userProfile.id);
       setOffices(data);
@@ -51,7 +51,7 @@ export default function OfficesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile?.id) return;
+    if (!userProfile?.id) {return;}
     setSaving(true);
     setError("");
     try {
@@ -81,7 +81,8 @@ export default function OfficesPage() {
   };
 
   const handleDelete = async (officeId: string) => {
-    if (!confirm("Are you sure you want to delete this office?")) return;
+    // eslint-disable-next-line no-alert
+    if (!confirm("Are you sure you want to delete this office?")) {return;}
     try {
       await deleteOffice(officeId);
       await loadOffices();

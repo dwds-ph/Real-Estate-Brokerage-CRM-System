@@ -23,7 +23,7 @@ export async function getRoutingConfig(): Promise<RoutingConfig | null> {
   const { getDoc } = await import("firebase/firestore");
   const docRef = doc(db, CONFIG_COLLECTION, CONFIG_DOC_ID);
   const snap = await getDoc(docRef);
-  if (snap.exists()) return snap.data() as RoutingConfig;
+  if (snap.exists()) {return snap.data() as RoutingConfig;}
   return null;
 }
 
@@ -37,7 +37,7 @@ export async function findNextAgent(
   lead: Partial<Lead>,
   _allAgents: AppUser[],
 ): Promise<string | null> {
-  if (!config.enabled || config.rules.length === 0) return null;
+  if (!config.enabled || config.rules.length === 0) {return null;}
 
   for (const rule of config.rules) {
     if (
@@ -47,14 +47,14 @@ export async function findNextAgent(
     ) {
       const interest = lead.propertyInterest.toLowerCase();
       for (const [key, agentId] of Object.entries(rule.specialtyMap)) {
-        if (interest.includes(key.toLowerCase())) return agentId;
+        if (interest.includes(key.toLowerCase())) {return agentId;}
       }
     }
 
     if (rule.type === "location" && rule.locationMap && lead.location) {
       const loc = lead.location.toLowerCase();
       for (const [key, agentId] of Object.entries(rule.locationMap)) {
-        if (loc.includes(key.toLowerCase())) return agentId;
+        if (loc.includes(key.toLowerCase())) {return agentId;}
       }
     }
   }
@@ -83,7 +83,7 @@ export async function autoAssignLead(
   allAgents: AppUser[],
 ): Promise<void> {
   const config = await getRoutingConfig();
-  if (!config || !config.enabled) return;
+  if (!config || !config.enabled) {return;}
 
   const assignedTo = await findNextAgent(config, leadData, allAgents);
   if (assignedTo) {

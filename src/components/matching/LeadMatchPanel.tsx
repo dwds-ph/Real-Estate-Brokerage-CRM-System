@@ -10,9 +10,9 @@ interface LeadMatchPanelProps {
 }
 
 function getScoreColor(score: number): { bar: string; text: string; label: string } {
-  if (score >= 70) return { bar: "bg-green-500", text: "text-green-600 dark:text-green-400", label: "Excellent Match" };
-  if (score >= 50) return { bar: "bg-blue-500", text: "text-blue-600 dark:text-blue-400", label: "Good Match" };
-  if (score >= 35) return { bar: "bg-yellow-500", text: "text-yellow-600 dark:text-yellow-400", label: "Fair Match" };
+  if (score >= 70) {return { bar: "bg-green-500", text: "text-green-600 dark:text-green-400", label: "Excellent Match" };}
+  if (score >= 50) {return { bar: "bg-blue-500", text: "text-blue-600 dark:text-blue-400", label: "Good Match" };}
+  if (score >= 35) {return { bar: "bg-yellow-500", text: "text-yellow-600 dark:text-yellow-400", label: "Fair Match" };}
   return { bar: "bg-gray-300 dark:bg-gray-600", text: "text-muted-foreground", label: "Weak Match" };
 }
 

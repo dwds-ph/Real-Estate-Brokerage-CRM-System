@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function BranchList({ branches, onEdit, onDelete, onViewDetail }: Props) {
-  if (branches.length === 0) return <div className="rounded-lg border bg-card p-6 text-center text-sm text-muted-foreground">No branches yet</div>;
+  if (branches.length === 0) {return <div className="rounded-lg border bg-card p-6 text-center text-sm text-muted-foreground">No branches yet</div>;}
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

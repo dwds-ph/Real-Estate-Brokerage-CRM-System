@@ -22,6 +22,7 @@ export default function ReferralDashboard() {
       setReferrals(data);
     } catch (err) {
       setError("Failed to load referrals");
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setLoading(false);
@@ -44,6 +45,7 @@ export default function ReferralDashboard() {
       await updateReferral(id, { status: "paid", paidAt: getTimestamp() });
       await loadReferrals();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };

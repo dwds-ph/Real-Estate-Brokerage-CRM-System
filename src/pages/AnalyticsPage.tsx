@@ -61,7 +61,7 @@ export default function AnalyticsPage() {
 
   // Goals subscription
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     const unsub = subscribeGoals(brokerId, setGoals);
     return unsub;
   }, [brokerId]);
@@ -98,7 +98,7 @@ export default function AnalyticsPage() {
   const handleCreateGoal = async (
     data: Omit<AgentGoal, "id" | "createdAt" | "updatedAt">,
   ) => {
-    if (!userProfile || !brokerId) return;
+    if (!userProfile || !brokerId) {return;}
     await createGoal({
       ...data,
       createdBy: brokerId,
@@ -110,7 +110,7 @@ export default function AnalyticsPage() {
   const handleUpdateGoal = async (
     data: Omit<AgentGoal, "id" | "createdAt" | "updatedAt">,
   ) => {
-    if (!editingGoal || !userProfile) return;
+    if (!editingGoal || !userProfile) {return;}
     await updateGoal(editingGoal.id, {
       ...data,
       updatedAt: Date.now(),
@@ -120,7 +120,8 @@ export default function AnalyticsPage() {
   };
 
   const handleDeleteGoal = async (goalId: string) => {
-    if (!window.confirm("Delete this goal?")) return;
+    // eslint-disable-next-line no-alert
+    if (!window.confirm("Delete this goal?")) {return;}
     await deleteGoal(goalId);
   };
 

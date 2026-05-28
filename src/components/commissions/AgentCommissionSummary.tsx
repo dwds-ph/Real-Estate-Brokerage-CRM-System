@@ -46,7 +46,7 @@ function getPeriodStart(period: PeriodFilter): number {
 
 function filterDealsByPeriod(deals: Deal[], period: PeriodFilter): Deal[] {
   const start = getPeriodStart(period);
-  if (start === 0) return deals;
+  if (start === 0) {return deals;}
   return deals.filter((d) => d.createdAt >= start);
 }
 
@@ -55,7 +55,7 @@ function filterPayoutsByPeriod(
   period: PeriodFilter,
 ): Payout[] {
   const start = getPeriodStart(period);
-  if (start === 0) return payouts;
+  if (start === 0) {return payouts;}
   return payouts.filter((p) => (p.paidAt ?? 0) >= start);
 }
 

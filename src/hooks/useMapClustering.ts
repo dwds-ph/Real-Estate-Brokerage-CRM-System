@@ -39,36 +39,36 @@ export function useMapClustering<T extends { _lat: number; _lng: number }>(
   } = options;
 
   return useMemo(() => {
-    if (singleMarker) return { clusters: [], individuals: [] };
+    if (singleMarker) {return { clusters: [], individuals: [] };}
 
     // Apply filters if provided
     const filtered = filters
       ? listings.filter((l) => {
-          if (!l._lat || !l._lng) return false;
+          if (!l._lat || !l._lng) {return false;}
           if (
             filters.propertyTypes.length > 0 &&
             !filters.propertyTypes.includes(
               (l as unknown as Record<string, string>).propertyType,
             )
           )
-            return false;
+            {return false;}
           if (
             filters.statuses.length > 0 &&
             !filters.statuses.includes(
               (l as unknown as Record<string, string>).status,
             )
           )
-            return false;
+            {return false;}
           if (
             filters.floodRisks.length > 0 &&
             !filters.floodRisks.includes(
               (l as unknown as Record<string, string>).floodRisk,
             )
           )
-            return false;
+            {return false;}
           const price = (l as unknown as Record<string, number>).price;
           if (price < filters.priceMin || price > filters.priceMax)
-            return false;
+            {return false;}
           return true;
         })
       : listings.filter((l) => l._lat && l._lng);
@@ -85,7 +85,7 @@ export function useMapClustering<T extends { _lat: number; _lng: number }>(
       const cx = Math.round(l._lng / activeGridSize);
       const cy = Math.round(l._lat / activeGridSize);
       const key = `${cx},${cy}`;
-      if (!grid.has(key)) grid.set(key, []);
+      if (!grid.has(key)) {grid.set(key, []);}
       grid.get(key)!.push(l);
     }
 

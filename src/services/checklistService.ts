@@ -40,8 +40,8 @@ export async function fetchChecklistInstances(
   scopeId?: string,
 ): Promise<ChecklistInstance[]> {
   const constraints = [];
-  if (scopeType) constraints.push(where("scopeType", "==", scopeType));
-  if (scopeId) constraints.push(where("scopeId", "==", scopeId));
+  if (scopeType) {constraints.push(where("scopeType", "==", scopeType));}
+  if (scopeId) {constraints.push(where("scopeId", "==", scopeId));}
   constraints.push(orderBy("createdAt", "desc"));
   const q = query(collection(db, COLLECTIONS.CHECKLISTS), ...constraints);
   const snap = await getDocs(q);

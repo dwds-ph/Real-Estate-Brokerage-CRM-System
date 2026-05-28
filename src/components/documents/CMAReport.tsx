@@ -31,7 +31,7 @@ interface Props {
 }
 
 export default function CMAReport({ report }: Props) {
-  if (!report) return null;
+  if (!report) {return null;}
 
   return (
     <div className="space-y-3">

@@ -68,11 +68,11 @@ export default function CoBrokeragePage() {
 
   const trackLoad = useCallback(() => {
     loadedCountRef.current += 1;
-    if (loadedCountRef.current >= 4) setLoading(false);
+    if (loadedCountRef.current >= 4) {setLoading(false);}
   }, []);
 
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     const unsub = onSnapshot(
       query(
         collection(db, "deals"),
@@ -85,14 +85,14 @@ export default function CoBrokeragePage() {
         setError(null);
       },
       (err) => {
-        setError("Failed to load deals: " + err.message);
+        setError(`Failed to load deals: ${  err.message}`);
         trackLoad();
       },
     );
     return unsub;
   }, [brokerId, trackLoad]);
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     return subscribeCoBrokers(brokerId, (data) => {
       setBrokers(data);
       trackLoad();
@@ -100,7 +100,7 @@ export default function CoBrokeragePage() {
     });
   }, [brokerId, trackLoad]);
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     return subscribeTeams(brokerId, (data) => {
       setTeams(data);
       trackLoad();
@@ -108,7 +108,7 @@ export default function CoBrokeragePage() {
     });
   }, [brokerId, trackLoad]);
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     return subscribeBranches(brokerId, (data) => {
       setBranches(data);
       trackLoad();
@@ -128,7 +128,7 @@ export default function CoBrokeragePage() {
 
   const handleSaveBroker = useCallback(
     async (data: Record<string, unknown>) => {
-      if (!brokerId || !userProfile) return;
+      if (!brokerId || !userProfile) {return;}
       if (editingBroker) {
         await updateCoBroker(editingBroker.id, data);
       } else {
@@ -149,7 +149,7 @@ export default function CoBrokeragePage() {
 
   const handleSaveTeam = useCallback(
     async (data: Record<string, unknown>) => {
-      if (!brokerId || !userProfile) return;
+      if (!brokerId || !userProfile) {return;}
       if (editingTeam) {
         await updateTeam(editingTeam.id, data);
       } else {
@@ -168,7 +168,7 @@ export default function CoBrokeragePage() {
 
   const handleSaveBranch = useCallback(
     async (data: Record<string, unknown>) => {
-      if (!brokerId || !userProfile) return;
+      if (!brokerId || !userProfile) {return;}
       if (editingBranch) {
         await updateBranch(editingBranch.id, data);
       } else {
@@ -190,7 +190,7 @@ export default function CoBrokeragePage() {
 
   const handleSaveSplit = useCallback(
     async (data: Record<string, unknown>) => {
-      if (!brokerId || !userProfile) return;
+      if (!brokerId || !userProfile) {return;}
       await createCoBrokerDeal({
         dealId: "",
         coBrokerName: "",

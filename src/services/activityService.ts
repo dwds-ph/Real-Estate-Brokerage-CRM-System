@@ -18,7 +18,7 @@ export function subscribeActivityForLead(
   leadId: string | undefined,
   callback?: (activities: ActivityLog[]) => void,
 ) {
-  if (!leadId) return () => {};
+  if (!leadId) {return () => {};}
 
   const constraints: QueryConstraint[] = [
     where("leadId", "==", leadId),
@@ -37,7 +37,7 @@ export function subscribeActivityForDeal(
   dealId: string | undefined,
   callback?: (activities: ActivityLog[]) => void,
 ) {
-  if (!dealId) return () => {};
+  if (!dealId) {return () => {};}
 
   const constraints: QueryConstraint[] = [
     where("dealId", "==", dealId),
@@ -56,7 +56,7 @@ export function subscribeRecentActivity(
   brokerId: string | undefined,
   callback?: (activities: ActivityLog[]) => void,
 ) {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
 
   const constraints: QueryConstraint[] = [
     where("createdBy", "==", brokerId),

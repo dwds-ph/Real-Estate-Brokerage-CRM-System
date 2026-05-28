@@ -56,7 +56,7 @@ function FitBounds({ listings }: { listings: ListingMarker[] }) {
       const bounds = L.latLngBounds(
         valid.map((l) => [l._lat, l._lng] as [number, number]),
       );
-      if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40] });
+      if (bounds.isValid()) {map.fitBounds(bounds, { padding: [40, 40] });}
     }
   }, [listings, map]);
   return null;
@@ -70,17 +70,17 @@ export default function PropertyMap({
   const filtered = filters
     ? listings.filter((l) => {
         if (filters.propertyType && l.propertyType !== filters.propertyType)
-          return false;
-        if (filters.status && l.status !== filters.status) return false;
-        if (filters.minPrice && l.price != null && l.price < filters.minPrice)
-          return false;
-        if (filters.maxPrice && l.price != null && l.price > filters.maxPrice)
-          return false;
+          {return false;}
+        if (filters.status && l.status !== filters.status) {return false;}
+        if (filters.minPrice && l.price != null /* eslint-disable-line eqeqeq */ && l.price < filters.minPrice)
+          {return false;}
+        if (filters.maxPrice && l.price != null /* eslint-disable-line eqeqeq */ && l.price > filters.maxPrice)
+          {return false;}
         if (
           filters.location &&
           !l.address?.toLowerCase().includes(filters.location.toLowerCase())
         )
-          return false;
+          {return false;}
         return true;
       })
     : listings;

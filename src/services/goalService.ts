@@ -9,7 +9,7 @@ import {
 import { type AgentGoal } from "@/types";
 
 export function subscribeGoals(brokerId: string | undefined, callback: (goals: AgentGoal[]) => void) {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
   return subscribeToQuery<AgentGoal>(
     COLLECTIONS.GOALS,
     [where("brokerId", "==", brokerId), orderBy("periodStart", "desc")],

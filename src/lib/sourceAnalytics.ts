@@ -32,14 +32,14 @@ export function computeSourceAnalytics(
   for (const lead of leads) {
     const src = lead.source || "unknown";
     if (!sourceMap.has(src))
-      sourceMap.set(src, {
+      {sourceMap.set(src, {
         leads: 0,
         deals: 0,
         commission: 0,
         dealValues: [],
         leadTimestamps: [],
         dealTimestamps: [],
-      });
+      });}
     sourceMap.get(src)!.leads++;
     sourceMap.get(src)!.leadTimestamps.push(lead.createdAt!);
   }
@@ -72,7 +72,7 @@ export function computeSourceAnalytics(
 }
 
 function computeAvgDays(leadTimes: number[], dealTimes: number[]): number {
-  if (leadTimes.length === 0 || dealTimes.length === 0) return 0;
+  if (leadTimes.length === 0 || dealTimes.length === 0) {return 0;}
   let total = 0;
   let count = 0;
   for (const dt of dealTimes) {

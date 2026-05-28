@@ -20,7 +20,7 @@ export default function ViewingsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile) return;
+    if (!userProfile) {return;}
     try {
       await createDoc("viewings", {
         ...form,

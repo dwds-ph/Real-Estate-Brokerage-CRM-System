@@ -113,15 +113,15 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
   const toggleSelection = useCallback((id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {next.delete(id);}
+      else {next.add(id);}
       return next;
     });
   }, []);
 
   const toggleSelectAll = useCallback(() => {
     setSelectedIds((prev) => {
-      if (prev.size === visiblePayouts.length) return new Set();
+      if (prev.size === visiblePayouts.length) {return new Set();}
       return new Set(visiblePayouts.map((p) => p.id));
     });
   }, [visiblePayouts]);
@@ -152,7 +152,8 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
   );
 
   const handleDelete = useCallback(async (payoutId: string) => {
-    if (!confirm("Delete this payout record?")) return;
+    // eslint-disable-next-line no-alert
+    if (!confirm("Delete this payout record?")) {return;}
     await deletePayout(payoutId);
   }, []);
 

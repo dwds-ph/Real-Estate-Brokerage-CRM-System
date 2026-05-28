@@ -75,17 +75,17 @@ export default defineConfig({
             id.includes("firebase/storage") ||
             id.includes("firebase/messaging")
           )
-            return "vendor-firebase";
+            {return "vendor-firebase";}
           if (
             id.includes("react") ||
             id.includes("react-dom") ||
             id.includes("react-router")
           )
-            return "vendor-react";
-          if (id.includes("recharts")) return "vendor-charts";
-          if (id.includes("leaflet")) return "vendor-leaflet";
+            {return "vendor-react";}
+          if (id.includes("recharts")) {return "vendor-charts";}
+          if (id.includes("leaflet")) {return "vendor-leaflet";}
           if (id.includes("jspdf") || id.includes("html2canvas"))
-            return "vendor-pdf";
+            {return "vendor-pdf";}
         },
       },
     },

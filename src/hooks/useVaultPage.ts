@@ -69,7 +69,7 @@ export function useVaultPage() {
     const grouped: GroupedDocs = {};
     documents.forEach((doc) => {
       if (doc.dealId) {
-        if (!grouped[doc.dealId]) grouped[doc.dealId] = [];
+        if (!grouped[doc.dealId]) {grouped[doc.dealId] = [];}
         grouped[doc.dealId].push(doc);
       }
     });
@@ -80,7 +80,7 @@ export function useVaultPage() {
     const grouped: GroupedDocs = {};
     documents.forEach((doc) => {
       if (doc.listingId) {
-        if (!grouped[doc.listingId]) grouped[doc.listingId] = [];
+        if (!grouped[doc.listingId]) {grouped[doc.listingId] = [];}
         grouped[doc.listingId].push(doc);
       }
     });
@@ -98,7 +98,7 @@ export function useVaultPage() {
 
   // User's incoming requests
   const myRequests = useMemo(() => {
-    if (!userProfile) return [];
+    if (!userProfile) {return [];}
     return requests.filter(
       (r) => r.toUserId === userProfile.id || r.fromUserId === userProfile.id,
     );
@@ -120,8 +120,9 @@ export function useVaultPage() {
 
   const handleDelete = useCallback(
     async (doc: VaultDocument) => {
+      // eslint-disable-next-line no-alert
       if (!window.confirm(`Delete "${doc.name}"? This cannot be undone.`))
-        return;
+        {return;}
       try {
         await deleteVaultDocument(doc);
         if (selectedDoc?.id === doc.id) {
@@ -130,6 +131,7 @@ export function useVaultPage() {
         }
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Delete failed";
+        // eslint-disable-next-line no-alert
         alert(message);
       }
     },
@@ -148,7 +150,7 @@ export function useVaultPage() {
   const uniqueStages = useMemo(() => {
     const stages = new Set<string>();
     allDocuments.forEach((d) => {
-      if (d.stage) stages.add(d.stage);
+      if (d.stage) {stages.add(d.stage);}
     });
     return Array.from(stages).sort();
   }, [allDocuments]);

@@ -66,7 +66,7 @@ export function useKeyboardShortcuts(customShortcuts: ShortcutDef[] = []) {
     (e: KeyboardEvent) => {
       // Ignore if user is typing in an input/textarea/select
       const tag = (e.target as HTMLElement).tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {return;}
 
       const key = e.key === "?" ? "?" : e.key.toUpperCase();
       const newPressed = new Set(pressedKeys);

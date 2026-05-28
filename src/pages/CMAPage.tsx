@@ -27,7 +27,7 @@ export default function CMAPage() {
   const [selectedReport, setSelectedReport] = useState<CMReport | null>(null);
 
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
     setError(null);
     const unsub = onSnapshot(
@@ -139,8 +139,9 @@ export default function CMAPage() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    // eslint-disable-next-line no-alert
                     if (confirm("Delete this report?"))
-                      deleteDoc(doc(db, "cmaReports", r.id));
+                      {deleteDoc(doc(db, "cmaReports", r.id));}
                   }}
                   className="text-[10px] text-red-500 hover:underline"
                 >

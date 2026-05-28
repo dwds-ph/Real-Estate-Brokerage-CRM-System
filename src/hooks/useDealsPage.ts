@@ -26,7 +26,7 @@ export function useDealsPage() {
 
   const handleDrop = useCallback(
     async (newStatus: LeadStatus) => {
-      if (!draggingId) return;
+      if (!draggingId) {return;}
       const now = Date.now();
       const lead = allLeads.find((l) => l.id === draggingId) as Lead;
       try {

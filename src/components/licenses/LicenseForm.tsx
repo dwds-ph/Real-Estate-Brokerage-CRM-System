@@ -54,12 +54,12 @@ export default function LicenseForm({
   function handleAgentChange(id: string) {
     setAgentId(id);
     const agent = agentUsers.find((u) => u.id === id);
-    if (agent) setAgentName(agent.displayName);
+    if (agent) {setAgentName(agent.displayName);}
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!agentId || !licenseNumber || !issueDate || !expiryDate) return;
+    if (!agentId || !licenseNumber || !issueDate || !expiryDate) {return;}
     setSaving(true);
 
     try {

@@ -40,6 +40,7 @@ export default function CommTemplateManager({
       setTemplates(data);
     } catch (err) {
       setError("Failed to load templates");
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setLoading(false);
@@ -47,7 +48,7 @@ export default function CommTemplateManager({
   };
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {return;}
     setTimeout(() => loadTemplates(), 0);
   }, [open]);
 
@@ -59,7 +60,7 @@ export default function CommTemplateManager({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile || !form.name.trim() || !form.body.trim()) return;
+    if (!userProfile || !form.name.trim() || !form.body.trim()) {return;}
     setSaving(true);
     try {
       if (editingId) {
@@ -70,6 +71,7 @@ export default function CommTemplateManager({
       resetForm();
       await loadTemplates();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setSaving(false);
@@ -77,11 +79,13 @@ export default function CommTemplateManager({
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this template?")) return;
+    // eslint-disable-next-line no-alert
+    if (!confirm("Delete this template?")) {return;}
     try {
       await deleteCommTemplate(id);
       await loadTemplates();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
@@ -92,7 +96,7 @@ export default function CommTemplateManager({
     setShowForm(true);
   };
 
-  if (!open) return null;
+  if (!open) {return null;}
 
   return (
     <div

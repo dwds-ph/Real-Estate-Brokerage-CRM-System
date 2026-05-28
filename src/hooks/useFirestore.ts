@@ -120,7 +120,7 @@ export async function getDocById<T extends DocumentData>(
   const snap = await getDocs(
     query(collection(db, collectionName), where("__name__", "==", docId)),
   );
-  if (snap.empty) return null;
+  if (snap.empty) {return null;}
   return { id: snap.docs[0].id, ...snap.docs[0].data() } as unknown as T;
 }
 

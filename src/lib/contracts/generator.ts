@@ -96,9 +96,9 @@ function addField(
   doc.setFontSize(FONT_SIZE_BODY);
   doc.setFont("helvetica", "bold");
   const displayValue =
-    value != null ? String(value) : "________________________";
-  doc.text(label + ": ", MARGIN, cursorY);
-  const labelWidth = doc.getTextWidth(label + ": ");
+    value != null /* eslint-disable-line eqeqeq */ ? String(value) : "________________________";
+  doc.text(`${label}: `, MARGIN, cursorY);
+  const labelWidth = doc.getTextWidth(`${label}: `);
   doc.setFont("helvetica", "normal");
   doc.text(displayValue, MARGIN + labelWidth, cursorY);
   cursorY += LINE_HEIGHT + 1;
@@ -120,14 +120,14 @@ function renderReservationAgreement(doc: Doc, data: ContractData): void {
   y = addSection(doc, "PARTIES", [], y);
   y = addField(doc, "SELLER", data.sellerName, y);
   if (data.sellerAddress)
-    y = addField(doc, "Seller Address", data.sellerAddress, y);
+    {y = addField(doc, "Seller Address", data.sellerAddress, y);}
   y = addField(doc, "BUYER", data.buyerName, y);
   if (data.buyerAddress)
-    y = addField(doc, "Buyer Address", data.buyerAddress, y);
+    {y = addField(doc, "Buyer Address", data.buyerAddress, y);}
   y = addField(doc, "Broker/Agent", data.brokerName, y);
   if (data.brokerLicense)
-    y = addField(doc, "License No.", data.brokerLicense, y);
-  if (data.brokerAgency) y = addField(doc, "Agency", data.brokerAgency, y);
+    {y = addField(doc, "License No.", data.brokerLicense, y);}
+  if (data.brokerAgency) {y = addField(doc, "Agency", data.brokerAgency, y);}
   y += 3;
 
   // Property
@@ -140,25 +140,25 @@ function renderReservationAgreement(doc: Doc, data: ContractData): void {
     y,
   );
   y = addField(doc, "Type", data.propertyType, y);
-  if (data.lotArea) y = addField(doc, "Lot Area", `${data.lotArea} sqm`, y);
+  if (data.lotArea) {y = addField(doc, "Lot Area", `${data.lotArea} sqm`, y);}
   if (data.floorArea)
-    y = addField(doc, "Floor Area", `${data.floorArea} sqm`, y);
-  if (data.tctNumber) y = addField(doc, "TCT No.", data.tctNumber, y);
+    {y = addField(doc, "Floor Area", `${data.floorArea} sqm`, y);}
+  if (data.tctNumber) {y = addField(doc, "TCT No.", data.tctNumber, y);}
   y += 3;
 
   // Financial Terms
   y = addSection(doc, "FINANCIAL TERMS", [], y);
   y = addField(doc, "Purchase Price", formatCurrency(data.purchasePrice), y);
   if (data.reservationFee)
-    y = addField(
+    {y = addField(
       doc,
       "Reservation Fee",
       formatCurrency(data.reservationFee),
       y,
-    );
+    );}
   y = addField(doc, "Date of Agreement", data.dateOfAgreement, y);
   if (data.targetClosingDate)
-    y = addField(doc, "Target Closing", data.targetClosingDate, y);
+    {y = addField(doc, "Target Closing", data.targetClosingDate, y);}
   y += 3;
 
   // Terms and conditions
@@ -200,10 +200,10 @@ function renderContractToSell(doc: Doc, data: ContractData): void {
   y = addSection(doc, "PARTIES", [], y);
   y = addField(doc, "SELLER", data.sellerName, y);
   if (data.sellerAddress)
-    y = addField(doc, "Seller Address", data.sellerAddress, y);
+    {y = addField(doc, "Seller Address", data.sellerAddress, y);}
   y = addField(doc, "BUYER", data.buyerName, y);
   if (data.buyerAddress)
-    y = addField(doc, "Buyer Address", data.buyerAddress, y);
+    {y = addField(doc, "Buyer Address", data.buyerAddress, y);}
   y = addField(doc, "Broker/Agent", data.brokerName, y);
   y += 3;
 
@@ -217,10 +217,10 @@ function renderContractToSell(doc: Doc, data: ContractData): void {
     y,
   );
   y = addField(doc, "Type", data.propertyType, y);
-  if (data.tctNumber) y = addField(doc, "TCT No.", data.tctNumber, y);
-  if (data.lotArea) y = addField(doc, "Lot Area", `${data.lotArea} sqm`, y);
+  if (data.tctNumber) {y = addField(doc, "TCT No.", data.tctNumber, y);}
+  if (data.lotArea) {y = addField(doc, "Lot Area", `${data.lotArea} sqm`, y);}
   if (data.floorArea)
-    y = addField(doc, "Floor Area", `${data.floorArea} sqm`, y);
+    {y = addField(doc, "Floor Area", `${data.floorArea} sqm`, y);}
   y += 3;
 
   // Financial
@@ -232,11 +232,11 @@ function renderContractToSell(doc: Doc, data: ContractData): void {
     y,
   );
   if (data.downPayment)
-    y = addField(doc, "Down Payment", formatCurrency(data.downPayment), y);
+    {y = addField(doc, "Down Payment", formatCurrency(data.downPayment), y);}
   if (data.paymentTerms)
-    y = addField(doc, "Payment Terms", data.paymentTerms, y);
+    {y = addField(doc, "Payment Terms", data.paymentTerms, y);}
   if (data.targetClosingDate)
-    y = addField(doc, "Closing Date", data.targetClosingDate, y);
+    {y = addField(doc, "Closing Date", data.targetClosingDate, y);}
   y += 3;
 
   // Maceda Law
@@ -271,10 +271,10 @@ function renderDeedOfAbsoluteSale(doc: Doc, data: ContractData): void {
   );
   y = addField(doc, "SELLER", data.sellerName, y);
   if (data.sellerAddress)
-    y = addField(doc, "Seller Address", data.sellerAddress, y);
+    {y = addField(doc, "Seller Address", data.sellerAddress, y);}
   y = addField(doc, "BUYER", data.buyerName, y);
   if (data.buyerAddress)
-    y = addField(doc, "Buyer Address", data.buyerAddress, y);
+    {y = addField(doc, "Buyer Address", data.buyerAddress, y);}
   y += 3;
 
   // Recitals
@@ -295,10 +295,10 @@ function renderDeedOfAbsoluteSale(doc: Doc, data: ContractData): void {
     `${data.propertyAddress}, ${data.propertyCity}${data.propertyProvince ? `, ${data.propertyProvince}` : ""}`,
     y,
   );
-  if (data.tctNumber) y = addField(doc, "TCT No.", data.tctNumber, y);
-  if (data.lotArea) y = addField(doc, "Lot Area", `${data.lotArea} sqm`, y);
+  if (data.tctNumber) {y = addField(doc, "TCT No.", data.tctNumber, y);}
+  if (data.lotArea) {y = addField(doc, "Lot Area", `${data.lotArea} sqm`, y);}
   if (data.floorArea)
-    y = addField(doc, "Floor Area", `${data.floorArea} sqm`, y);
+    {y = addField(doc, "Floor Area", `${data.floorArea} sqm`, y);}
   y += 3;
 
   // Sale

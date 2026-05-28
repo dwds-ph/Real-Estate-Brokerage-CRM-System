@@ -319,8 +319,8 @@ describe("importFromCSV", () => {
 
   it("processes rows in batches of 20", async () => {
     const csv =
-      "name\n" +
-      Array.from({ length: 25 }, (_, i) => `User${i + 1}`).join("\n");
+      `name\n${ 
+      Array.from({ length: 25 }, (_, i) => `User${i + 1}`).join("\n")}`;
     await importFromCSV(csv, LEAD_IMPORT_CONFIG);
     // addDoc should have been called 25 times
     expect(mockAddDoc).toHaveBeenCalledTimes(25);

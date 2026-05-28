@@ -64,7 +64,7 @@ function ToastItem({
   };
 
   useEffect(() => {
-    if (!toast.duration) return;
+    if (!toast.duration) {return;}
     const timer = setTimeout(() => onDismiss(toast.id), toast.duration);
     return () => clearTimeout(timer);
   }, [toast.id, toast.duration, onDismiss]);
@@ -112,7 +112,7 @@ export function ToastContainer() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  if (toasts.length === 0) return null;
+  if (toasts.length === 0) {return null;}
 
   return (
     <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]">

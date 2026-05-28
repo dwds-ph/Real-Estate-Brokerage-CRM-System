@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Mock } from "vitest";
 import {
   subscribeToursForAgent,
   subscribeToursForBroker,
@@ -77,7 +76,7 @@ function sampleTourStop(overrides: Partial<TourStop> = {}): TourStop {
   };
 }
 
-function sampleTour(overrides: Partial<Tour> = {}): Tour {
+function _sampleTour(overrides: Partial<Tour> = {}): Tour {
   return {
     id: "tour-1",
     title: "Client Property Tour",

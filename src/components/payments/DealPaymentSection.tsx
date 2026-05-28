@@ -15,7 +15,7 @@ export function DealPaymentSection({ allDeals }: DealPaymentSectionProps) {
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
 
-  if (allDeals.length === 0) return null;
+  if (allDeals.length === 0) {return null;}
 
   return (
     <div className="rounded-lg border bg-card">

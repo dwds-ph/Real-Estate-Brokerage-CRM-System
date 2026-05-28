@@ -172,7 +172,7 @@ describe("geocodeAddress", () => {
   });
 
   it("handles address with diacritics", async () => {
-    const mockFetch = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
       json: () => Promise.resolve([{ lat: "10.3", lon: "123.9" }]),
     } as Response);
 

@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshProfile = async () => {
-    if (user) await fetchProfile(user.uid);
+    if (user) {await fetchProfile(user.uid);}
   };
 
   return (
@@ -127,6 +127,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  if (!context) {throw new Error("useAuth must be used within AuthProvider");}
   return context;
 }

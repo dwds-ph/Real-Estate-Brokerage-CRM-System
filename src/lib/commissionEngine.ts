@@ -269,7 +269,7 @@ export function computeFullBreakdown(params: {
 // ─── Utility ─────────────────────────────────────────────────────────
 
 export function formatCommissionPercent(dealPrice: number, grossCommission: number): string {
-  if (dealPrice <= 0) return "0%";
+  if (dealPrice <= 0) {return "0%";}
   return `${((grossCommission / dealPrice) * 100).toFixed(2)}%`;
 }
 

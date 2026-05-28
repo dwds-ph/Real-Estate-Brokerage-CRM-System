@@ -39,6 +39,7 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
       }
     } catch (err) {
       setError("Failed to load routing config");
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setLoading(false);
@@ -46,7 +47,7 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
   }, []);
 
   useEffect(() => {
-    if (open) setTimeout(() => loadConfig(), 0);
+    if (open) {setTimeout(() => loadConfig(), 0);}
   }, [open, loadConfig]);
 
   const addRule = (type: LeadRoutingRule["type"]) => {
@@ -86,13 +87,14 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError("Failed to save routing config");
+      // eslint-disable-next-line no-console
       console.error(err);
     } finally {
       setSaving(false);
     }
   };
 
-  if (!open) return null;
+  if (!open) {return null;}
 
   return (
     <div
@@ -216,7 +218,7 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
                             if (e.key === "Enter") {
                               const input = e.target as HTMLInputElement;
                               const key = input.value.trim();
-                              if (!key || !rule.specialtyMap) return;
+                              if (!key || !rule.specialtyMap) {return;}
                               const agentId = (
                                 document.getElementById(
                                   `specialty-agent-${i}`,
@@ -251,7 +253,7 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
                               `specialty-key-${i}`,
                             ) as HTMLInputElement;
                             const key = input.value.trim();
-                            if (!key || !rule.specialtyMap) return;
+                            if (!key || !rule.specialtyMap) {return;}
                             const sel = document.getElementById(
                               `specialty-agent-${i}`,
                             ) as HTMLSelectElement;
@@ -289,8 +291,8 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
                                     </span>
                                     <button
                                       onClick={() => {
-                                        if (!rule.specialtyMap) return;
-                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                        if (!rule.specialtyMap) {return;}
+                                         
                                         const { [interest]: _, ...rest } =
                                           rule.specialtyMap;
                                         updateRule(i, { specialtyMap: rest });
@@ -337,7 +339,7 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
                               `loc-key-${i}`,
                             ) as HTMLInputElement;
                             const key = input.value.trim();
-                            if (!key || !rule.locationMap) return;
+                            if (!key || !rule.locationMap) {return;}
                             const sel = document.getElementById(
                               `loc-agent-${i}`,
                             ) as HTMLSelectElement;
@@ -375,8 +377,8 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
                                     </span>
                                     <button
                                       onClick={() => {
-                                        if (!rule.locationMap) return;
-                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                        if (!rule.locationMap) {return;}
+                                         
                                         const { [location]: _, ...rest } =
                                           rule.locationMap;
                                         updateRule(i, { locationMap: rest });

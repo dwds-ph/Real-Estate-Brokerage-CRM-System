@@ -38,7 +38,7 @@ export default function ListingsPage() {
   const filtered = listings
     .filter((l) => filter === "all" || (l as Listing).status === filter)
     .filter((l) => {
-      if (!search) return true;
+      if (!search) {return true;}
       const s = search.toLowerCase();
       const listing = l as Listing;
       return (
@@ -49,7 +49,7 @@ export default function ListingsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile) return;
+    if (!userProfile) {return;}
     try {
       const data = {
         title: form.title,
@@ -87,12 +87,14 @@ export default function ListingsPage() {
       }
       resetForm();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Failed to save listing:", err);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this listing?")) return;
+    // eslint-disable-next-line no-alert
+    if (!confirm("Delete this listing?")) {return;}
     await deleteDocById("listings", id);
   };
 

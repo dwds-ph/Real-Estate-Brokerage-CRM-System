@@ -32,7 +32,7 @@ export default function ExpensesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile) return;
+    if (!userProfile) {return;}
     try {
       await createDoc("expenses", {
         ...form,
@@ -55,7 +55,8 @@ export default function ExpensesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this expense?")) return;
+    // eslint-disable-next-line no-alert
+    if (!confirm("Delete this expense?")) {return;}
     try {
       await deleteDocById("expenses", id);
       toast("success", "Expense deleted");

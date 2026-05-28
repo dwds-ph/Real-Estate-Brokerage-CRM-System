@@ -27,7 +27,7 @@ export default function SettingsPage() {
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {return;}
     setError("");
     setSaving(true);
     try {
@@ -49,7 +49,7 @@ export default function SettingsPage() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth.currentUser) return;
+    if (!auth.currentUser) {return;}
     setPasswordError("");
     setPasswordSaved(false);
     try {
@@ -69,7 +69,7 @@ export default function SettingsPage() {
     }
   };
 
-  if (!userProfile) return null;
+  if (!userProfile) {return null;}
 
   return (
     <div className="space-y-8">

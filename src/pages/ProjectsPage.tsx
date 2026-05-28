@@ -27,6 +27,7 @@ export default function ProjectsPage() {
   };
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (window.confirm("Delete this project? This cannot be undone.")) {
       await deleteProject(id);
     }

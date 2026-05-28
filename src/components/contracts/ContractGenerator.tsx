@@ -58,7 +58,7 @@ export function ContractGenerator({
   };
 
   const handleDownload = () => {
-    if (!selectedTemplate) return;
+    if (!selectedTemplate) {return;}
     const doc = generateContract(selectedTemplate, formData as ContractData);
     const template = CONTRACT_TEMPLATES.find((t) => t.id === selectedTemplate);
     doc.save(
@@ -78,7 +78,7 @@ export function ContractGenerator({
     }
   };
 
-  if (!open) return null;
+  if (!open) {return null;}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -291,7 +291,7 @@ export function ContractGenerator({
                   {formData.propertyTitle}
                 </span>
               </div>
-              {formData.purchasePrice != null && formData.purchasePrice > 0 && (
+              {formData.purchasePrice != null /* eslint-disable-line eqeqeq */ && formData.purchasePrice > 0 && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Amount:</span>
                   <span className="font-medium">

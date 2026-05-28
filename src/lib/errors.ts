@@ -143,13 +143,13 @@ export function createValidationError(
  * Safely extract an error message from any thrown value.
  */
 export function getErrorMessage(error: unknown): string {
-  if (error instanceof AppError) return error.message;
-  if (error instanceof Error) return error.message;
-  if (typeof error === "string") return error;
+  if (error instanceof AppError) {return error.message;}
+  if (error instanceof Error) {return error.message;}
+  if (typeof error === "string") {return error;}
   if (typeof error === "object" && error !== null) {
     const obj = error as Record<string, unknown>;
-    if (typeof obj.message === "string") return obj.message;
-    if (typeof obj.error === "string") return obj.error;
+    if (typeof obj.message === "string") {return obj.message;}
+    if (typeof obj.error === "string") {return obj.error;}
   }
   return "An unknown error occurred";
 }

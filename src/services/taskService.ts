@@ -15,7 +15,7 @@ export function subscribeTasks(
   filters?: { assignedTo?: string; status?: TaskStatus },
   callback?: (tasks: Task[]) => void,
 ) {
-  if (!brokerId) return () => {};
+  if (!brokerId) {return () => {};}
   const constraints: QueryConstraint[] = [
     where("brokerId", "==", brokerId),
     orderBy("createdAt", "desc"),
@@ -33,7 +33,7 @@ export function subscribeTasksByAssignee(
   userId: string | undefined,
   callback?: (tasks: Task[]) => void,
 ) {
-  if (!userId) return () => {};
+  if (!userId) {return () => {};}
   return subscribeToQuery<Task>(
     COLLECTIONS.TASKS,
     [where("assignedTo", "==", userId), orderBy("createdAt", "desc")],

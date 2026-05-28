@@ -19,7 +19,7 @@ const DISMISSED_KEY = "smart-reminders-dismissed";
 function getDismissed(): Set<string> {
   try {
     const raw = localStorage.getItem(DISMISSED_KEY);
-    if (raw) return new Set(JSON.parse(raw));
+    if (raw) {return new Set(JSON.parse(raw));}
   } catch {
     // ignore
   }
@@ -48,7 +48,7 @@ export default function SmartReminders() {
     // Leads inactive > 3 days
     const threeDays = 3 * 24 * 60 * 60 * 1000;
     for (const lead of leads as (Lead & { id: string })[]) {
-      if (!lead.assignedTo || lead.assignedTo !== userProfile?.id) continue;
+      if (!lead.assignedTo || lead.assignedTo !== userProfile?.id) {continue;}
       const lastActivity = lead.updatedAt || lead.createdAt;
       if (
         now - lastActivity > threeDays &&

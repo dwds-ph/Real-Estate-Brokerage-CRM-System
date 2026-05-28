@@ -8,9 +8,9 @@ const geocodeCache = new Map<string, [number, number]>();
 export async function geocodeAddress(
   address: string,
 ): Promise<[number, number] | null> {
-  if (!address || !address.trim()) return null;
+  if (!address || !address.trim()) {return null;}
   const key = address.toLowerCase().trim();
-  if (geocodeCache.has(key)) return geocodeCache.get(key)!;
+  if (geocodeCache.has(key)) {return geocodeCache.get(key)!;}
 
   try {
     const res = await fetch(

@@ -11,6 +11,7 @@ describe("Logger class", () => {
 
   it("logs debug messages", () => {
     const spy = vi.spyOn(console, "debug").mockImplementation(() => {});
+    // eslint-disable-next-line no-console
     console.debug("test"); // warmup
     logger.debug("test message");
     // debug may be suppressed by VITE_LOG_LEVEL — we just verify no crash

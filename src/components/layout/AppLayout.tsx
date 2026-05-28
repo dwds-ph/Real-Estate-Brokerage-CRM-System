@@ -51,7 +51,7 @@ export default function AppLayout() {
     const check = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      if (mobile) setSidebarOpen(false);
+      if (mobile) {setSidebarOpen(false);}
     };
     check();
     window.addEventListener("resize", check);
@@ -60,7 +60,7 @@ export default function AppLayout() {
 
   // Close sidebar on navigation (mobile)
   const handleNavClick = () => {
-    if (isMobile) setSidebarOpen(false);
+    if (isMobile) {setSidebarOpen(false);}
   };
 
   const handleLogout = async () => {

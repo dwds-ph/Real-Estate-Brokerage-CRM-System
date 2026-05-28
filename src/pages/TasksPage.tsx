@@ -49,7 +49,7 @@ export default function TasksPage() {
 
   // Listen to tasks
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     const q = query(
       collection(db, "tasks"),
       where("brokerId", "==", brokerId),
@@ -63,7 +63,7 @@ export default function TasksPage() {
         setError(null);
       },
       (err) => {
-        setError("Failed to load tasks: " + err.message);
+        setError(`Failed to load tasks: ${  err.message}`);
         setLoading(false);
       },
     );
@@ -72,7 +72,7 @@ export default function TasksPage() {
 
   // Listen to checklist templates
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     const q = query(
       collection(db, "checklistTemplates"),
       where("brokerId", "==", brokerId),
@@ -89,7 +89,7 @@ export default function TasksPage() {
         setError(null);
       },
       (err) => {
-        setError("Failed to load templates: " + err.message);
+        setError(`Failed to load templates: ${  err.message}`);
       },
     );
     return unsub;
@@ -120,24 +120,24 @@ export default function TasksPage() {
         !t.title.toLowerCase().includes(s) &&
         !t.description?.toLowerCase().includes(s)
       )
-        return false;
+        {return false;}
     }
-    if (filters.status !== "all" && t.status !== filters.status) return false;
+    if (filters.status !== "all" && t.status !== filters.status) {return false;}
     if (filters.priority !== "all" && t.priority !== filters.priority)
-      return false;
-    if (filters.assignedTo && t.assignedTo !== filters.assignedTo) return false;
+      {return false;}
+    if (filters.assignedTo && t.assignedTo !== filters.assignedTo) {return false;}
     if (
       filters.overdue &&
       (!t.dueDate || t.dueDate >= now || t.status === "done")
     )
-      return false;
+      {return false;}
     return true;
   });
 
   // ─── Handlers ──────────────────────────────────────────────────
   const handleCreateTask = useCallback(
     async (data: TaskFormData) => {
-      if (!userProfile || !brokerId) return;
+      if (!userProfile || !brokerId) {return;}
       setSaving(true);
       try {
         await createTask({
@@ -195,7 +195,7 @@ export default function TasksPage() {
 
   const handleCreateTemplate = useCallback(
     async (data: { name: string; description: string; items: string[] }) => {
-      if (!brokerId || !userProfile) return;
+      if (!brokerId || !userProfile) {return;}
       await addDoc(collection(db, "checklistTemplates"), {
         name: data.name,
         description: data.description,
@@ -216,7 +216,7 @@ export default function TasksPage() {
 
   const handleLoadTemplate = useCallback((template: ChecklistTemplate) => {
     setEditingTask((prev) => {
-      if (!prev) return prev;
+      if (!prev) {return prev;}
       const existing = prev.checklist || [];
       const newItems = template.items.map((item) => ({
         id: `cl_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,

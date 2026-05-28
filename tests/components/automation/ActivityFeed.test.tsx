@@ -16,8 +16,8 @@ const mockUsers = vi.fn();
 
 vi.mock("@/hooks/useFirestore", () => ({
   useCollection: vi.fn((collectionName: string) => {
-    if (collectionName === "auditLogs") return { data: mockActivities(), loading: mockLoading, error: null };
-    if (collectionName === "users") return { data: mockUsers(), loading: false, error: null };
+    if (collectionName === "auditLogs") {return { data: mockActivities(), loading: mockLoading, error: null };}
+    if (collectionName === "users") {return { data: mockUsers(), loading: false, error: null };}
     return { data: [], loading: false, error: null };
   }),
 }));

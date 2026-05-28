@@ -27,7 +27,7 @@ export default function ChecklistManager({ items, onChange, readOnly }: Checklis
 
   const addItem = () => {
     const text = newText.trim();
-    if (!text) return;
+    if (!text) {return;}
     onChange([...items, { id: nextId(), text, checked: false }]);
     setNewText("");
   };

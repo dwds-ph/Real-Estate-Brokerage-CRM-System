@@ -18,7 +18,7 @@ const labels = {
 };
 
 const AffordabilityCheck = memo(function AffordabilityCheck({ result }: Props) {
-  if (!result) return null;
+  if (!result) {return null;}
 
   return (
     <div className="rounded-lg border bg-card p-4 space-y-2">

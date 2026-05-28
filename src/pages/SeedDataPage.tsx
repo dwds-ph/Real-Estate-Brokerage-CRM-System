@@ -10,11 +10,12 @@ export default function SeedDataPage() {
 
   const handleSeed = async () => {
     if (
+      // eslint-disable-next-line no-alert
       !window.confirm(
         "This will create demo listings, leads, and deals. Continue?",
       )
     )
-      return;
+      {return;}
     setSeeding(true);
     setResult(null);
     try {

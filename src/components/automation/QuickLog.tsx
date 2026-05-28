@@ -30,7 +30,7 @@ export default function QuickLog({ leadId, lead, onLogged }: QuickLogProps) {
   };
 
   const handleQuickLog = async () => {
-    if (!leadId || !commText.trim() || !userProfile) return;
+    if (!leadId || !commText.trim() || !userProfile) {return;}
     setSaving(true);
     try {
       const entry: CommLogEntry = {
@@ -54,6 +54,7 @@ export default function QuickLog({ leadId, lead, onLogged }: QuickLogProps) {
       showToast("✅ Communication logged successfully");
       onLogged();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
       showToast("❌ Failed to log communication");
     } finally {

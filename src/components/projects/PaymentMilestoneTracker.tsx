@@ -19,7 +19,7 @@ export default function PaymentMilestoneTracker({
   const [milestones, setMilestones] = useState<PaymentMilestone[]>([]);
 
   useEffect(() => {
-    if (!unitId) return;
+    if (!unitId) {return;}
     const unsub = subscribeMilestones(unitId, (data) => setMilestones(data));
     return () => unsub();
   }, [unitId]);

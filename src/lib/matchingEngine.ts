@@ -59,7 +59,7 @@ export function parsePropertyInterest(text?: string): {
   bedrooms?: number;
   keywords: string[];
 } {
-  if (!text) return { propertyTypes: [], keywords: [] };
+  if (!text) {return { propertyTypes: [], keywords: [] };}
 
   const lower = text.toLowerCase();
   const keywords: string[] = [];
@@ -119,7 +119,7 @@ function scoreLocation(
   leadLocation: string | undefined,
   listing: { city: string; province: string },
 ): { score: number; detail: string } {
-  if (!leadLocation) return { score: 0, detail: "No location preference" };
+  if (!leadLocation) {return { score: 0, detail: "No location preference" };}
 
   const ll = leadLocation.toLowerCase().trim();
 
@@ -247,7 +247,7 @@ function computeMatchScore(
   criteriaResults: { score: number; weight: number }[],
 ): number {
   const totalWeight = criteriaResults.reduce((s, c) => s + c.weight, 0);
-  if (totalWeight === 0) return 0;
+  if (totalWeight === 0) {return 0;}
   const weighted = criteriaResults.reduce(
     (s, c) => s + c.score * c.weight,
     0,
@@ -264,7 +264,7 @@ export function matchLeadToListings(
   const results: MatchResult[] = [];
 
   for (const listing of listings) {
-    if (listing.status === "sold" || listing.status === "off-market") continue;
+    if (listing.status === "sold" || listing.status === "off-market") {continue;}
 
     const budgetScore = scoreBudget(lead.budget, listing.price);
     const locationScore = scoreLocation(lead.location, listing.location);
@@ -309,7 +309,7 @@ export function matchLeadToListings(
       criteriaItems.map((c) => ({ score: c.matched ? 1 : 0, weight: c.weight })),
     );
 
-    if (score < MIN_SCORE_TO_SHOW) continue;
+    if (score < MIN_SCORE_TO_SHOW) {continue;}
 
     results.push({
       type: "listing",
@@ -338,10 +338,10 @@ export function matchLeadToUnits(
   const results: MatchResult[] = [];
 
   for (const unit of units) {
-    if (unit.status !== "available" && unit.status !== "reserved") continue;
+    if (unit.status !== "available" && unit.status !== "reserved") {continue;}
 
     const project = projects.get(unit.projectId);
-    if (!project) continue;
+    if (!project) {continue;}
 
     const budgetScore = scoreBudget(lead.budget, unit.price);
     const locationScore = scoreLocation(
@@ -385,7 +385,7 @@ export function matchLeadToUnits(
       criteriaItems.map((c) => ({ score: c.matched ? 1 : 0, weight: c.weight })),
     );
 
-    if (score < MIN_SCORE_TO_SHOW) continue;
+    if (score < MIN_SCORE_TO_SHOW) {continue;}
 
     results.push({
       type: "unit",

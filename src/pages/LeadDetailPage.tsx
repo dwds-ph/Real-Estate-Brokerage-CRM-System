@@ -56,7 +56,7 @@ export default function LeadDetailPage() {
   }
 
   const handleStatusChange = async (status: string) => {
-    if (!id) return;
+    if (!id) {return;}
     await updateDocById("leads", id, {
       status,
       activityTimeline: [
@@ -71,12 +71,12 @@ export default function LeadDetailPage() {
   };
 
   const handleScoreChange = async (score: string) => {
-    if (!id) return;
+    if (!id) {return;}
     await updateDocById("leads", id, { score });
   };
 
   const handleAddCommLog = async () => {
-    if (!id || !commText.trim() || !userProfile) return;
+    if (!id || !commText.trim() || !userProfile) {return;}
     setSaving(true);
     const entry: CommLogEntry = {
       type: commType,

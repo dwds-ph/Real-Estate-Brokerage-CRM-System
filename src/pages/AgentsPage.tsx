@@ -20,7 +20,7 @@ export default function AgentsPage() {
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile) return;
+    if (!userProfile) {return;}
     setError("");
     setSaving(true);
     try {

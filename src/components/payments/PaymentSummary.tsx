@@ -19,7 +19,7 @@ export function PaymentSummary({ payments }: PaymentSummaryProps) {
   const overdueCount = payments.filter((p) => p.status === "overdue").length;
   const paidCount = payments.filter((p) => p.status === "paid").length;
 
-  if (payments.length === 0) return null;
+  if (payments.length === 0) {return null;}
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">

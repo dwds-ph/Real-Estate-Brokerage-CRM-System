@@ -293,7 +293,7 @@ export function autoFillFromDeal(
     data.propertyType = listing.propertyType;
     data.lotArea = listing.propertyDetails?.lotArea;
     data.floorArea = listing.propertyDetails?.floorArea;
-    if (!data.purchasePrice) data.purchasePrice = listing.price;
+    if (!data.purchasePrice) {data.purchasePrice = listing.price;}
   }
 
   data.dateOfAgreement = new Date().toISOString().split("T")[0];

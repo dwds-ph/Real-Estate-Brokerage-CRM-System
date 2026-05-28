@@ -22,7 +22,7 @@ export default function LicensesPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userProfile) return;
+    if (!userProfile) {return;}
 
     const isBroker = userProfile.role === "broker";
     setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect

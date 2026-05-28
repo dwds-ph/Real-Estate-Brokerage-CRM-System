@@ -41,7 +41,7 @@ export default function MortgagePage() {
 
   // Filtered mortgages
   const mortgages = useMemo(() => {
-    if (statusFilter === "all") return allMortgages;
+    if (statusFilter === "all") {return allMortgages;}
     return allMortgages.filter((m) => m.status === statusFilter);
   }, [allMortgages, statusFilter]);
 
@@ -56,12 +56,14 @@ export default function MortgagePage() {
   }, [allMortgages]);
 
   const handleDelete = async (mortgageId: string) => {
+    // eslint-disable-next-line no-alert
     if (!window.confirm("Delete this mortgage record? This cannot be undone."))
-      return;
+      {return;}
     setDeleting(mortgageId);
     try {
       await deleteDocById("mortgages", mortgageId);
     } catch {
+      // eslint-disable-next-line no-alert
       alert("Failed to delete mortgage");
     } finally {
       setDeleting(null);

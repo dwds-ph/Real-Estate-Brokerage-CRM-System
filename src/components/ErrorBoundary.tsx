@@ -36,7 +36,7 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   override render() {
-    if (!this.state.hasError) return this.props.children;
+    if (!this.state.hasError) {return this.props.children;}
 
     const { error } = this.state;
     const errorMessage = error ? getErrorMessage(error) : "An unexpected error occurred";

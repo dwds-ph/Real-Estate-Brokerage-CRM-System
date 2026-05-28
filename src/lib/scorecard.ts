@@ -287,8 +287,8 @@ function computeBadges(
 // ─── Period label helper ────────────────────────────────────────────
 
 export function getPeriodLabel(days: number): string {
-  if (days <= 7) return "This Week";
-  if (days <= 30) return "This Month";
-  if (days <= 90) return "This Quarter";
+  if (days <= 7) {return "This Week";}
+  if (days <= 30) {return "This Month";}
+  if (days <= 90) {return "This Quarter";}
   return "All Time";
 }

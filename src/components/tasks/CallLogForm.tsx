@@ -28,12 +28,12 @@ export default function CallLogForm({
   const handleContactChange = (value: string) => {
     setContactName(value);
     const contact = contacts.find((c) => c.name === value);
-    if (contact?.phone) setContactPhone(contact.phone);
+    if (contact?.phone) {setContactPhone(contact.phone);}
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contactName) return;
+    if (!contactName) {return;}
     await onSubmit({
       contactName,
       contactPhone: contactPhone || undefined,

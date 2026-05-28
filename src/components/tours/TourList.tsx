@@ -132,7 +132,7 @@ export default function TourList({
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    if (!userProfile) return;
+    if (!userProfile) {return;}
 
     const isBroker = userProfile.role === "broker";
     setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
@@ -170,7 +170,7 @@ export default function TourList({
   const filtered = useMemo(
     () =>
       tours.filter((t) => {
-        if (filter !== "all" && t.status !== filter) return false;
+        if (filter !== "all" && t.status !== filter) {return false;}
         if (search) {
           const q = search.toLowerCase();
           return (
@@ -189,7 +189,7 @@ export default function TourList({
       filtered.reduce(
         (acc, t) => {
           const status = t.status;
-          if (!acc[status]) acc[status] = [];
+          if (!acc[status]) {acc[status] = [];}
           acc[status].push(t);
           return acc;
         },
@@ -209,6 +209,7 @@ export default function TourList({
   const handleDelete = useCallback(
     async (tourId: string, e: React.MouseEvent) => {
       e.stopPropagation();
+      // eslint-disable-next-line no-alert
       if (window.confirm("Delete this tour?")) {
         await deleteTour(tourId);
       }
@@ -297,7 +298,7 @@ export default function TourList({
       ) : (
         statusOrder.map((status) => {
           const group = grouped[status] || [];
-          if (group.length === 0) return null;
+          if (group.length === 0) {return null;}
           return (
             <section key={status}>
               <div className="flex items-center gap-2 mb-2">

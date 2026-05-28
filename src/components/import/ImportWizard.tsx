@@ -32,9 +32,9 @@ const IMPORT_TYPES: ImportTypeOption[] = [
 // ─── Helpers ────────────────────────────────────────────────────────────
 
 function truncateValue(val: unknown, maxLen = 60): string {
-  if (val === null || val === undefined) return "—";
+  if (val === null || val === undefined) {return "—";}
   const str = String(val);
-  return str.length > maxLen ? str.slice(0, maxLen) + "…" : str;
+  return str.length > maxLen ? `${str.slice(0, maxLen)  }…` : str;
 }
 
 // ─── Step Components ────────────────────────────────────────────────────
@@ -162,7 +162,7 @@ export default function ImportWizard() {
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (file) readFile(file);
+    if (file) {readFile(file);}
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
@@ -171,7 +171,7 @@ export default function ImportWizard() {
     setDragOver(false);
 
     const file = e.dataTransfer.files?.[0];
-    if (file) readFile(file);
+    if (file) {readFile(file);}
   }
 
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
@@ -189,7 +189,7 @@ export default function ImportWizard() {
   // ── Import execution ──────────────────────────────────────────────
 
   async function handleImport() {
-    if (!selectedConfig || !csvText) return;
+    if (!selectedConfig || !csvText) {return;}
 
     setStep("importing");
     setProgress({ current: 0, total: 0 });
@@ -331,7 +331,7 @@ export default function ImportWizard() {
           tabIndex={0}
           onClick={() => fileInputRef.current?.click()}
           onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click();
+            if (e.key === "Enter" || e.key === " ") {fileInputRef.current?.click();}
           }}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -378,7 +378,7 @@ export default function ImportWizard() {
   // ── Render: Preview ───────────────────────────────────────────────
 
   function renderPreview() {
-    if (!preview || !selectedConfig) return null;
+    if (!preview || !selectedConfig) {return null;}
 
     const allColumns = selectedConfig.columns;
     const hasErrors = preview.rows.some((r) => !r.valid);
@@ -637,7 +637,7 @@ export default function ImportWizard() {
   // ── Render: Done ──────────────────────────────────────────────────
 
   function renderDone() {
-    if (!importResult) return null;
+    if (!importResult) {return null;}
 
     const hasErrors = importResult.errorCount > 0;
     const successPct =

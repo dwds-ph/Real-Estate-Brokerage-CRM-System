@@ -33,7 +33,7 @@ export default function CompliancePage() {
   const [checklistError, setChecklistError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!brokerId) return;
+    if (!brokerId) {return;}
     setDealsLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
     setDealsError(null);
     const unsub = onSnapshot(
@@ -76,7 +76,7 @@ export default function CompliancePage() {
   }, [selectedDealId]);
 
   const handleCreateChecklist = useCallback(async () => {
-    if (!selectedDealId || !userProfile) return;
+    if (!selectedDealId || !userProfile) {return;}
     const deal = deals.find((d) => d.id === selectedDealId);
     const items = getPHComplianceTemplate();
     await createChecklist({
@@ -90,7 +90,7 @@ export default function CompliancePage() {
 
   const handleToggle = useCallback(
     async (itemId: string) => {
-      if (!activeChecklist) return;
+      if (!activeChecklist) {return;}
       const updatedItems = activeChecklist.items.map((item) =>
         item.id === itemId
           ? {
@@ -115,7 +115,7 @@ export default function CompliancePage() {
 
   const handleUpdateNotes = useCallback(
     async (itemId: string, notes: string) => {
-      if (!activeChecklist) return;
+      if (!activeChecklist) {return;}
       const updatedItems = activeChecklist.items.map((item) =>
         item.id === itemId ? { ...item, notes } : item,
       );

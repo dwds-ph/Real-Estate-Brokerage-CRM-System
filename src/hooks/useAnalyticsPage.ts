@@ -60,7 +60,7 @@ export function useAnalyticsPage() {
 
   // Filter by date range for certain reports
   const fromTs = new Date(dateRange.from).getTime();
-  const toTs = new Date(dateRange.to + "T23:59:59").getTime();
+  const toTs = new Date(`${dateRange.to  }T23:59:59`).getTime();
 
   const filteredLeads = useMemo(
     () => leads.filter((l) => l.createdAt >= fromTs && l.createdAt <= toTs),

@@ -56,7 +56,7 @@ export default function QuickCreate({ open, onClose }: QuickCreateProps) {
 
   const handleScheduleViewing = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile) return;
+    if (!userProfile) {return;}
     setSaving(true);
     try {
       await createDoc("viewings", {
@@ -76,7 +76,7 @@ export default function QuickCreate({ open, onClose }: QuickCreateProps) {
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile) return;
+    if (!userProfile) {return;}
     setSaving(true);
     try {
       await createDoc("tasks", {
@@ -97,7 +97,7 @@ export default function QuickCreate({ open, onClose }: QuickCreateProps) {
 
   const handleAddReminder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userProfile) return;
+    if (!userProfile) {return;}
     setSaving(true);
     try {
       // Create as a task with the reminder info
@@ -121,7 +121,7 @@ export default function QuickCreate({ open, onClose }: QuickCreateProps) {
     }
   };
 
-  if (!open) return null;
+  if (!open) {return null;}
 
   return (
     <div

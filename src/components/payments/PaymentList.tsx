@@ -19,7 +19,8 @@ export function PaymentList({ payments, onRefresh }: PaymentListProps) {
   };
 
   const handleDelete = async (paymentId: string) => {
-    if (!confirm("Delete this payment entry?")) return;
+    // eslint-disable-next-line no-alert
+    if (!confirm("Delete this payment entry?")) {return;}
     await deletePayment(paymentId);
     onRefresh();
   };

@@ -14,7 +14,7 @@ const STORAGE_KEY = "smart-reminder-prefs";
 function loadPrefs(): ReminderPrefs {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {return JSON.parse(raw);}
   } catch {
     // ignore
   }

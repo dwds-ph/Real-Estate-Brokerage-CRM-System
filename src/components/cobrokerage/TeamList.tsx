@@ -21,11 +21,11 @@ export default function TeamList({
   onViewDetail,
 }: Props) {
   if (teams.length === 0)
-    return (
+    {return (
       <div className="rounded-lg border bg-card p-6 text-center text-sm text-muted-foreground">
         No teams yet
       </div>
-    );
+    );}
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

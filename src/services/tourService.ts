@@ -15,7 +15,7 @@ export function subscribeToursForAgent(
   callback: (tours: Tour[]) => void,
   onError?: (error: string) => void,
 ) {
-  if (!agentId) return () => {};
+  if (!agentId) {return () => {};}
 
   const constraints: QueryConstraint[] = [
     where("agentId", "==", agentId),
@@ -104,13 +104,13 @@ export function getTotalTourDuration(stops: Tour["stops"]): number {
 export function formatDuration(minutes: number): string {
   const hrs = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  if (hrs === 0) return `${mins}m`;
-  if (mins === 0) return `${hrs}h`;
+  if (hrs === 0) {return `${mins}m`;}
+  if (mins === 0) {return `${hrs}h`;}
   return `${hrs}h ${mins}m`;
 }
 
 export function generateGoogleMapsUrl(stops: Tour["stops"]): string {
-  if (stops.length === 0) return "";
+  if (stops.length === 0) {return "";}
   const addresses = stops.map((s) => encodeURIComponent(s.listingAddress));
   return `https://www.google.com/maps/dir/${addresses.join("/")}`;
 }

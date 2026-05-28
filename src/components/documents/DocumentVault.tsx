@@ -57,11 +57,11 @@ export default function DocumentVault({ documents, onUpload, loading }: Props) {
   const isExpired = (date?: number) => date && date < now;
 
   if (loading)
-    return (
+    {return (
       <div className="flex justify-center py-8">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
-    );
+    );}
 
   return (
     <div className="space-y-3">
@@ -108,6 +108,7 @@ export default function DocumentVault({ documents, onUpload, loading }: Props) {
                 </div>
                 <button
                   onClick={async () => {
+                    // eslint-disable-next-line no-alert
                     if (confirm("Delete this document?")) {
                       await deleteDocument(doc.id);
                     }

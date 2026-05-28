@@ -20,11 +20,11 @@ export default function CoBrokerList({
   onAddSplit,
 }: Props) {
   if (brokers.length === 0)
-    return (
+    {return (
       <div className="rounded-lg border bg-card p-6 text-center text-sm text-muted-foreground">
         No co-brokers yet
       </div>
-    );
+    );}
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

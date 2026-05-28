@@ -37,9 +37,10 @@ export default function MortgageTracker({
     mortgage.status === "approved" || mortgage.status === "rejected";
 
   const handleAdvance = async () => {
-    if (isComplete || advancing) return;
+    if (isComplete || advancing) {return;}
+    // eslint-disable-next-line no-alert
     if (!window.confirm(`Advance to next stage "${getNextStageLabel()}"?`))
-      return;
+      {return;}
 
     setAdvancing(true);
     setError(null);
@@ -57,7 +58,7 @@ export default function MortgageTracker({
 
   const getNextStageLabel = (): string => {
     const nextIndex = currentIndex + 1;
-    if (nextIndex >= STAGE_ORDER.length) return "Complete";
+    if (nextIndex >= STAGE_ORDER.length) {return "Complete";}
     return (
       MORTGAGE_STAGES.find((s) => s.key === STAGE_ORDER[nextIndex])?.label || ""
     );
@@ -75,7 +76,7 @@ export default function MortgageTracker({
 
   const renderStage = (stageKey: MortgageStage, index: number) => {
     const stage = mortgage.stages.find((s) => s.key === stageKey);
-    if (!stage) return null;
+    if (!stage) {return null;}
 
     const isActive = stageKey === mortgage.currentStage;
     const isDone = stage.status === "done";

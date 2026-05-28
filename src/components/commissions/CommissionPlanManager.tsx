@@ -145,6 +145,7 @@ export default function CommissionPlanManager() {
 
   const handleDelete = useCallback(async (plan: CommissionPlan) => {
     if (
+      // eslint-disable-next-line no-alert
       window.confirm(
         `Delete commission plan "${plan.name}"? This cannot be undone.`,
       )

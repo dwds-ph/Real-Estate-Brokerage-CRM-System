@@ -62,6 +62,7 @@ if (import.meta.env.VITE_USE_EMULATORS === "true") {
   connectFirestoreEmulator(db, firestoreHost, firestorePort);
   connectStorageEmulator(storage, storageHost, storagePort);
 
+  // eslint-disable-next-line no-console
   console.log(
     `[firebase] Connected to emulators: auth=${authHost} firestore=${firestoreHost}:${firestorePort} storage=${storageHost}:${storagePort}`,
   );
