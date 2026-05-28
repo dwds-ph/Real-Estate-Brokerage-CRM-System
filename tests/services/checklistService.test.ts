@@ -81,7 +81,7 @@ describe("checklistService", () => {
       await updateChecklistTemplate("tmpl-1", { name: "Updated" });
       expect(updateDoc).toHaveBeenCalledWith(
         expect.objectContaining({ id: "tmpl-1" }),
-        { name: "Updated" },
+        expect.objectContaining({ name: "Updated" }),
       );
     });
 

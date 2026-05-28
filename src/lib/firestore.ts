@@ -83,22 +83,14 @@ export function subscribeToQuery<T extends FirestoreEntity>(
   onError?: (error: string) => void,
 ): Unsubscribe {
   const q = query(collection(db, collectionName), ...constraints);
-  if (onError) {
-    return onSnapshot(
-      q,
-      (snapshot) => {
-        onData(snapshotToEntities<T>(snapshot));
-      },
-      (err: FirestoreError) => {
-        console.error(`[firestore] subscribeToQuery(${collectionName}) error:`, err.message);
-        onError(err.message);
-      },
-    );
-  }
   return onSnapshot(
     q,
     (snapshot) => {
       onData(snapshotToEntities<T>(snapshot));
+    },
+    (err: FirestoreError) => {
+      console.error(`[firestore] subscribeToQuery(${collectionName}) error:`, err.message);
+      onError?.(err.message);
     },
   );
 }

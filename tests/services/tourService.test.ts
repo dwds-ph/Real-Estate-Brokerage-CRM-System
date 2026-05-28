@@ -371,6 +371,7 @@ describe("tourService", () => {
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
         expect.any(Function),
+        expect.any(Function),
       );
     });
 

@@ -34,7 +34,10 @@ export function subscribeAllLicenses(
   callback: (licenses: License[]) => void,
   onError?: (error: string) => void,
 ) {
-  return subscribeToCollection<License>(COLLECTIONS.LICENSES, callback, onError);
+  const constraints: QueryConstraint[] = [
+    orderBy("expiryDate", "asc"),
+  ];
+  return subscribeToQuery<License>(COLLECTIONS.LICENSES, constraints, callback, onError);
 }
 
 export function subscribeExpiringLicenses(

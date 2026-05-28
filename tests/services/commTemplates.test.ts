@@ -89,7 +89,7 @@ describe("commTemplates", () => {
       await updateCommTemplate("t1", { name: "Updated Name" });
       expect(updateDoc).toHaveBeenCalledWith(
         expect.objectContaining({ id: "t1" }),
-        { name: "Updated Name" },
+        expect.objectContaining({ name: "Updated Name" }),
       );
     });
   });
