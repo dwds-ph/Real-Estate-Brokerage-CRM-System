@@ -1,23 +1,30 @@
-import { collection, query, where, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { where, orderBy } from "firebase/firestore";
+import {
+  subscribeToQuery,
+  createDocument,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import type { AgentTeam } from "@/types";
 
 export function subscribeTeams(brokerId: string | undefined, callback: (items: AgentTeam[]) => void) {
   if (!brokerId) return () => {};
-  const q = query(collection(db, "teams"), where("brokerId", "==", brokerId), orderBy("name", "asc"));
-  return onSnapshot(q, (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as AgentTeam)));
+  return subscribeToQuery<AgentTeam>(
+    COLLECTIONS.TEAMS,
+    [where("brokerId", "==", brokerId), orderBy("name", "asc")],
+    callback,
+  );
 }
 
 export async function createTeam(data: Omit<AgentTeam, "id" | "createdAt" | "updatedAt">) {
-  const now = Date.now();
-  const ref = await addDoc(collection(db, "teams"), { ...data, createdAt: now, updatedAt: now });
-  return ref.id;
+  return createDocument<AgentTeam>(COLLECTIONS.TEAMS, data);
 }
 
 export async function updateTeam(id: string, data: Partial<AgentTeam>) {
-  await updateDoc(doc(db, "teams", id), { ...data, updatedAt: Date.now() });
+  return updateDocument<AgentTeam>(COLLECTIONS.TEAMS, id, data);
 }
 
 export async function deleteTeam(id: string) {
-  await deleteDoc(doc(db, "teams", id));
+  return deleteDocument(COLLECTIONS.TEAMS, id);
 }

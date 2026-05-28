@@ -1,17 +1,18 @@
 import {
-  collection,
-  query,
   where,
-  onSnapshot,
-  updateDoc,
-  deleteDoc,
-  doc,
   orderBy,
-  type QueryConstraint,
-  type Unsubscribe,
   writeBatch,
+  doc,
+  type QueryConstraint,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import {
+  subscribeToQuery,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+  type Unsubscribe,
+} from "@/lib/firestore";
 import { type Payout } from "@/types";
 
 // ─── Real-time listeners ─────────────────────────────────────────
@@ -28,19 +29,7 @@ export function subscribePayouts(
     orderBy("createdAt", "desc"),
   ];
 
-  const q = query(collection(db, "payouts"), ...constraints);
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const payouts = snapshot.docs.map(
-        (d) => ({ id: d.id, ...d.data() }) as Payout,
-      );
-      callback(payouts);
-    },
-    (err) => {
-      onError?.(err.message);
-    },
-  );
+  return subscribeToQuery<Payout>(COLLECTIONS.PAYOUTS, constraints, callback, onError);
 }
 
 export function subscribePendingPayouts(
@@ -55,13 +44,7 @@ export function subscribePendingPayouts(
     orderBy("createdAt", "desc"),
   ];
 
-  const q = query(collection(db, "payouts"), ...constraints);
-  return onSnapshot(q, (snapshot) => {
-    const payouts = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Payout,
-    );
-    callback(payouts);
-  });
+  return subscribeToQuery<Payout>(COLLECTIONS.PAYOUTS, constraints, callback);
 }
 
 // ─── Status updates ──────────────────────────────────────────────
@@ -73,7 +56,6 @@ export async function updatePayoutStatus(
 ) {
   const updateData: Record<string, unknown> = {
     status,
-    updatedAt: Date.now(),
   };
 
   if (status === "approved") {
@@ -86,7 +68,7 @@ export async function updatePayoutStatus(
     if (userId) updateData.paidBy = userId;
   }
 
-  await updateDoc(doc(db, "payouts", payoutId), updateData);
+  await updateDocument(COLLECTIONS.PAYOUTS, payoutId, updateData as Partial<Payout>);
 }
 
 // ─── Bulk operations ─────────────────────────────────────────────
@@ -102,7 +84,7 @@ export async function bulkUpdatePayoutStatus(
   const now = Date.now();
 
   payoutIds.forEach((payoutId) => {
-    const ref = doc(db, "payouts", payoutId);
+    const ref = doc(db, COLLECTIONS.PAYOUTS, payoutId);
     const updateData: Record<string, unknown> = {
       status,
       updatedAt: now,
@@ -127,5 +109,5 @@ export async function bulkUpdatePayoutStatus(
 // ─── Delete ──────────────────────────────────────────────────────
 
 export async function deletePayout(payoutId: string) {
-  await deleteDoc(doc(db, "payouts", payoutId));
+  await deleteDocument(COLLECTIONS.PAYOUTS, payoutId);
 }

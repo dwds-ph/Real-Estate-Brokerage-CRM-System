@@ -1,16 +1,15 @@
 import {
-  collection,
-  query,
   where,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
   orderBy,
   type QueryConstraint,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import {
+  subscribeToQuery,
+  createDocumentWithUser,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import { type Payment, type PaymentStatus } from "@/types";
 
 // ─── Real-time listener ─────────────────────────────────────────
@@ -26,13 +25,7 @@ export function subscribePaymentsForDeal(
     orderBy("dueDate", "asc"),
   ];
 
-  const q = query(collection(db, "payments"), ...constraints);
-  return onSnapshot(q, (snapshot) => {
-    const payments = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Payment,
-    );
-    callback(payments);
-  });
+  return subscribeToQuery<Payment>(COLLECTIONS.PAYMENTS, constraints, callback);
 }
 
 // ─── CRUD ────────────────────────────────────────────────────────
@@ -47,24 +40,17 @@ export async function createPayment(
 ) {
   const now = Date.now();
   const isOverdue = now > data.dueDate;
-  const docRef = await addDoc(collection(db, "payments"), {
-    ...data,
-    dealId,
-    status: isOverdue
-      ? ("overdue" as PaymentStatus)
-      : ("pending" as PaymentStatus),
-    createdBy: userId,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return docRef.id;
+  const status: PaymentStatus = isOverdue ? "overdue" : "pending";
+
+  return createDocumentWithUser<Payment>(
+    COLLECTIONS.PAYMENTS,
+    { ...data, dealId, status },
+    userId,
+  );
 }
 
 export async function updatePayment(paymentId: string, data: Partial<Payment>) {
-  await updateDoc(doc(db, "payments", paymentId), {
-    ...data,
-    updatedAt: Date.now(),
-  });
+  await updateDocument<Payment>(COLLECTIONS.PAYMENTS, paymentId, data);
 }
 
 export async function markPaymentPaid(
@@ -72,16 +58,15 @@ export async function markPaymentPaid(
   paidDate?: number,
   receiptUrl?: string,
 ) {
-  await updateDoc(doc(db, "payments", paymentId), {
+  await updateDocument<Payment>(COLLECTIONS.PAYMENTS, paymentId, {
     status: "paid" as PaymentStatus,
     paidDate: paidDate || Date.now(),
     ...(receiptUrl ? { receiptUrl } : {}),
-    updatedAt: Date.now(),
   });
 }
 
 export async function deletePayment(paymentId: string) {
-  await deleteDoc(doc(db, "payments", paymentId));
+  await deleteDocument(COLLECTIONS.PAYMENTS, paymentId);
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────

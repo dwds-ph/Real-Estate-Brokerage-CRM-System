@@ -1,16 +1,16 @@
 import {
-  collection,
-  query,
   where,
   orderBy,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
   type QueryConstraint,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import {
+  subscribeToQuery,
+  subscribeToCollection,
+  createDocument,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import { type License, type LicenseStatus, type LicenseType } from "@/types";
 
 // ─── Real-time listeners ────────────────────────────────────────────
@@ -22,42 +22,19 @@ export function subscribeLicensesForAgent(
 ) {
   if (!agentId) return () => {};
 
-  const q = query(
-    collection(db, "licenses"),
+  const constraints: QueryConstraint[] = [
     where("agentId", "==", agentId),
     orderBy("expiryDate", "asc"),
-  );
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const licenses = snapshot.docs.map(
-        (d) => ({ id: d.id, ...d.data() }) as License,
-      );
-      callback(licenses);
-    },
-    (err) => {
-      onError?.(err.message);
-    },
-  );
+  ];
+
+  return subscribeToQuery<License>(COLLECTIONS.LICENSES, constraints, callback, onError);
 }
 
 export function subscribeAllLicenses(
   callback: (licenses: License[]) => void,
   onError?: (error: string) => void,
 ) {
-  const q = query(collection(db, "licenses"), orderBy("expiryDate", "asc"));
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const licenses = snapshot.docs.map(
-        (d) => ({ id: d.id, ...d.data() }) as License,
-      );
-      callback(licenses);
-    },
-    (err) => {
-      onError?.(err.message);
-    },
-  );
+  return subscribeToCollection<License>(COLLECTIONS.LICENSES, callback, onError);
 }
 
 export function subscribeExpiringLicenses(
@@ -73,13 +50,7 @@ export function subscribeExpiringLicenses(
     orderBy("expiryDate", "asc"),
   ];
 
-  const q = query(collection(db, "licenses"), ...constraints);
-  return onSnapshot(q, (snapshot) => {
-    const licenses = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as License,
-    );
-    callback(licenses);
-  });
+  return subscribeToQuery<License>(COLLECTIONS.LICENSES, constraints, callback);
 }
 
 // ─── CRUD ───────────────────────────────────────────────────────────
@@ -87,31 +58,20 @@ export function subscribeExpiringLicenses(
 export async function createLicense(
   data: Omit<License, "id" | "createdAt" | "updatedAt" | "status">,
 ) {
-  const now = Date.now();
   const status = computeLicenseStatus(data.expiryDate);
-
-  const docRef = await addDoc(collection(db, "licenses"), {
-    ...data,
-    status,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return docRef.id;
+  return createDocument<License>(COLLECTIONS.LICENSES, { ...data, status });
 }
 
 export async function updateLicense(licenseId: string, data: Partial<License>) {
-  const updates: Partial<License> & { updatedAt: number } = {
-    ...data,
-    updatedAt: Date.now(),
-  };
+  const updates: Partial<License> = { ...data };
   if (data.expiryDate) {
     updates.status = computeLicenseStatus(data.expiryDate);
   }
-  await updateDoc(doc(db, "licenses", licenseId), updates);
+  await updateDocument<License>(COLLECTIONS.LICENSES, licenseId, updates);
 }
 
 export async function deleteLicense(licenseId: string) {
-  await deleteDoc(doc(db, "licenses", licenseId));
+  await deleteDocument(COLLECTIONS.LICENSES, licenseId);
 }
 
 // ─── Status calculations ────────────────────────────────────────────

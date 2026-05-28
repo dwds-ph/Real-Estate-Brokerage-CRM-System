@@ -1,41 +1,41 @@
-import {
-  collection, query, where, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { where, orderBy } from "firebase/firestore";
+import { subscribeToQuery, createDocument, updateDocument, deleteDocument, COLLECTIONS } from "@/lib/firestore";
 import type { CoBroker, CoBrokerDeal } from "@/types";
 
 export function subscribeCoBrokers(brokerId: string | undefined, callback: (items: CoBroker[]) => void) {
   if (!brokerId) return () => {};
-  const q = query(collection(db, "coBrokers"), where("brokerId", "==", brokerId), orderBy("name", "asc"));
-  return onSnapshot(q, (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as CoBroker)));
+  return subscribeToQuery<CoBroker>(
+    COLLECTIONS.CO_BROKERS,
+    [where("brokerId", "==", brokerId), orderBy("name", "asc")],
+    callback,
+  );
 }
 
 export function subscribeCoBrokerDeals(brokerId: string | undefined, callback: (items: CoBrokerDeal[]) => void) {
   if (!brokerId) return () => {};
-  const q = query(collection(db, "coBrokerDeals"), where("brokerId", "==", brokerId), orderBy("createdAt", "desc"));
-  return onSnapshot(q, (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as CoBrokerDeal)));
+  return subscribeToQuery<CoBrokerDeal>(
+    COLLECTIONS.CO_BROKER_DEALS,
+    [where("brokerId", "==", brokerId), orderBy("createdAt", "desc")],
+    callback,
+  );
 }
 
 export async function createCoBroker(data: Omit<CoBroker, "id" | "createdAt" | "updatedAt">) {
-  const now = Date.now();
-  const ref = await addDoc(collection(db, "coBrokers"), { ...data, createdAt: now, updatedAt: now });
-  return ref.id;
+  return createDocument<CoBroker>(COLLECTIONS.CO_BROKERS, data as unknown as Omit<CoBroker, "id">);
 }
 
 export async function updateCoBroker(id: string, data: Partial<CoBroker>) {
-  await updateDoc(doc(db, "coBrokers", id), { ...data, updatedAt: Date.now() });
+  await updateDocument<CoBroker>(COLLECTIONS.CO_BROKERS, id, data);
 }
 
 export async function deleteCoBroker(id: string) {
-  await deleteDoc(doc(db, "coBrokers", id));
+  await deleteDocument(COLLECTIONS.CO_BROKERS, id);
 }
 
 export async function createCoBrokerDeal(data: Omit<CoBrokerDeal, "id" | "createdAt" | "updatedAt">) {
-  const now = Date.now();
-  const ref = await addDoc(collection(db, "coBrokerDeals"), { ...data, createdAt: now, updatedAt: now });
-  return ref.id;
+  return createDocument<CoBrokerDeal>(COLLECTIONS.CO_BROKER_DEALS, data as unknown as Omit<CoBrokerDeal, "id">);
 }
 
 export async function updateCoBrokerDeal(id: string, data: Partial<CoBrokerDeal>) {
-  await updateDoc(doc(db, "coBrokerDeals", id), { ...data, updatedAt: Date.now() });
+  await updateDocument<CoBrokerDeal>(COLLECTIONS.CO_BROKER_DEALS, id, data);
 }

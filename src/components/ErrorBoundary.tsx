@@ -1,8 +1,12 @@
-import { Component, ReactNode, ErrorInfo } from "react";
+import { Component, type ReactNode, type ErrorInfo } from "react";
+import { AppError, getErrorMessage } from "@/lib/errors";
+import { createScopedLogger } from "@/lib/logger";
+
+const logger = createScopedLogger("ErrorBoundary");
 
 interface Props {
   children: ReactNode;
-  fallback?: ReactNode;
+  fallback?: ReactNode | ((error: Error, retry: () => void) => ReactNode);
 }
 
 interface State {
@@ -20,37 +24,64 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("ErrorBoundary caught:", error, errorInfo);
-    // Optionally send to Sentry here
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    logger.error("ErrorBoundary caught an error", {
+      error: error instanceof AppError ? error.toJSON() : error.message,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
-  render() {
-    if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback;
-      }
-      return (
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="rounded-lg border bg-card p-8 max-w-md text-center space-y-4">
-            <span className="text-4xl">⚠️</span>
-            <h2 className="text-xl font-semibold">Something went wrong</h2>
-            <p className="text-sm text-muted-foreground">
-              {this.state.error?.message || "An unexpected error occurred"}
-            </p>
+  private handleRetry = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
+  override render() {
+    if (!this.state.hasError) return this.props.children;
+
+    const { error } = this.state;
+    const errorMessage = error ? getErrorMessage(error) : "An unexpected error occurred";
+
+    // If a fallback render prop is provided, use it
+    if (typeof this.props.fallback === "function") {
+      return this.props.fallback(error!, this.handleRetry);
+    }
+
+    // If a fallback ReactNode is provided, use it
+    if (this.props.fallback) {
+      return this.props.fallback;
+    }
+
+    // Default error UI
+    return (
+      <div
+        className="flex items-center justify-center min-h-[400px]"
+        role="alert"
+      >
+        <div className="rounded-lg border bg-card p-8 max-w-md text-center space-y-4">
+          <span className="text-4xl" aria-hidden="true">
+            ⚠️
+          </span>
+          <h2 className="text-xl font-semibold">Something went wrong</h2>
+          <p className="text-sm text-muted-foreground">{errorMessage}</p>
+          <div className="flex justify-center gap-3">
+            <button
+              onClick={this.handleRetry}
+              className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Try again
+            </button>
             <button
               onClick={() => {
-                this.setState({ hasError: false, error: null });
+                this.handleRetry();
                 window.location.href = "/";
               }}
-              className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+              className="rounded-lg border px-4 py-2 text-sm hover:bg-muted transition-colors"
             >
               Go to Dashboard
             </button>
           </div>
         </div>
-      );
-    }
-    return this.props.children;
+      </div>
+    );
   }
 }

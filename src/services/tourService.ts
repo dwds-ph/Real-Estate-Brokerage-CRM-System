@@ -1,16 +1,11 @@
+import { where, orderBy, type QueryConstraint } from "firebase/firestore";
 import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  orderBy,
-  type QueryConstraint,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+  subscribeToQuery,
+  createDocument,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import { type Tour, type TourStatus } from "@/types";
 
 // ─── Real-time listeners ────────────────────────────────────────────
@@ -27,37 +22,18 @@ export function subscribeToursForAgent(
     orderBy("scheduledDate", "desc"),
   ];
 
-  const q = query(collection(db, "tours"), ...constraints);
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const tours = snapshot.docs.map(
-        (d) => ({ id: d.id, ...d.data() }) as Tour,
-      );
-      callback(tours);
-    },
-    (err) => {
-      onError?.(err.message);
-    },
-  );
+  return subscribeToQuery<Tour>(COLLECTIONS.TOURS, constraints, callback, onError);
 }
 
 export function subscribeToursForBroker(
   callback: (tours: Tour[]) => void,
   onError?: (error: string) => void,
 ) {
-  const q = query(collection(db, "tours"), orderBy("scheduledDate", "desc"));
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const tours = snapshot.docs.map(
-        (d) => ({ id: d.id, ...d.data() }) as Tour,
-      );
-      callback(tours);
-    },
-    (err) => {
-      onError?.(err.message);
-    },
+  return subscribeToQuery<Tour>(
+    COLLECTIONS.TOURS,
+    [orderBy("scheduledDate", "desc")],
+    callback,
+    onError,
   );
 }
 
@@ -69,11 +45,7 @@ export function subscribeToursByStatus(
     where("status", "==", status),
     orderBy("scheduledDate", "desc"),
   ];
-  const q = query(collection(db, "tours"), ...constraints);
-  return onSnapshot(q, (snapshot) => {
-    const tours = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Tour);
-    callback(tours);
-  });
+  return subscribeToQuery<Tour>(COLLECTIONS.TOURS, constraints, callback);
 }
 
 // ─── CRUD ───────────────────────────────────────────────────────────
@@ -81,31 +53,19 @@ export function subscribeToursByStatus(
 export async function createTour(
   data: Omit<Tour, "id" | "createdAt" | "updatedAt">,
 ) {
-  const now = Date.now();
-  const docRef = await addDoc(collection(db, "tours"), {
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return docRef.id;
+  return createDocument<Tour>(COLLECTIONS.TOURS, data as Omit<Tour, "id">);
 }
 
 export async function updateTour(tourId: string, data: Partial<Tour>) {
-  await updateDoc(doc(db, "tours", tourId), {
-    ...data,
-    updatedAt: Date.now(),
-  });
+  return updateDocument<Tour>(COLLECTIONS.TOURS, tourId, data);
 }
 
 export async function deleteTour(tourId: string) {
-  await deleteDoc(doc(db, "tours", tourId));
+  return deleteDocument(COLLECTIONS.TOURS, tourId);
 }
 
 export async function updateTourStatus(tourId: string, status: TourStatus) {
-  await updateDoc(doc(db, "tours", tourId), {
-    status,
-    updatedAt: Date.now(),
-  });
+  return updateDocument<Tour>(COLLECTIONS.TOURS, tourId, { status } as Partial<Tour>);
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────

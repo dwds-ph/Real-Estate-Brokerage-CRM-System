@@ -1,26 +1,18 @@
+import { orderBy, type QueryConstraint } from "firebase/firestore";
 import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+  subscribeToQuery,
+  createDocument,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import { type CommissionPlan } from "@/types";
 
 // ─── Commission Plans: Real-time listeners ────────────────────────────
 
 export function subscribePlans(callback: (plans: CommissionPlan[]) => void) {
-  const q = query(collection(db, "commissionPlans"), orderBy("createdAt", "desc"));
-  return onSnapshot(q, (snapshot) => {
-    const plans = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as CommissionPlan,
-    );
-    callback(plans);
-  });
+  const constraints: QueryConstraint[] = [orderBy("createdAt", "desc")];
+  return subscribeToQuery<CommissionPlan>(COLLECTIONS.COMMISSION_PLANS, constraints, callback);
 }
 
 // ─── Commission Plans: CRUD ───────────────────────────────────────────
@@ -28,22 +20,13 @@ export function subscribePlans(callback: (plans: CommissionPlan[]) => void) {
 export async function createPlan(
   data: Omit<CommissionPlan, "id" | "createdAt" | "updatedAt">,
 ) {
-  const now = Date.now();
-  const docRef = await addDoc(collection(db, "commissionPlans"), {
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return docRef.id;
+  return createDocument<CommissionPlan>(COLLECTIONS.COMMISSION_PLANS, data);
 }
 
 export async function updatePlan(planId: string, data: Partial<CommissionPlan>) {
-  await updateDoc(doc(db, "commissionPlans", planId), {
-    ...data,
-    updatedAt: Date.now(),
-  });
+  await updateDocument<CommissionPlan>(COLLECTIONS.COMMISSION_PLANS, planId, data);
 }
 
 export async function deletePlan(planId: string) {
-  await deleteDoc(doc(db, "commissionPlans", planId));
+  await deleteDocument(COLLECTIONS.COMMISSION_PLANS, planId);
 }

@@ -1,6 +1,7 @@
-import { doc, updateDoc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { AppUser, Lead } from "@/types";
+import { updateDocument, COLLECTIONS } from "@/lib/firestore";
+import { AppUser, Lead, Listing } from "@/types";
 
 export interface LeadRoutingRule {
   type: "round-robin" | "specialty" | "location";
@@ -86,6 +87,6 @@ export async function autoAssignLead(
 
   const assignedTo = await findNextAgent(config, leadData, allAgents);
   if (assignedTo) {
-    await updateDoc(doc(db, "leads", leadId), { assignedTo });
+    await updateDocument<Listing>(COLLECTIONS.LEADS, leadId, { assignedTo } as unknown as Partial<Listing>);
   }
 }

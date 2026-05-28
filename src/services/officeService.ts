@@ -1,16 +1,6 @@
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  DocumentData,
-} from "firebase/firestore";
+import { query, collection, getDocs, where, orderBy, DocumentData } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { createDocument, updateDocument, deleteDocument, COLLECTIONS } from "@/lib/firestore";
 import { Office } from "@/types";
 
 /**
@@ -18,7 +8,7 @@ import { Office } from "@/types";
  */
 export async function getOffices(brokerId: string): Promise<Office[]> {
   const q = query(
-    collection(db, "offices"),
+    collection(db, COLLECTIONS.OFFICES),
     where("brokerId", "==", brokerId),
     orderBy("createdAt", "desc"),
   );
@@ -32,11 +22,7 @@ export async function getOffices(brokerId: string): Promise<Office[]> {
 export async function createOffice(
   data: Omit<Office, "id" | "createdAt">,
 ): Promise<string> {
-  const docRef = await addDoc(collection(db, "offices"), {
-    ...data,
-    createdAt: Date.now(),
-  });
-  return docRef.id;
+  return createDocument<Office>(COLLECTIONS.OFFICES, data as unknown as Omit<Office, "id">);
 }
 
 /**
@@ -46,14 +32,14 @@ export async function updateOffice(
   officeId: string,
   data: Partial<Office>,
 ): Promise<void> {
-  await updateDoc(doc(db, "offices", officeId), data);
+  await updateDocument<Office>(COLLECTIONS.OFFICES, officeId, data);
 }
 
 /**
  * Delete an office document.
  */
 export async function deleteOffice(officeId: string): Promise<void> {
-  await deleteDoc(doc(db, "offices", officeId));
+  await deleteDocument(COLLECTIONS.OFFICES, officeId);
 }
 
 /**

@@ -1,0 +1,61 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# JavaScript
+*.js text
+*.jsx text
+*.mjs text
+*.cjs text
+
+# TypeScript
+*.ts text
+*.tsx text
+
+# Styles
+*.css text
+*.scss text
+
+# Markup
+*.html text
+*.htm text
+*.xml text
+*.svg text
+
+# Config
+*.json text
+*.yaml text
+*.yml text
+*.toml text
+*.env text
+*.env.* text
+
+# Shell
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Markdown
+*.md text
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+
+# Fonts
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Archives
+*.zip binary
+*.tar.gz binary
+
+# Build artifacts
+dist/ -text
+coverage/ -text
+node_modules/ -text

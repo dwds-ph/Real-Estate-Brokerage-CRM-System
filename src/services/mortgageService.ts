@@ -1,16 +1,6 @@
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  QueryConstraint,
-} from "firebase/firestore";
+import { query, collection, getDocs, where, orderBy, QueryConstraint } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { createDocument, updateDocument, deleteDocument, COLLECTIONS } from "@/lib/firestore";
 import { Mortgage, MortgageStage, MortgageStatus, BankProfile } from "@/types";
 
 // ─── Bank Presets ───────────────────────────────────────────────────
@@ -109,7 +99,7 @@ export async function createMortgage(data: {
   status?: MortgageStatus;
 }): Promise<string> {
   const stages = createDefaultStages();
-  const docRef = await addDoc(collection(db, "mortgages"), {
+  return createDocument<Mortgage>(COLLECTIONS.MORTGAGES, {
     dealId: data.dealId,
     bankId: data.bankId,
     bankName: data.bankName,
@@ -117,10 +107,7 @@ export async function createMortgage(data: {
     status: data.status || "ongoing",
     currentStage: "application" as MortgageStage,
     stages,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  });
-  return docRef.id;
+  } as unknown as Omit<Mortgage, "id">);
 }
 
 export async function updateMortgage(
@@ -134,15 +121,11 @@ export async function updateMortgage(
     stages: Mortgage["stages"];
   }>,
 ): Promise<void> {
-  const updateData: Record<string, unknown> = {
-    ...data,
-    updatedAt: Date.now(),
-  };
-  await updateDoc(doc(db, "mortgages", mortgageId), updateData);
+  await updateDocument<Mortgage>(COLLECTIONS.MORTGAGES, mortgageId, data);
 }
 
 export async function deleteMortgage(mortgageId: string): Promise<void> {
-  await deleteDoc(doc(db, "mortgages", mortgageId));
+  await deleteDocument(COLLECTIONS.MORTGAGES, mortgageId);
 }
 
 // ─── Stage Advancement ─────────────────────────────────────────────
@@ -212,9 +195,8 @@ export async function updateStageNotes(
     return stage;
   });
 
-  await updateDoc(doc(db, "mortgages", mortgageId), {
+  await updateDocument<Mortgage>(COLLECTIONS.MORTGAGES, mortgageId, {
     stages: updatedStages,
-    updatedAt: Date.now(),
   });
 }
 
@@ -224,7 +206,7 @@ export async function fetchMortgagesByDeal(
   dealId: string,
 ): Promise<Mortgage[]> {
   const q = query(
-    collection(db, "mortgages"),
+    collection(db, COLLECTIONS.MORTGAGES),
     where("dealId", "==", dealId),
     orderBy("createdAt", "desc"),
   );

@@ -1,15 +1,5 @@
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { where, orderBy } from "firebase/firestore";
+import { subscribeToQuery, createDocument, updateDocument, deleteDocument, COLLECTIONS } from "@/lib/firestore";
 import type { ComplianceChecklist, ComplianceItem } from "@/types";
 
 export function subscribeComplianceChecklists(
@@ -18,47 +8,29 @@ export function subscribeComplianceChecklists(
   onError?: (error: string) => void,
 ) {
   if (!dealId) return () => {};
-  const q = query(
-    collection(db, "complianceChecklists"),
-    where("dealId", "==", dealId),
-    orderBy("createdAt", "desc"),
-  );
-  return onSnapshot(
-    q,
-    (snap) =>
-      callback?.(
-        snap.docs.map(
-          (d) => ({ id: d.id, ...d.data() }) as ComplianceChecklist,
-        ),
-      ),
-    (err) => onError?.(err.message),
+  return subscribeToQuery<ComplianceChecklist>(
+    COLLECTIONS.COMPLIANCE_CHECKLISTS,
+    [where("dealId", "==", dealId), orderBy("createdAt", "desc")],
+    callback ?? (() => {}),
+    onError,
   );
 }
 
 export async function createChecklist(
   data: Omit<ComplianceChecklist, "id" | "createdAt" | "updatedAt">,
 ) {
-  const now = Date.now();
-  const ref = await addDoc(collection(db, "complianceChecklists"), {
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return ref.id;
+  return createDocument<ComplianceChecklist>(COLLECTIONS.COMPLIANCE_CHECKLISTS, data as unknown as Omit<ComplianceChecklist, "id">);
 }
 
 export async function updateChecklist(
   id: string,
   data: Partial<ComplianceChecklist>,
 ) {
-  await updateDoc(doc(db, "complianceChecklists", id), {
-    ...data,
-    updatedAt: Date.now(),
-  });
+  await updateDocument<ComplianceChecklist>(COLLECTIONS.COMPLIANCE_CHECKLISTS, id, data);
 }
 
 export async function deleteChecklist(id: string) {
-  await deleteDoc(doc(db, "complianceChecklists", id));
+  await deleteDocument(COLLECTIONS.COMPLIANCE_CHECKLISTS, id);
 }
 
 export function getPHComplianceTemplate(): ComplianceItem[] {

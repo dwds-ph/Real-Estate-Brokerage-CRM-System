@@ -16,7 +16,7 @@ import {
 } from "firebase/storage";
 
 import { db, storage } from "@/lib/firebase";
-import { createDoc, updateDocById, deleteDocById } from "@/hooks/useFirestore";
+import { createDocument, updateDocument, deleteDocument, COLLECTIONS } from "@/lib/firestore";
 import { VaultDocument, DocumentRequest, DocumentCategory } from "@/types";
 
 // ─── Upload File with Progress ──────────────────────────────────────
@@ -76,11 +76,11 @@ export async function createVaultDocument(
     version?: number;
   },
 ): Promise<string> {
-  return createDoc("vaultDocuments", {
+  return createDocument(COLLECTIONS.VAULT_DOCUMENTS, {
     ...data,
     version: data.version ?? 1,
     uploadedAt: Date.now(),
-  });
+  } as unknown as Omit<VaultDocument, "id">);
 }
 
 // ─── Update Document (creates a new version) ────────────────────────
@@ -103,7 +103,7 @@ export async function updateVaultDocumentWithVersion(
   }
 
   // Store current version's data as a version history entry
-  await createDoc("vaultDocumentVersions", {
+  await createDocument("vaultDocumentVersions", {
     documentId: docId,
     version: currentDoc.version,
     name: currentDoc.name,
@@ -113,15 +113,15 @@ export async function updateVaultDocumentWithVersion(
     uploadedBy: currentDoc.uploadedBy,
     uploadedAt: currentDoc.uploadedAt,
     notes: currentDoc.notes,
-  });
+  } as unknown as Omit<DocumentData, "id">);
 
   // Update the main document
-  await updateDocById("vaultDocuments", docId, {
+  await updateDocument(COLLECTIONS.VAULT_DOCUMENTS, docId, {
     ...updates,
     fileUrl,
     version: newVersion,
     previousVersionId: docId,
-  });
+  } as unknown as Partial<VaultDocument>);
 }
 
 // ─── Get Version History ────────────────────────────────────────────
@@ -149,7 +149,7 @@ export async function deleteVaultDocument(doc: VaultDocument): Promise<void> {
   } catch {
     // If file doesn't exist in storage, proceed with Firestore delete
   }
-  await deleteDocById("vaultDocuments", doc.id);
+  await deleteDocument(COLLECTIONS.VAULT_DOCUMENTS, doc.id);
 }
 
 // ─── Document Requests ──────────────────────────────────────────────
@@ -157,11 +157,10 @@ export async function deleteVaultDocument(doc: VaultDocument): Promise<void> {
 export async function createDocumentRequest(
   data: Omit<DocumentRequest, "id" | "createdAt" | "status">,
 ): Promise<string> {
-  return createDoc("documentRequests", {
+  return createDocument(COLLECTIONS.DOCUMENT_REQUESTS, {
     ...data,
     status: "pending",
-    createdAt: Date.now(),
-  });
+  } as unknown as Omit<DocumentRequest, "id">);
 }
 
 export async function respondToDocumentRequest(
@@ -169,11 +168,11 @@ export async function respondToDocumentRequest(
   status: "uploaded" | "cancelled",
   uploadedDocId?: string,
 ): Promise<void> {
-  await updateDocById("documentRequests", requestId, {
+  await updateDocument(COLLECTIONS.DOCUMENT_REQUESTS, requestId, {
     status,
     respondedAt: Date.now(),
     ...(uploadedDocId ? { uploadedDocId } : {}),
-  });
+  } as unknown as Partial<DocumentRequest>);
 }
 
 // ─── Expiry Alerts ──────────────────────────────────────────────────
@@ -199,7 +198,7 @@ export async function getExpiringDocuments(
     constraints.unshift(where("uploadedBy", "==", userId));
   }
 
-  const q = query(collection(db, "vaultDocuments"), ...constraints);
+  const q = query(collection(db, COLLECTIONS.VAULT_DOCUMENTS), ...constraints);
   const snapshot = await getDocs(q);
   return snapshot.docs.map(
     (d) => ({ id: d.id, ...d.data() }) as unknown as VaultDocument,

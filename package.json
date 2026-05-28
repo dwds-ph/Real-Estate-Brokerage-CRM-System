@@ -10,7 +10,7 @@
     "dev": "vite",
     "dev:emu": "firebase emulators:start",
     "dev:full": "concurrently -n emu,vite -c yellow,cyan \"firebase emulators:start\" \"vite\"",
-    "build": "tsc -b && vite build && node scripts/generate-sw.mjs",
+    "build": "tsc --noEmit && vite build && node scripts/generate-sw.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -23,7 +23,18 @@
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "e2e:ci": "concurrently -k -s first \"firebase emulators:start --only firestore --project demo-crm\" \"node scripts/start-auth-emulator.cjs demo-crm 9099\" \"vite\" \"bash scripts/wait-for-emulators.sh && playwright test\"",
-    "e2e:debug": "playwright test --debug"
+    "e2e:debug": "playwright test --debug",
+    "validate": "yarn typecheck && yarn lint && yarn test:coverage && yarn build",
+    "validate:fast": "yarn lint && yarn typecheck"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -52,6 +63,7 @@
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/coverage-v8": "^4.1.7",
     "autoprefixer": "^10.5.0",
     "concurrently": "^9.2.1",
     "eslint": "^10.4.0",

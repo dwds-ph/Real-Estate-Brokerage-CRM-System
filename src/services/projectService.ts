@@ -1,15 +1,11 @@
+import { where, orderBy } from "firebase/firestore";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+  subscribeToQuery,
+  createDocument,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import {
   type Project,
   type Unit,
@@ -20,30 +16,22 @@ import {
 // ─── Projects: Real-time listeners ──────────────────────────────────
 
 export function subscribeProjects(callback: (projects: Project[]) => void) {
-  const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
-  return onSnapshot(q, (snapshot) => {
-    const projects = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Project,
-    );
-    callback(projects);
-  });
+  return subscribeToQuery<Project>(
+    COLLECTIONS.PROJECTS,
+    [orderBy("createdAt", "desc")],
+    callback,
+  );
 }
 
 export function subscribeProjectsForAgent(
   agentId: string,
   callback: (projects: Project[]) => void,
 ) {
-  const q = query(
-    collection(db, "projects"),
-    where("assignedTo", "array-contains", agentId),
-    orderBy("createdAt", "desc"),
+  return subscribeToQuery<Project>(
+    COLLECTIONS.PROJECTS,
+    [where("assignedTo", "array-contains", agentId), orderBy("createdAt", "desc")],
+    callback,
   );
-  return onSnapshot(q, (snapshot) => {
-    const projects = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Project,
-    );
-    callback(projects);
-  });
 }
 
 // ─── Projects: CRUD ─────────────────────────────────────────────────
@@ -51,24 +39,15 @@ export function subscribeProjectsForAgent(
 export async function createProject(
   data: Omit<Project, "id" | "createdAt" | "updatedAt">,
 ) {
-  const now = Date.now();
-  const docRef = await addDoc(collection(db, "projects"), {
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return docRef.id;
+  return createDocument<Project>(COLLECTIONS.PROJECTS, data as Omit<Project, "id">);
 }
 
 export async function updateProject(projectId: string, data: Partial<Project>) {
-  await updateDoc(doc(db, "projects", projectId), {
-    ...data,
-    updatedAt: Date.now(),
-  });
+  return updateDocument<Project>(COLLECTIONS.PROJECTS, projectId, data);
 }
 
 export async function deleteProject(projectId: string) {
-  await deleteDoc(doc(db, "projects", projectId));
+  return deleteDocument(COLLECTIONS.PROJECTS, projectId);
 }
 
 // ─── Units: Real-time listeners ─────────────────────────────────────
@@ -77,15 +56,11 @@ export function subscribeUnits(
   projectId: string,
   callback: (units: Unit[]) => void,
 ) {
-  const q = query(
-    collection(db, "units"),
-    where("projectId", "==", projectId),
-    orderBy("block", "asc"),
+  return subscribeToQuery<Unit>(
+    COLLECTIONS.UNITS,
+    [where("projectId", "==", projectId), orderBy("block", "asc")],
+    callback,
   );
-  return onSnapshot(q, (snapshot) => {
-    const units = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Unit);
-    callback(units);
-  });
 }
 
 export function subscribeUnitsByStatus(
@@ -93,16 +68,15 @@ export function subscribeUnitsByStatus(
   status: string,
   callback: (units: Unit[]) => void,
 ) {
-  const q = query(
-    collection(db, "units"),
-    where("projectId", "==", projectId),
-    where("status", "==", status),
-    orderBy("createdAt", "desc"),
+  return subscribeToQuery<Unit>(
+    COLLECTIONS.UNITS,
+    [
+      where("projectId", "==", projectId),
+      where("status", "==", status),
+      orderBy("createdAt", "desc"),
+    ],
+    callback,
   );
-  return onSnapshot(q, (snapshot) => {
-    const units = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Unit);
-    callback(units);
-  });
 }
 
 // ─── Units: CRUD ────────────────────────────────────────────────────
@@ -110,24 +84,15 @@ export function subscribeUnitsByStatus(
 export async function createUnit(
   data: Omit<Unit, "id" | "createdAt" | "updatedAt">,
 ) {
-  const now = Date.now();
-  const docRef = await addDoc(collection(db, "units"), {
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return docRef.id;
+  return createDocument<Unit>(COLLECTIONS.UNITS, data as Omit<Unit, "id">);
 }
 
 export async function updateUnit(unitId: string, data: Partial<Unit>) {
-  await updateDoc(doc(db, "units", unitId), {
-    ...data,
-    updatedAt: Date.now(),
-  });
+  return updateDocument<Unit>(COLLECTIONS.UNITS, unitId, data);
 }
 
 export async function deleteUnit(unitId: string) {
-  await deleteDoc(doc(db, "units", unitId));
+  return deleteDocument(COLLECTIONS.UNITS, unitId);
 }
 
 // ─── Payment Milestones: Real-time listeners ────────────────────────
@@ -136,34 +101,22 @@ export function subscribeMilestones(
   unitId: string,
   callback: (milestones: PaymentMilestone[]) => void,
 ) {
-  const q = query(
-    collection(db, "paymentMilestones"),
-    where("unitId", "==", unitId),
-    orderBy("dueDate", "asc"),
+  return subscribeToQuery<PaymentMilestone>(
+    COLLECTIONS.PAYMENT_MILESTONES,
+    [where("unitId", "==", unitId), orderBy("dueDate", "asc")],
+    callback,
   );
-  return onSnapshot(q, (snapshot) => {
-    const milestones = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as PaymentMilestone,
-    );
-    callback(milestones);
-  });
 }
 
 export function subscribeProjectMilestones(
   projectId: string,
   callback: (milestones: PaymentMilestone[]) => void,
 ) {
-  const q = query(
-    collection(db, "paymentMilestones"),
-    where("projectId", "==", projectId),
-    orderBy("dueDate", "asc"),
+  return subscribeToQuery<PaymentMilestone>(
+    COLLECTIONS.PAYMENT_MILESTONES,
+    [where("projectId", "==", projectId), orderBy("dueDate", "asc")],
+    callback,
   );
-  return onSnapshot(q, (snapshot) => {
-    const milestones = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as PaymentMilestone,
-    );
-    callback(milestones);
-  });
 }
 
 // ─── Payment Milestones: CRUD ───────────────────────────────────────
@@ -171,27 +124,18 @@ export function subscribeProjectMilestones(
 export async function createMilestone(
   data: Omit<PaymentMilestone, "id" | "createdAt" | "updatedAt">,
 ) {
-  const now = Date.now();
-  const docRef = await addDoc(collection(db, "paymentMilestones"), {
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return docRef.id;
+  return createDocument<PaymentMilestone>(COLLECTIONS.PAYMENT_MILESTONES, data as Omit<PaymentMilestone, "id">);
 }
 
 export async function updateMilestone(
   milestoneId: string,
   data: Partial<PaymentMilestone>,
 ) {
-  await updateDoc(doc(db, "paymentMilestones", milestoneId), {
-    ...data,
-    updatedAt: Date.now(),
-  });
+  return updateDocument<PaymentMilestone>(COLLECTIONS.PAYMENT_MILESTONES, milestoneId, data);
 }
 
 export async function deleteMilestone(milestoneId: string) {
-  await deleteDoc(doc(db, "paymentMilestones", milestoneId));
+  return deleteDocument(COLLECTIONS.PAYMENT_MILESTONES, milestoneId);
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────

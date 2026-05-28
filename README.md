@@ -6,13 +6,15 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 
 ## Tech Stack
 
-- **Frontend:** React + Vite + TypeScript + Tailwind CSS + ShadCN/ui
+- **Frontend:** React 19 + Vite 8 + TypeScript 6 + Tailwind CSS 3 + ShadCN/ui
 - **Backend:** Firebase-only (no Cloud Functions)
 - **Database:** Firestore (real-time sync)
 - **Auth:** Firebase Auth (email/password + Google OAuth)
 - **Storage:** Firebase Storage (property images, receipts, viewing photos)
 - **Hosting:** Firebase Hosting
 - **Notifications:** Firebase Cloud Messaging (push notifications)
+- **Testing:** Vitest + React Testing Library + Playwright
+- **Quality:** ESLint + Prettier + Husky + lint-staged
 - **CI/CD:** GitHub Actions → Firebase Hosting deploy
 
 ## Features
@@ -50,7 +52,6 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Hosted at `/b/{listingId}` (no auth required)
 - Share buttons: WhatsApp, Viber, Messenger, Copy Link
 - Agent QR code on brochure
-- "Download as Image" support (coming in v2)
 - View tracking per brochure
 
 ### Viewing Schedule Tracker
@@ -94,7 +95,6 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Receipt photo upload to Firebase Storage
 - Summary by category with totals
 - Broker visibility into agent expenses
-- Export to CSV (coming in v2)
 
 ### BIR Tax Estimator
 - **6% Capital Gains Tax** computation
@@ -133,14 +133,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - **In-app notification bell** with unread badge and dropdown
 - Full notification history page with filters
 - **Push notifications via FCM** — background + foreground messages
-- Notification triggers:
-  - New lead assigned
-  - Viewing reminder (24h / 1h)
-  - Commission approved / paid
-  - Deal status change
-  - New task assigned
-  - @mention in notes
-  - Reschedule request from client portal
+- Notification triggers for all major entity changes
 - Mark individual or all notifications as read
 
 ### Broker Command Center
@@ -149,14 +142,14 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Lead source analytics (Facebook, Referral, Walk-in, Manual conversion)
 - Upcoming viewings list
 - Pending tasks widget
-- Agent leaderboard (coming in v2)
-- Team performance report (coming in v2)
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 18+
 - npm 10+
 - Firebase project with Auth, Firestore, Storage, and Hosting enabled
 
@@ -205,42 +198,180 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 
 | Script | Description |
 |--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Type-check and build for production |
+| `npm run dev` | Start development server (Vite on port 3000) |
+| `npm run dev:emu` | Start Firebase emulators only |
+| `npm run dev:full` | Emulators + Vite concurrently |
+| `npm run build` | Type-check + Vite build + SW generation |
 | `npm run preview` | Preview production build |
 | `npm run lint` | Run ESLint |
-| `npm run lint:fix` | Fix lint issues |
+| `npm run lint:fix` | Fix lint issues automatically |
 | `npm run format` | Format code with Prettier |
 | `npm run typecheck` | Run TypeScript type checking |
-| `npm test` | Run tests (Vitest) |
-| `npm run test:coverage` | Run tests with coverage |
+| `npm test` | Run unit tests (Vitest) |
+| `npm run test:coverage` | Run tests with coverage report |
+| `npm run test:ui` | Run tests with Vitest UI |
+| `npm run e2e` | Run Playwright E2E tests |
+
+---
 
 ## Project Structure
 
 ```
 src/
-├── components/         # Reusable components
-│   ├── auth/           # Auth guard (ProtectedRoute)
-│   ├── layout/         # Sidebar + main layout (AppLayout)
-│   ├── notifications/  # Notification bell dropdown
-│   ├── ui/             # Generic UI components (planned)
-│   └── ErrorBoundary   # React error boundary
-├── context/            # React context providers (Auth, Theme)
-├── hooks/              # Custom React hooks (useFirestore)
-├── lib/                # Utilities, Firebase config, commission engine
-├── pages/              # Route pages (14+ pages)
-├── services/           # Business logic (notifications, FCM)
-├── styles/             # Global styles
-└── types/              # TypeScript definitions (14+ entities)
+├── components/              # Reusable components
+│   ├── analytics/           # Analytics dashboards & charts
+│   ├── auth/                # Auth guard (ProtectedRoute)
+│   ├── automation/          # Checklists, referrals, activity feed
+│   ├── calendar/            # Unified calendar, reminders
+│   ├── cobrokerage/         # Co-broking management
+│   ├── commissions/         # Commission breakdown, plan manager
+│   ├── contracts/           # Contract generator
+│   ├── deals/               # Deal kanban, cards
+│   ├── documents/           # Document vault, upload, metadata
+│   ├── import/              # CSV import wizard
+│   ├── layout/              # Sidebar + main layout (AppLayout)
+│   ├── leads/               # Lead forms, lists, filters
+│   ├── licenses/            # License management
+│   ├── loans/               # Loan calculators, affordability
+│   ├── map/                 # Property map with Leaflet
+│   ├── market/              # Market analysis, price trends
+│   ├── matching/            # Lead-property matching
+│   ├── mortgage/            # Mortgage tracker
+│   ├── notifications/       # Notification bell
+│   ├── payments/            # Payment forms, summaries
+│   ├── payouts/             # Payout dashboard
+│   ├── ph-tools/            # PH-specific tools (Pag-IBIG, BIR, title)
+│   ├── projects/            # Project management
+│   ├── scorecard/           # Agent leaderboard, badges
+│   ├── tasks/               # Task cards, kanban, checklists
+│   ├── tours/               # Tour builder, stop cards
+│   └── ui/                  # Shared UI (EmptyState, LoadingSpinner, Toast)
+├── context/                 # React context providers (Auth, Theme)
+├── hooks/                   # Custom React hooks
+│   ├── useAsync.ts          # Async operation handler
+│   ├── useDebounce.ts       # Debounced values
+│   ├── useFirestore.ts      # Firestore real-time hooks
+│   ├── useKeyboardShortcuts.ts  # Keyboard shortcut system
+│   ├── useLocalStorage.ts   # LocalStorage persistence
+│   ├── useMediaQuery.ts     # Responsive media query tracking
+│   └── useNetworkStatus.ts  # Online/offline detection
+├── lib/                     # Core libraries & utilities
+│   ├── errors.ts            # Structured error types (AppError)
+│   ├── logger.ts            # Structured logging utility
+│   ├── validation.ts        # Input validation helpers
+│   ├── utils.ts             # General utility functions
+│   ├── firebase.ts          # Firebase initialization
+│   ├── commission.ts        # Commission calculation engine
+│   ├── commissionEngine.ts  # Advanced commission engine
+│   ├── cmaEngine.ts         # Comparative Market Analysis
+│   ├── csvImport.ts         # CSV parsing & validation
+│   ├── loanEngine.ts        # Loan amortization engine
+│   ├── mapUtils.ts          # Map coordinate utilities
+│   ├── marketReport.ts      # Market report generation
+│   ├── matchingEngine.ts    # Lead-property matching algorithm
+│   ├── scorecard.ts         # Agent scorecard calculations
+│   ├── sourceAnalytics.ts   # Lead source analytics
+│   ├── syndication.ts       # Property syndication helpers
+│   └── contracts/           # Contract templates & generation
+├── pages/                   # Route pages (40+ pages)
+├── services/                # Business logic layer
+└── types/                   # TypeScript type definitions
 ```
+
+---
 
 ## Architecture
 
 - **Firebase-only** — no Cloud Functions. Firestore security rules act as the backend.
 - **Client-side commission calculation** — raw deal data is source of truth; calc is for display/reference.
-- **Manual FB lead entry** (v1) — leads captured via form entry; Facebook auto-import planned for v2.
-- **Push notifications** via Firebase Cloud Messaging with in-app notification system.
 - **Real-time sync** — Firestore listeners keep all views up-to-date across sessions.
+- **Code-split routes** — lazy-loaded pages reduce initial bundle size.
+- **Service Worker** — PWA support with offline caching via Workbox.
+- **Manual FB lead entry** (v1) — leads captured via form entry; Facebook auto-import planned for v2.
+
+### Error Handling
+
+The app uses a structured error handling system:
+
+- `AppError` — typed error class with code, severity, context, and recoverability metadata
+- `ErrorBoundary` — React error boundary with retry support
+- `logger` — structured logging with environment-aware log levels
+- `createScopedLogger(module)` — module-scoped loggers for debugging
+
+### Validation
+
+Input validation is centralized in `lib/validation.ts`:
+
+- `validateEmail`, `validatePhone`, `validateRequired`
+- `validateMinLength`, `validatePositiveNumber`
+- `combineResults` — aggregate multiple validation results
+
+---
+
+## Testing
+
+### Test Structure
+
+Tests use Vitest with React Testing Library:
+
+```
+src/
+├── lib/
+│   ├── utils.test.ts         # Utility function tests
+│   ├── commission.test.ts    # Commission calculation tests
+│   ├── errors.test.ts        # Error type tests
+│   ├── logger.test.ts        # Logger tests
+│   └── validation.test.ts    # Validation tests
+├── hooks/
+│   ├── hooks.test.ts         # Hook unit tests
+│   └── useKeyboardShortcuts.test.ts  # Keyboard shortcut tests
+├── services/
+│   └── notifications.test.ts # Notification service tests
+e2e/
+└── *.spec.ts                 # Playwright E2E tests
+```
+
+### Running Tests
+
+```bash
+# Unit tests
+npm test
+
+# With coverage
+npm run test:coverage
+
+# E2E tests
+npm run e2e
+
+# E2E with debug UI
+npm run e2e:ui
+```
+
+### Coverage Thresholds
+
+| Metric    | Threshold |
+|-----------|-----------|
+| Statements| 80%       |
+| Branches  | 70%       |
+| Functions | 80%       |
+| Lines     | 80%       |
+
+---
+
+## Quality Gates
+
+The project enforces quality through:
+
+1. **ESLint** — TypeScript-aware linting with strict rules
+2. **Prettier** — Consistent code formatting
+3. **TypeScript** — Strict mode type checking
+4. **Husky** — Pre-commit hooks (lint-staged + typecheck)
+5. **lint-staged** — Run linters only on staged files
+6. **Vitest** — Unit/integration tests with coverage thresholds
+7. **Playwright** — End-to-end browser tests
+8. **GitHub Actions** — CI pipeline (lint → typecheck → test → build → e2e)
+
+---
 
 ## PH-Specific Design
 

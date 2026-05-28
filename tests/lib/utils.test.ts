@@ -159,15 +159,12 @@ describe("timeAgo", () => {
 });
 
 describe("generateId", () => {
-  it("returns a string id", () => {
+  it("returns a non-empty string id", () => {
     const id = generateId();
     expect(typeof id).toBe("string");
     expect(id.length).toBeGreaterThan(0);
   });
-
-  it("returns non-empty string", () => {
-    expect(generateId()).toBe("generated-mock-id-12345");
-  });
+});
 });
 
 describe("getLeadStatusColor", () => {

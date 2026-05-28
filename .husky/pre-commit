@@ -1,1 +1,11 @@
-npx lint-staged
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Phase 1: Run lint-staged (fast — only checks staged files)
+npx lint-staged --no-stash
+
+# Phase 2: Run full project typecheck
+npx tsc --noEmit
+
+# Phase 3: Build check (quick — catches bundle issues)
+npm run build --if-present

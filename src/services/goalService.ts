@@ -1,33 +1,30 @@
+import { where, orderBy } from "firebase/firestore";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+  subscribeToQuery,
+  createDocument,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import { type AgentGoal } from "@/types";
 
 export function subscribeGoals(brokerId: string | undefined, callback: (goals: AgentGoal[]) => void) {
   if (!brokerId) return () => {};
-  const q = query(collection(db, "goals"), where("brokerId", "==", brokerId), orderBy("periodStart", "desc"));
-  return onSnapshot(q, (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as AgentGoal)));
+  return subscribeToQuery<AgentGoal>(
+    COLLECTIONS.GOALS,
+    [where("brokerId", "==", brokerId), orderBy("periodStart", "desc")],
+    callback,
+  );
 }
 
 export async function createGoal(data: Omit<AgentGoal, "id" | "createdAt" | "updatedAt">) {
-  const now = Date.now();
-  const docRef = await addDoc(collection(db, "goals"), { ...data, createdAt: now, updatedAt: now });
-  return docRef.id;
+  return createDocument<AgentGoal>(COLLECTIONS.GOALS, data);
 }
 
 export async function updateGoal(id: string, data: Partial<AgentGoal>) {
-  await updateDoc(doc(db, "goals", id), { ...data, updatedAt: Date.now() });
+  return updateDocument<AgentGoal>(COLLECTIONS.GOALS, id, data);
 }
 
 export async function deleteGoal(id: string) {
-  await deleteDoc(doc(db, "goals", id));
+  return deleteDocument(COLLECTIONS.GOALS, id);
 }

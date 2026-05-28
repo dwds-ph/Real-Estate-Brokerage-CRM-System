@@ -1,16 +1,15 @@
 import {
-  collection,
-  query,
   where,
   orderBy,
-  onSnapshot,
-  addDoc,
-  deleteDoc,
-  doc,
   limit,
   type QueryConstraint,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import {
+  subscribeToQuery,
+  createDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import { type ActivityLog } from "@/types";
 
 // ─── Real-time listeners ─────────────────────────────────────────
@@ -20,18 +19,18 @@ export function subscribeActivityForLead(
   callback?: (activities: ActivityLog[]) => void,
 ) {
   if (!leadId) return () => {};
-  const q = query(
-    collection(db, "activityLogs"),
+
+  const constraints: QueryConstraint[] = [
     where("leadId", "==", leadId),
     orderBy("createdAt", "desc"),
     limit(50),
+  ];
+
+  return subscribeToQuery<ActivityLog>(
+    COLLECTIONS.ACTIVITY_LOGS,
+    constraints,
+    (activities) => callback?.(activities),
   );
-  return onSnapshot(q, (snapshot) => {
-    const activities = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as ActivityLog,
-    );
-    callback?.(activities);
-  });
 }
 
 export function subscribeActivityForDeal(
@@ -39,18 +38,18 @@ export function subscribeActivityForDeal(
   callback?: (activities: ActivityLog[]) => void,
 ) {
   if (!dealId) return () => {};
-  const q = query(
-    collection(db, "activityLogs"),
+
+  const constraints: QueryConstraint[] = [
     where("dealId", "==", dealId),
     orderBy("createdAt", "desc"),
     limit(50),
+  ];
+
+  return subscribeToQuery<ActivityLog>(
+    COLLECTIONS.ACTIVITY_LOGS,
+    constraints,
+    (activities) => callback?.(activities),
   );
-  return onSnapshot(q, (snapshot) => {
-    const activities = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as ActivityLog,
-    );
-    callback?.(activities);
-  });
 }
 
 export function subscribeRecentActivity(
@@ -58,18 +57,18 @@ export function subscribeRecentActivity(
   callback?: (activities: ActivityLog[]) => void,
 ) {
   if (!brokerId) return () => {};
+
   const constraints: QueryConstraint[] = [
     where("createdBy", "==", brokerId),
     orderBy("createdAt", "desc"),
     limit(20),
   ];
-  const q = query(collection(db, "activityLogs"), ...constraints);
-  return onSnapshot(q, (snapshot) => {
-    const activities = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as ActivityLog,
-    );
-    callback?.(activities);
-  });
+
+  return subscribeToQuery<ActivityLog>(
+    COLLECTIONS.ACTIVITY_LOGS,
+    constraints,
+    (activities) => callback?.(activities),
+  );
 }
 
 // ─── CRUD ────────────────────────────────────────────────────────
@@ -77,13 +76,9 @@ export function subscribeRecentActivity(
 export async function createActivityLog(
   data: Omit<ActivityLog, "id" | "createdAt">,
 ) {
-  const docRef = await addDoc(collection(db, "activityLogs"), {
-    ...data,
-    createdAt: Date.now(),
-  });
-  return docRef.id;
+  return createDocument<ActivityLog>(COLLECTIONS.ACTIVITY_LOGS, data);
 }
 
 export async function deleteActivityLog(logId: string) {
-  await deleteDoc(doc(db, "activityLogs", logId));
+  await deleteDocument(COLLECTIONS.ACTIVITY_LOGS, logId);
 }

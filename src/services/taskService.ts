@@ -1,16 +1,11 @@
+import { where, orderBy, type QueryConstraint } from "firebase/firestore";
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  type QueryConstraint,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+  subscribeToQuery,
+  createDocument,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import { type Task, type TaskStatus, type ChecklistItem } from "@/types";
 
 // ─── Real-time listeners ─────────────────────────────────────────
@@ -31,13 +26,7 @@ export function subscribeTasks(
   if (filters?.status) {
     constraints.unshift(where("status", "==", filters.status));
   }
-  const q = query(collection(db, "tasks"), ...constraints);
-  return onSnapshot(q, (snapshot) => {
-    const tasks = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Task,
-    );
-    callback?.(tasks);
-  });
+  return subscribeToQuery<Task>(COLLECTIONS.TASKS, constraints, callback ?? (() => {}));
 }
 
 export function subscribeTasksByAssignee(
@@ -45,17 +34,11 @@ export function subscribeTasksByAssignee(
   callback?: (tasks: Task[]) => void,
 ) {
   if (!userId) return () => {};
-  const q = query(
-    collection(db, "tasks"),
-    where("assignedTo", "==", userId),
-    orderBy("createdAt", "desc"),
+  return subscribeToQuery<Task>(
+    COLLECTIONS.TASKS,
+    [where("assignedTo", "==", userId), orderBy("createdAt", "desc")],
+    callback ?? (() => {}),
   );
-  return onSnapshot(q, (snapshot) => {
-    const tasks = snapshot.docs.map(
-      (d) => ({ id: d.id, ...d.data() }) as Task,
-    );
-    callback?.(tasks);
-  });
 }
 
 // ─── CRUD ────────────────────────────────────────────────────────
@@ -63,42 +46,27 @@ export function subscribeTasksByAssignee(
 export async function createTask(
   data: Omit<Task, "id" | "createdAt" | "updatedAt">,
 ) {
-  const now = Date.now();
-  const docRef = await addDoc(collection(db, "tasks"), {
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return docRef.id;
+  return createDocument<Task>(COLLECTIONS.TASKS, data as Omit<Task, "id">);
 }
 
 export async function updateTask(
   taskId: string,
   data: Partial<Omit<Task, "id" | "createdAt">>,
 ) {
-  await updateDoc(doc(db, "tasks", taskId), {
-    ...data,
-    updatedAt: Date.now(),
-  });
+  return updateDocument<Task>(COLLECTIONS.TASKS, taskId, data);
 }
 
 export async function deleteTask(taskId: string) {
-  await deleteDoc(doc(db, "tasks", taskId));
+  return deleteDocument(COLLECTIONS.TASKS, taskId);
 }
 
 export async function updateTaskStatus(taskId: string, status: TaskStatus) {
-  await updateDoc(doc(db, "tasks", taskId), {
-    status,
-    updatedAt: Date.now(),
-  });
+  return updateDocument<Task>(COLLECTIONS.TASKS, taskId, { status } as Partial<Task>);
 }
 
 export async function updateTaskChecklist(
   taskId: string,
   checklist: ChecklistItem[],
 ) {
-  await updateDoc(doc(db, "tasks", taskId), {
-    checklist,
-    updatedAt: Date.now(),
-  });
+  return updateDocument<Task>(COLLECTIONS.TASKS, taskId, { checklist } as Partial<Task>);
 }

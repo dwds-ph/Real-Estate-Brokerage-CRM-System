@@ -1,5 +1,6 @@
 import { db } from "@/lib/firebase";
 import { collection, doc, writeBatch } from "firebase/firestore";
+import { COLLECTIONS } from "@/lib/firestore";
 
 // ─── Helpers ──────────────────────────────────────────────────────────
 
@@ -374,7 +375,7 @@ export async function seedProductionData(): Promise<SeedResult> {
       const chunk = LISTINGS.slice(i, i + BATCH_SIZE);
       for (let j = 0; j < chunk.length; j++) {
         const l = chunk[j];
-        const ref = doc(collection(db, "listings"), uid("listing", i + j + 1));
+        const ref = doc(collection(db, COLLECTIONS.LISTINGS), uid("listing", i + j + 1));
         batch.set(ref, {
           ...l,
           id: ref.id,
@@ -413,7 +414,7 @@ export async function seedProductionData(): Promise<SeedResult> {
       const chunk = LEADS.slice(i, i + BATCH_SIZE);
       for (let j = 0; j < chunk.length; j++) {
         const l = chunk[j];
-        const ref = doc(collection(db, "leads"), uid("lead", i + j + 1));
+        const ref = doc(collection(db, COLLECTIONS.LEADS), uid("lead", i + j + 1));
         const leadStatus =
           i + j < DEALS.length
             ? "negotiating"
@@ -450,7 +451,7 @@ export async function seedProductionData(): Promise<SeedResult> {
       const chunk = DEALS.slice(i, i + BATCH_SIZE);
       for (let j = 0; j < chunk.length; j++) {
         const d = chunk[j];
-        const ref = doc(collection(db, "deals"), uid("deal", i + j + 1));
+        const ref = doc(collection(db, COLLECTIONS.DEALS), uid("deal", i + j + 1));
         const agentIndex = d.listingIndex % AGENTS.length;
         const commission = d.dealPrice * 0.03;
         batch.set(ref, {

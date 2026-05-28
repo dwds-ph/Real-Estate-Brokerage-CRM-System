@@ -19,17 +19,18 @@ vi.mock("firebase/storage", () => ({
 
 vi.mock("firebase/messaging", () => ({
   getMessaging: vi.fn(() => ({ name: "mock-messaging" })),
+  isSupported: vi.fn(() => Promise.resolve(true)),
 }));
 
 describe("firebase config", () => {
-  it("exports auth, db, storage, and messaging objects", async () => {
+  it("exports auth, db, storage, and default", async () => {
     // Dynamic import so mocks are applied
     const firebaseModule = await import("@/lib/firebase");
 
     expect(firebaseModule).toHaveProperty("auth");
     expect(firebaseModule).toHaveProperty("db");
     expect(firebaseModule).toHaveProperty("storage");
-    expect(firebaseModule).toHaveProperty("messaging");
+    expect(firebaseModule).toHaveProperty("getMessagingInstance");
     expect(firebaseModule.default).toBeDefined();
   });
 });

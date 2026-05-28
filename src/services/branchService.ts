@@ -1,23 +1,30 @@
-import { collection, query, where, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { where, orderBy } from "firebase/firestore";
+import {
+  subscribeToQuery,
+  createDocument,
+  updateDocument,
+  deleteDocument,
+  COLLECTIONS,
+} from "@/lib/firestore";
 import type { Branch } from "@/types";
 
 export function subscribeBranches(brokerId: string | undefined, callback: (items: Branch[]) => void) {
   if (!brokerId) return () => {};
-  const q = query(collection(db, "branches"), where("brokerId", "==", brokerId), orderBy("name", "asc"));
-  return onSnapshot(q, (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Branch)));
+  return subscribeToQuery<Branch>(
+    COLLECTIONS.BRANCHES,
+    [where("brokerId", "==", brokerId), orderBy("name", "asc")],
+    callback,
+  );
 }
 
 export async function createBranch(data: Omit<Branch, "id" | "createdAt" | "updatedAt">) {
-  const now = Date.now();
-  const ref = await addDoc(collection(db, "branches"), { ...data, createdAt: now, updatedAt: now });
-  return ref.id;
+  return createDocument<Branch>(COLLECTIONS.BRANCHES, data);
 }
 
 export async function updateBranch(id: string, data: Partial<Branch>) {
-  await updateDoc(doc(db, "branches", id), { ...data, updatedAt: Date.now() });
+  return updateDocument<Branch>(COLLECTIONS.BRANCHES, id, data);
 }
 
 export async function deleteBranch(id: string) {
-  await deleteDoc(doc(db, "branches", id));
+  return deleteDocument(COLLECTIONS.BRANCHES, id);
 }

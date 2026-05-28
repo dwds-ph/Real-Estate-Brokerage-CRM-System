@@ -15,5 +15,37 @@ export default defineConfig({
     setupFiles: ["./src/lib/test-setup.ts"],
     css: true,
     exclude: ["e2e/**", "node_modules/**"],
+
+    // Coverage configuration (enabled via --coverage flag)
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json", "html", "lcov"],
+      reportsDirectory: "./coverage",
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: [
+        "src/**/*.test.{ts,tsx}",
+        "src/**/*.spec.{ts,tsx}",
+        "src/**/__tests__/**",
+        "src/vite-env.d.ts",
+        "src/main.tsx",
+        "src/**/index.ts",
+      ],
+      thresholds: {
+        statements: 80,
+        branches: 70,
+        functions: 80,
+        lines: 80,
+      },
+    },
+
+    // Run tests sequentially for deterministic results
+    sequence: {
+      shuffle: false,
+    },
+
+    // Clean up mocks between tests
+    mockReset: true,
+    restoreMocks: true,
+    clearMocks: true,
   },
 });
