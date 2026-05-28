@@ -1,11 +1,14 @@
-const DEFAULT_VIEWPORT = { center: [14.5995, 120.9842] as [number, number], zoom: 12 };
+const DEFAULT_VIEWPORT = {
+  center: [14.5995, 120.9842] as [number, number],
+  zoom: 12,
+};
 
 const geocodeCache = new Map<string, [number, number]>();
 
 export async function geocodeAddress(
   address: string,
 ): Promise<[number, number] | null> {
-  if (!address) return null;
+  if (!address || !address.trim()) return null;
   const key = address.toLowerCase().trim();
   if (geocodeCache.has(key)) return geocodeCache.get(key)!;
 
@@ -16,7 +19,10 @@ export async function geocodeAddress(
     );
     const data = await res.json();
     if (data && data.length > 0) {
-      const coords: [number, number] = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+      const coords: [number, number] = [
+        parseFloat(data[0].lat),
+        parseFloat(data[0].lon),
+      ];
       geocodeCache.set(key, coords);
       return coords;
     }
