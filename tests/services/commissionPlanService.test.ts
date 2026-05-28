@@ -1,12 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Mock } from "vitest";
 import {
   subscribePlans,
   createPlan,
   updatePlan,
   deletePlan,
 } from "@/services/commissionPlanService";
-import type { CommissionPlan } from "@/types";
 
 // ─── Mock firebase/firestore ─────────────────────────────────────────
 
@@ -36,31 +34,13 @@ vi.mock("@/lib/firebase", () => ({
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
-function makeMockSnapshot(
-  docs: Array<{ id: string; data: () => Record<string, unknown> }>,
-) {
+function makeMockSnapshot(docs: Array<{ id: string; data: () => Record<string, unknown> }>) {
   return {
     docs: docs.map((d) => ({
       id: d.id,
       data: d.data,
       exists: true,
     })),
-  };
-}
-
-function samplePlan(overrides: Partial<CommissionPlan> = {}): CommissionPlan {
-  return {
-    id: "plan-1",
-    name: "Standard Commission",
-    type: "fixed",
-    brokerId: "broker-1",
-    rules: {
-      percent: 3,
-    },
-    assignedTo: ["agent-1", "agent-2"],
-    createdAt: Date.now() - 86400000,
-    updatedAt: Date.now() - 86400000,
-    ...overrides,
   };
 }
 
@@ -82,17 +62,12 @@ describe("commissionPlanService", () => {
 
       subscribePlans(vi.fn());
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "commissionPlans",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "commissionPlans");
       expect(mockOrderBy).toHaveBeenCalledWith("createdAt", "desc");
-      expect(mockQuery).toHaveBeenCalledWith(
-        "plans-collection",
-        "orderBy-createdAt-desc",
-      );
+      expect(mockQuery).toHaveBeenCalledWith("plans-collection", "orderBy-createdAt-desc");
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -204,10 +179,7 @@ describe("commissionPlanService", () => {
 
       const id = await createPlan(planInput);
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "commissionPlans",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "commissionPlans");
       expect(mockAddDoc).toHaveBeenCalledWith(
         "plans-collection",
         expect.objectContaining({
@@ -271,11 +243,7 @@ describe("commissionPlanService", () => {
 
       await updatePlan("plan-1", { name: "Updated Plan Name" });
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "commissionPlans",
-        "plan-1",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "commissionPlans", "plan-1");
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         { id: "plan-1" },
         expect.objectContaining({
@@ -339,11 +307,7 @@ describe("commissionPlanService", () => {
 
       await deletePlan("plan-to-delete");
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "commissionPlans",
-        "plan-to-delete",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "commissionPlans", "plan-to-delete");
       expect(mockDeleteDoc).toHaveBeenCalledWith({ id: "plan-to-delete" });
       expect(mockDeleteDoc).toHaveBeenCalledOnce();
     });

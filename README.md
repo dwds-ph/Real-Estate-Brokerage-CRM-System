@@ -20,6 +20,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 ## Features
 
 ### Lead Management
+
 - Lead CRUD with full details (name, phone, email, source, status, score)
 - Status workflow: New → Contacted → Viewed → Negotiating → Closed / Lost
 - Lead scoring: Hot / Warm / Cold with visual indicators
@@ -31,6 +32,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Filters by status, source, search by name/phone/email
 
 ### Deal Pipeline (Kanban)
+
 - 6-column Kanban board with drag & drop
 - Per-agent view (agents see only their deals)
 - Broker overview (all agents' pipelines at a glance)
@@ -38,6 +40,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Status transition tracking in activity timeline
 
 ### Property Listing Management
+
 - Listing CRUD with multi-step form
 - Image upload to Firebase Storage (with preview)
 - Status tracking: Available → Under Option → Sold / Rented / Off-Market
@@ -48,6 +51,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Search & filters (price, location, type, status, flood risk)
 
 ### Property Brochure Generator
+
 - Auto-generated public shareable page per property
 - Hosted at `/b/{listingId}` (no auth required)
 - Share buttons: WhatsApp, Viber, Messenger, Copy Link
@@ -55,6 +59,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - View tracking per brochure
 
 ### Viewing Schedule Tracker
+
 - Schedule viewings with date, time, property, and lead
 - Status management: Scheduled → Done / Cancelled / No-Show
 - Upcoming vs past viewings sections
@@ -63,6 +68,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Push notification reminders (24h + 1h before via FCM)
 
 ### Client Portal
+
 - Public-facing page per client at `/p/{leadToken}`
 - Client sees assigned properties and upcoming viewings
 - Request reschedule button (creates notification for agent)
@@ -70,6 +76,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Shareable link via Messenger / Viber / SMS
 
 ### Commission Tracking (PH-Specific)
+
 - **Commission structures supported:**
   - Fixed % — standard broker share
   - Tiered split — broker/agent percentage splits
@@ -84,12 +91,14 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Payout request/approval flow
 
 ### Co-broking / Shared Deals
+
 - Dual-agent deal support (listing agent + buyer's agent)
 - Configurable split percentage (50/50 default, custom supported)
 - Shared pipeline — both agents see deal progress
 - Payout split tracked separately per agent
 
 ### Expense Tracking
+
 - Per-agent expense recording
 - Categories: Transportation, Meals, Ads & Marketing, Miscellaneous
 - Receipt photo upload to Firebase Storage
@@ -97,6 +106,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Broker visibility into agent expenses
 
 ### BIR Tax Estimator
+
 - **6% Capital Gains Tax** computation
 - **1.5% Documentary Stamp Tax**
 - **1% Creditable Withholding Tax**
@@ -104,6 +114,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Built into Title Status Tracker
 
 ### PH-Specific Tools
+
 - **Pag-IBIG Loan Calculator** — monthly amortization, max loan tiers
 - **Bank Financing Calculator** — BPI, BDO, Metrobank, Security Bank, EastWest rate comparison
 - **Title Status Tracker** — 5-stage progress bar (With Seller → BIR CGT → Registry of Deeds → Transfer → Complete)
@@ -111,6 +122,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Estimated closing costs breakdown
 
 ### Agent Hierarchy System
+
 - Tree structure: Broker → Agents → Sub-agents
 - Permission enforcement: broker sees all, agent sees own
 - Agent profiles with license number, HLURB/DHSUD accreditation
@@ -118,6 +130,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Invitation flow — broker invites agent via link
 
 ### Task Management
+
 - Task CRUD with title, description, priority (high/medium/low), due date
 - Link tasks to leads, listings, or deals
 - Filter by priority, due date, related entity
@@ -125,11 +138,13 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Push notification on new task assignment
 
 ### Notes & Mentions
+
 - Internal notes on leads, listings, and deals
 - **@mentions** — `@agentName` triggers in-app notification
 - Note types: general, reminder, document request
 
 ### Notifications
+
 - **In-app notification bell** with unread badge and dropdown
 - Full notification history page with filters
 - **Push notifications via FCM** — background + foreground messages
@@ -137,6 +152,7 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 - Mark individual or all notifications as read
 
 ### Broker Command Center
+
 - KPI cards: Total leads, Active listings, Upcoming viewings, Commission earned
 - Lead pipeline funnel chart (by status)
 - Lead source analytics (Facebook, Referral, Walk-in, Manual conversion)
@@ -156,17 +172,20 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
 ### Setup
 
 1. **Clone the repo:**
+
    ```bash
    git clone https://github.com/dwds-ph/Real-Estate-Brokerage-CRM-System.git
    cd Real-Estate-Brokerage-CRM-System
    ```
 
 2. **Install dependencies:**
+
    ```bash
-   npm install
+   yarn install
    ```
 
 3. **Create a `.env` file** from the template:
+
    ```bash
    cp .env.example .env
    ```
@@ -180,37 +199,40 @@ Built with a **Firebase-only architecture** (no Cloud Functions) — security ru
    - Fill in the `.env` values
 
 5. **Deploy Firestore rules:**
+
    ```bash
    firebase deploy --only firestore:rules
    ```
 
 6. **Deploy Firestore indexes:**
+
    ```bash
    firebase deploy --only firestore:indexes
    ```
 
 7. **Start the development server:**
    ```bash
-   npm run dev
+   yarn dev
    ```
 
 ### Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server (Vite on port 3000) |
-| `npm run dev:emu` | Start Firebase emulators only |
-| `npm run dev:full` | Emulators + Vite concurrently |
-| `npm run build` | Type-check + Vite build + SW generation |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
-| `npm run lint:fix` | Fix lint issues automatically |
-| `npm run format` | Format code with Prettier |
-| `npm run typecheck` | Run TypeScript type checking |
-| `npm test` | Run unit tests (Vitest) |
-| `npm run test:coverage` | Run tests with coverage report |
-| `npm run test:ui` | Run tests with Vitest UI |
-| `npm run e2e` | Run Playwright E2E tests |
+| Script               | Description                                             |
+| -------------------- | ------------------------------------------------------- |
+| `yarn dev`           | Start development server (Vite on port 3000)            |
+| `yarn dev:emu`       | Start Firebase emulators only                           |
+| `yarn dev:full`      | Emulators + Vite concurrently                           |
+| `yarn build`         | Type-check + Vite build + SW generation                 |
+| `yarn preview`       | Preview production build                                |
+| `yarn lint`          | Run ESLint                                              |
+| `yarn lint:fix`      | Fix lint issues automatically                           |
+| `yarn format`        | Format code with Prettier                               |
+| `yarn typecheck`     | Run TypeScript type checking                            |
+| `yarn test`          | Run unit tests (Vitest)                                 |
+| `yarn test:coverage` | Run tests with coverage report                          |
+| `yarn test:ui`       | Run tests with Vitest UI                                |
+| `yarn validate`      | Run all quality gates (lint + typecheck + test + build) |
+| `yarn e2e`           | Run Playwright E2E tests                                |
 
 ---
 
@@ -285,6 +307,10 @@ src/
 - **Firebase-only** — no Cloud Functions. Firestore security rules act as the backend.
 - **Client-side commission calculation** — raw deal data is source of truth; calc is for display/reference.
 - **Real-time sync** — Firestore listeners keep all views up-to-date across sessions.
+- **Shared Firestore helpers** (`lib/firestore.ts`) — single source of truth for CRUD, snapshot mapping, timestamps, and collection constants. All ~30 services delegate through these helpers.
+- **Strongly typed service layer** — business logic lives in `src/services/`, each with clear Firestore responsibility via shared helpers.
+- **Domain-organized types** — 15+ domain files with barrel re-export from `src/types/index.ts`.
+- **Structured error handling** — `AppError` with severity, recoverability, and scoped logging.
 - **Code-split routes** — lazy-loaded pages reduce initial bundle size.
 - **Service Worker** — PWA support with offline caching via Workbox.
 - **Manual FB lead entry** (v1) — leads captured via form entry; Facebook auto-import planned for v2.
@@ -349,12 +375,12 @@ npm run e2e:ui
 
 ### Coverage Thresholds
 
-| Metric    | Threshold |
-|-----------|-----------|
-| Statements| 80%       |
-| Branches  | 70%       |
-| Functions | 80%       |
-| Lines     | 80%       |
+| Metric     | Threshold |
+| ---------- | --------- |
+| Statements | 80%       |
+| Branches   | 70%       |
+| Functions  | 80%       |
+| Lines      | 80%       |
 
 ---
 
@@ -375,16 +401,16 @@ The project enforces quality through:
 
 ## PH-Specific Design
 
-| Factor | Implementation |
-|--------|---------------|
-| **Commission splits** | Fixed %, tiered, co-broking, referral, escalating tiers |
-| **VAT (12%) & Withholding Tax** | Auto-deducted in commission calculation |
-| **CGT (6%) & DST (1.5%)** | Built into Title Status Tracker & BIR estimator |
-| **Pag-IBIG / Bank Financing** | Built-in calculators with PH bank rates |
-| **Title transfer** | 5-stage tracker with document checklist |
-| **Flood risk tagging** | Low/Medium/High/Unknown on listings |
-| **Brochure generator** | Shareable property cards for FB Marketplace |
-| **Co-broking culture** | First-class dual-agent deal support |
+| Factor                          | Implementation                                          |
+| ------------------------------- | ------------------------------------------------------- |
+| **Commission splits**           | Fixed %, tiered, co-broking, referral, escalating tiers |
+| **VAT (12%) & Withholding Tax** | Auto-deducted in commission calculation                 |
+| **CGT (6%) & DST (1.5%)**       | Built into Title Status Tracker & BIR estimator         |
+| **Pag-IBIG / Bank Financing**   | Built-in calculators with PH bank rates                 |
+| **Title transfer**              | 5-stage tracker with document checklist                 |
+| **Flood risk tagging**          | Low/Medium/High/Unknown on listings                     |
+| **Brochure generator**          | Shareable property cards for FB Marketplace             |
+| **Co-broking culture**          | First-class dual-agent deal support                     |
 
 ## License
 

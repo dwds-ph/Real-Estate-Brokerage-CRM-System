@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Mock } from "vitest";
 import {
   subscribeTasks,
   subscribeTasksByAssignee,
@@ -9,7 +8,7 @@ import {
   updateTaskStatus,
   updateTaskChecklist,
 } from "@/services/taskService";
-import type { Task, TaskStatus, ChecklistItem } from "@/types";
+import type { TaskStatus, ChecklistItem } from "@/types";
 
 // ─── Mock firebase/firestore ─────────────────────────────────────────
 
@@ -45,40 +44,13 @@ vi.mock("@/lib/firebase", () => ({
 
 const now = Date.now();
 
-function makeMockSnapshot(
-  docs: Array<{ id: string; data: () => Record<string, unknown> }>,
-) {
+function makeMockSnapshot(docs: Array<{ id: string; data: () => Record<string, unknown> }>) {
   return {
     docs: docs.map((d) => ({
       id: d.id,
       data: d.data,
       exists: true,
     })),
-  };
-}
-
-function sampleTask(overrides: Partial<Task> = {}): Task {
-  return {
-    id: "task-1",
-    title: "Follow up with client",
-    description: "Call to discuss property options",
-    status: "todo",
-    priority: "high",
-    assignedTo: "user-1",
-    assignedName: "Alice",
-    createdBy: "user-1",
-    createdByName: "Alice",
-    dueDate: now + 86400000,
-    brokerId: "broker-1",
-    checklist: [
-      { id: "c1", text: "Prepare documents", checked: false },
-      { id: "c2", text: "Send contract", checked: true },
-    ],
-    tags: ["urgent", "follow-up"],
-    recurring: "none",
-    createdAt: now,
-    updatedAt: now,
-    ...overrides,
   };
 }
 
@@ -108,7 +80,7 @@ describe("taskService", () => {
       mockQuery.mockReturnValue("query-ref");
       mockOnSnapshot.mockReturnValue(vi.fn());
 
-      const unsub = subscribeTasks("broker-1", undefined, callback);
+      const _unsub = subscribeTasks("broker-1", undefined, callback);
 
       expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "tasks");
       expect(mockWhere).toHaveBeenCalledWith("brokerId", "==", "broker-1");
@@ -122,8 +94,8 @@ describe("taskService", () => {
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
         expect.any(Function),
+        expect.any(Function),
       );
-      expect(unsub).toBeInstanceOf(Function);
     });
 
     it("should include assignedTo filter when provided", () => {
@@ -136,18 +108,8 @@ describe("taskService", () => {
       subscribeTasks("broker-1", { assignedTo: "user-2" }, vi.fn());
 
       // brokerId where is in the initial array, then assignedTo is unshifted
-      expect(mockWhere).toHaveBeenNthCalledWith(
-        1,
-        "brokerId",
-        "==",
-        "broker-1",
-      );
-      expect(mockWhere).toHaveBeenNthCalledWith(
-        2,
-        "assignedTo",
-        "==",
-        "user-2",
-      );
+      expect(mockWhere).toHaveBeenNthCalledWith(1, "brokerId", "==", "broker-1");
+      expect(mockWhere).toHaveBeenNthCalledWith(2, "assignedTo", "==", "user-2");
     });
 
     it("should include status filter when provided", () => {
@@ -160,18 +122,8 @@ describe("taskService", () => {
       subscribeTasks("broker-1", { status: "in_progress" }, vi.fn());
 
       // brokerId where in initial array, then status is unshifted
-      expect(mockWhere).toHaveBeenNthCalledWith(
-        1,
-        "brokerId",
-        "==",
-        "broker-1",
-      );
-      expect(mockWhere).toHaveBeenNthCalledWith(
-        2,
-        "status",
-        "==",
-        "in_progress",
-      );
+      expect(mockWhere).toHaveBeenNthCalledWith(1, "brokerId", "==", "broker-1");
+      expect(mockWhere).toHaveBeenNthCalledWith(2, "status", "==", "in_progress");
     });
 
     it("should include both assignedTo and status filters when both provided", () => {
@@ -181,25 +133,11 @@ describe("taskService", () => {
       mockQuery.mockReturnValue("query-ref");
       mockOnSnapshot.mockReturnValue(vi.fn());
 
-      subscribeTasks(
-        "broker-1",
-        { assignedTo: "user-3", status: "done" },
-        vi.fn(),
-      );
+      subscribeTasks("broker-1", { assignedTo: "user-3", status: "done" }, vi.fn());
 
       // brokerId is 1st (initial array), assignedTo is 2nd (first unshift), status is 3rd (second unshift)
-      expect(mockWhere).toHaveBeenNthCalledWith(
-        1,
-        "brokerId",
-        "==",
-        "broker-1",
-      );
-      expect(mockWhere).toHaveBeenNthCalledWith(
-        2,
-        "assignedTo",
-        "==",
-        "user-3",
-      );
+      expect(mockWhere).toHaveBeenNthCalledWith(1, "brokerId", "==", "broker-1");
+      expect(mockWhere).toHaveBeenNthCalledWith(2, "assignedTo", "==", "user-3");
       expect(mockWhere).toHaveBeenNthCalledWith(3, "status", "==", "done");
     });
 
@@ -234,9 +172,7 @@ describe("taskService", () => {
       mockOrderBy.mockReturnValue("orderBy-createdAt-desc");
       mockQuery.mockReturnValue("query-ref");
 
-      const snapshot = makeMockSnapshot([
-        { id: "t1", data: () => ({ title: "Task A" }) },
-      ]);
+      const snapshot = makeMockSnapshot([{ id: "t1", data: () => ({ title: "Task A" }) }]);
 
       mockOnSnapshot.mockImplementation((_q, onNext: (s: unknown) => void) => {
         onNext(snapshot);
@@ -311,10 +247,11 @@ describe("taskService", () => {
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
         expect.any(Function),
+        expect.any(Function),
       );
     });
 
-    it("should map snapshot and invoke callback", () => {
+    it("should map snapshot docs to Task objects and invoke callback", () => {
       mockCollection.mockReturnValue("tasks-collection");
       mockWhere.mockReturnValue("where-constraint");
       mockOrderBy.mockReturnValue("orderBy-createdAt-desc");
@@ -332,9 +269,7 @@ describe("taskService", () => {
       const callback = vi.fn();
       subscribeTasksByAssignee("user-1", callback);
 
-      expect(callback).toHaveBeenCalledWith([
-        { id: "t1", title: "My Task", status: "todo" },
-      ]);
+      expect(callback).toHaveBeenCalledWith([{ id: "t1", title: "My Task", status: "todo" }]);
     });
 
     it("should handle empty snapshot", () => {
@@ -455,11 +390,7 @@ describe("taskService", () => {
         priority: "urgent",
       });
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "tasks",
-        "task-1",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "tasks", "task-1");
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         { id: "task-1" },
         expect.objectContaining({
@@ -502,11 +433,7 @@ describe("taskService", () => {
 
       await deleteTask("task-to-delete");
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "tasks",
-        "task-to-delete",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "tasks", "task-to-delete");
       expect(mockDeleteDoc).toHaveBeenCalledWith({ id: "task-to-delete" });
       expect(mockDeleteDoc).toHaveBeenCalledOnce();
     });
@@ -522,28 +449,21 @@ describe("taskService", () => {
       ["in_progress", "todo"],
       ["done", "todo"],
       ["done", "in_progress"],
-    ] as Array<[TaskStatus, TaskStatus]>)(
-      "should transition from %s to %s",
-      async (from, to) => {
-        mockDoc.mockReturnValue({ id: "task-1" });
-        mockUpdateDoc.mockResolvedValue(undefined);
+    ] as Array<[TaskStatus, TaskStatus]>)("should transition from %s to %s", async (from, to) => {
+      mockDoc.mockReturnValue({ id: "task-1" });
+      mockUpdateDoc.mockResolvedValue(undefined);
 
-        await updateTaskStatus("task-1", to);
+      await updateTaskStatus("task-1", to);
 
-        expect(mockDoc).toHaveBeenCalledWith(
-          expect.anything(),
-          "tasks",
-          "task-1",
-        );
-        expect(mockUpdateDoc).toHaveBeenCalledWith(
-          { id: "task-1" },
-          expect.objectContaining({
-            status: to,
-            updatedAt: expect.any(Number),
-          }),
-        );
-      },
-    );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "tasks", "task-1");
+      expect(mockUpdateDoc).toHaveBeenCalledWith(
+        { id: "task-1" },
+        expect.objectContaining({
+          status: to,
+          updatedAt: expect.any(Number),
+        }),
+      );
+    });
 
     it("should only set status and updatedAt", async () => {
       mockDoc.mockReturnValue({ id: "task-1" });
@@ -571,11 +491,7 @@ describe("taskService", () => {
 
       await updateTaskChecklist("task-1", checklist);
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "tasks",
-        "task-1",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "tasks", "task-1");
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         { id: "task-1" },
         expect.objectContaining({

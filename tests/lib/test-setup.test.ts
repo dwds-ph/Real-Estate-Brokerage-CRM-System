@@ -10,7 +10,7 @@ describe("test setup", () => {
     expect(firebaseModule).toHaveProperty("auth");
     expect(firebaseModule).toHaveProperty("db");
     expect(firebaseModule).toHaveProperty("storage");
-    expect(firebaseModule).toHaveProperty("messaging");
+    expect(firebaseModule).toHaveProperty("getMessagingInstance");
     expect(firebaseModule.default).toBeDefined();
   });
 });

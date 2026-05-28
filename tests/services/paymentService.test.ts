@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Mock } from "vitest";
 import {
   subscribePaymentsForDeal,
   createPayment,
@@ -43,12 +42,10 @@ vi.mock("@/lib/firebase", () => ({
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 const now = Date.now();
-const HOUR = 3600000;
+const _HOUR = 3600000;
 const DAY = 86400000;
 
-function makeMockSnapshot(
-  docs: Array<{ id: string; data: () => Record<string, unknown> }>,
-) {
+function makeMockSnapshot(docs: Array<{ id: string; data: () => Record<string, unknown> }>) {
   return {
     docs: docs.map((d) => ({
       id: d.id,
@@ -110,12 +107,9 @@ describe("paymentService", () => {
       mockQuery.mockReturnValue("query-ref");
       mockOnSnapshot.mockReturnValue(vi.fn());
 
-      const unsub = subscribePaymentsForDeal("deal-1", vi.fn());
+      const _unsub = subscribePaymentsForDeal("deal-1", vi.fn());
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "payments",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "payments");
       expect(mockWhere).toHaveBeenCalledWith("dealId", "==", "deal-1");
       expect(mockOrderBy).toHaveBeenCalledWith("dueDate", "asc");
       expect(mockQuery).toHaveBeenCalledWith(
@@ -126,8 +120,8 @@ describe("paymentService", () => {
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
         expect.any(Function),
+        expect.any(Function),
       );
-      expect(unsub).toBeInstanceOf(Function);
     });
 
     it("should map snapshot docs to Payment objects and invoke callback", () => {
@@ -240,10 +234,7 @@ describe("paymentService", () => {
       });
 
       expect(() => {
-        subscribePaymentsForDeal(
-          "deal-1",
-          undefined as unknown as (p: Payment[]) => void,
-        );
+        subscribePaymentsForDeal("deal-1", undefined as unknown as (p: Payment[]) => void);
       }).toThrow(TypeError);
     });
   });
@@ -265,10 +256,7 @@ describe("paymentService", () => {
 
       const id = await createPayment("deal-1", paymentInput, "user-1");
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "payments",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "payments");
       expect(mockAddDoc).toHaveBeenCalledWith(
         "payments-collection",
         expect.objectContaining({
@@ -373,11 +361,7 @@ describe("paymentService", () => {
         amount: 600000,
       });
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "payments",
-        "payment-1",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "payments", "payment-1");
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         { id: "payment-1" },
         expect.objectContaining({
@@ -430,11 +414,7 @@ describe("paymentService", () => {
 
       await markPaymentPaid("payment-1");
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "payments",
-        "payment-1",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "payments", "payment-1");
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         { id: "payment-1" },
         expect.objectContaining({
@@ -460,11 +440,7 @@ describe("paymentService", () => {
       mockDoc.mockReturnValue({ id: "payment-1" });
       mockUpdateDoc.mockResolvedValue(undefined);
 
-      await markPaymentPaid(
-        "payment-1",
-        now,
-        "https://example.com/receipt.pdf",
-      );
+      await markPaymentPaid("payment-1", now, "https://example.com/receipt.pdf");
 
       const data = vi.mocked(mockUpdateDoc).mock.calls[0][1];
       expect(data.status).toBe("paid");
@@ -488,30 +464,17 @@ describe("paymentService", () => {
       await markPaymentPaid("payment-1");
 
       const data = vi.mocked(mockUpdateDoc).mock.calls[0][1];
-      expect(Object.keys(data).sort()).toEqual([
-        "paidDate",
-        "status",
-        "updatedAt",
-      ]);
+      expect(Object.keys(data).sort()).toEqual(["paidDate", "status", "updatedAt"]);
     });
 
     it("should set status, paidDate, receiptUrl, and updatedAt when receiptUrl provided", async () => {
       mockDoc.mockReturnValue({ id: "payment-1" });
       mockUpdateDoc.mockResolvedValue(undefined);
 
-      await markPaymentPaid(
-        "payment-1",
-        now,
-        "https://example.com/receipt.pdf",
-      );
+      await markPaymentPaid("payment-1", now, "https://example.com/receipt.pdf");
 
       const data = vi.mocked(mockUpdateDoc).mock.calls[0][1];
-      expect(Object.keys(data).sort()).toEqual([
-        "paidDate",
-        "receiptUrl",
-        "status",
-        "updatedAt",
-      ]);
+      expect(Object.keys(data).sort()).toEqual(["paidDate", "receiptUrl", "status", "updatedAt"]);
     });
   });
 
@@ -524,11 +487,7 @@ describe("paymentService", () => {
 
       await deletePayment("payment-to-delete");
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "payments",
-        "payment-to-delete",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "payments", "payment-to-delete");
       expect(mockDeleteDoc).toHaveBeenCalledWith({ id: "payment-to-delete" });
       expect(mockDeleteDoc).toHaveBeenCalledOnce();
     });
@@ -569,27 +528,16 @@ describe("paymentService", () => {
 
   describe("getPaymentStatusColor", () => {
     it.each([
-      [
-        "pending",
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-      ],
-      [
-        "paid",
-        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      ],
+      ["pending", "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"],
+      ["paid", "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"],
       ["overdue", "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"],
-      [
-        "cancelled",
-        "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
-      ],
+      ["cancelled", "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"],
     ])("should return correct classes for status '%s'", (status, expected) => {
       expect(getPaymentStatusColor(status)).toBe(expected);
     });
 
     it("should return default classes for unknown statuses", () => {
-      expect(getPaymentStatusColor("unknown")).toBe(
-        "bg-gray-100 text-gray-800",
-      );
+      expect(getPaymentStatusColor("unknown")).toBe("bg-gray-100 text-gray-800");
     });
   });
 

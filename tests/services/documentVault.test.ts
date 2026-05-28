@@ -31,29 +31,27 @@ const mockGetDownloadURL = vi.fn();
 const mockDeleteObject = vi.fn();
 vi.mock("firebase/storage", () => ({
   ref: vi.fn((_storage, path) => ({ path, fullPath: path })),
-  uploadBytesResumable: (...args: unknown[]) =>
-    mockUploadBytesResumable(...args),
+  uploadBytesResumable: (...args: unknown[]) => mockUploadBytesResumable(...args),
   getDownloadURL: (...args: unknown[]) => mockGetDownloadURL(...args),
   deleteObject: (...args: unknown[]) => mockDeleteObject(...args),
 }));
 
-// Mock @/hooks/useFirestore
-vi.mock("@/hooks/useFirestore", () => ({
-  createDoc: vi.fn(() => Promise.resolve("mock-doc-id")),
-  updateDocById: vi.fn(() => Promise.resolve()),
-  deleteDocById: vi.fn(() => Promise.resolve()),
+// Mock @/lib/firestore
+vi.mock("@/lib/firestore", () => ({
+  createDocument: vi.fn(() => Promise.resolve("mock-doc-id")),
+  updateDocument: vi.fn(() => Promise.resolve()),
+  deleteDocument: vi.fn(() => Promise.resolve()),
+  COLLECTIONS: {
+    VAULT_DOCUMENTS: "vaultDocuments",
+    DOCUMENT_REQUESTS: "documentRequests",
+  },
 }));
 
-const { createDoc, updateDocById, deleteDocById } =
-  await import("@/hooks/useFirestore");
+const { createDocument, updateDocument, deleteDocument } = await import("@/lib/firestore");
 const { getDocs } = await import("firebase/firestore");
 
 // Create a minimal File-like object for testing
-function createMockFile(
-  name = "test.pdf",
-  size = 1024,
-  type = "application/pdf",
-): File {
+function createMockFile(name = "test.pdf", size = 1024, type = "application/pdf"): File {
   const blob = new Blob([new Uint8Array(size)], { type });
   return Object.assign(blob, {
     name,
@@ -89,9 +87,7 @@ describe("documentVault", () => {
         };
         return uploadTask;
       });
-      mockGetDownloadURL.mockResolvedValue(
-        "https://storage.example.com/file.pdf",
-      );
+      mockGetDownloadURL.mockResolvedValue("https://storage.example.com/file.pdf");
 
       const url = await uploadVaultFile(file, "user-1");
       expect(url).toBe("https://storage.example.com/file.pdf");
@@ -121,9 +117,7 @@ describe("documentVault", () => {
         return uploadTask;
       });
 
-      mockGetDownloadURL.mockResolvedValue(
-        "https://storage.example.com/doc.pdf",
-      );
+      mockGetDownloadURL.mockResolvedValue("https://storage.example.com/doc.pdf");
 
       await uploadVaultFile(file, "user-1", progressCb);
       expect(progressCb).toHaveBeenCalledWith(
@@ -149,15 +143,13 @@ describe("documentVault", () => {
         return uploadTask;
       });
 
-      await expect(uploadVaultFile(file, "user-1")).rejects.toThrow(
-        "Upload failed",
-      );
+      await expect(uploadVaultFile(file, "user-1")).rejects.toThrow("Upload failed");
     });
   });
 
   describe("createVaultDocument", () => {
-    it("should call createDoc with version=1 by default", async () => {
-      vi.mocked(createDoc).mockResolvedValue("doc-id");
+    it("should call createDocument with version=1 by default", async () => {
+      vi.mocked(createDocument).mockResolvedValue("doc-id");
 
       const id = await createVaultDocument({
         dealId: "deal-1",
@@ -171,14 +163,14 @@ describe("documentVault", () => {
       });
 
       expect(id).toBe("doc-id");
-      expect(createDoc).toHaveBeenCalledWith(
+      expect(createDocument).toHaveBeenCalledWith(
         "vaultDocuments",
         expect.objectContaining({ version: 1 }),
       );
     });
 
     it("should use provided version if given", async () => {
-      vi.mocked(createDoc).mockResolvedValue("doc-id");
+      vi.mocked(createDocument).mockResolvedValue("doc-id");
 
       await createVaultDocument({
         dealId: "deal-1",
@@ -192,7 +184,7 @@ describe("documentVault", () => {
         version: 2,
       });
 
-      expect(createDoc).toHaveBeenCalledWith(
+      expect(createDocument).toHaveBeenCalledWith(
         "vaultDocuments",
         expect.objectContaining({ version: 2 }),
       );
@@ -220,7 +212,7 @@ describe("documentVault", () => {
       });
 
       // Should create a version history entry
-      expect(createDoc).toHaveBeenCalledWith(
+      expect(createDocument).toHaveBeenCalledWith(
         "vaultDocumentVersions",
         expect.objectContaining({
           documentId: "doc-1",
@@ -230,7 +222,7 @@ describe("documentVault", () => {
       );
 
       // Should update the main document with new version
-      expect(updateDocById).toHaveBeenCalledWith(
+      expect(updateDocument).toHaveBeenCalledWith(
         "vaultDocuments",
         "doc-1",
         expect.objectContaining({
@@ -257,19 +249,11 @@ describe("documentVault", () => {
         };
         return uploadTask;
       });
-      mockGetDownloadURL.mockResolvedValue(
-        "https://storage.example.com/new.pdf",
-      );
+      mockGetDownloadURL.mockResolvedValue("https://storage.example.com/new.pdf");
 
-      await updateVaultDocumentWithVersion(
-        "doc-1",
-        currentDoc,
-        {},
-        file,
-        "user-1",
-      );
+      await updateVaultDocumentWithVersion("doc-1", currentDoc, {}, file, "user-1");
 
-      expect(updateDocById).toHaveBeenCalledWith(
+      expect(updateDocument).toHaveBeenCalledWith(
         "vaultDocuments",
         "doc-1",
         expect.objectContaining({
@@ -316,7 +300,7 @@ describe("documentVault", () => {
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       expect(mockDeleteObject).toHaveBeenCalledOnce();
-      expect(deleteDocById).toHaveBeenCalledWith("vaultDocuments", "doc-1");
+      expect(deleteDocument).toHaveBeenCalledWith("vaultDocuments", "doc-1");
     });
 
     it("should proceed with Firestore delete even if storage delete fails", async () => {
@@ -327,7 +311,7 @@ describe("documentVault", () => {
         fileUrl: "https://storage.example.com/doc.pdf",
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-      expect(deleteDocById).toHaveBeenCalledWith("vaultDocuments", "doc-1");
+      expect(deleteDocument).toHaveBeenCalledWith("vaultDocuments", "doc-1");
     });
   });
 
@@ -356,7 +340,7 @@ describe("documentVault", () => {
 
   describe("createDocumentRequest", () => {
     it("should create a document request with status pending", async () => {
-      vi.mocked(createDoc).mockResolvedValue("req-id");
+      vi.mocked(createDocument).mockResolvedValue("req-id");
 
       const id = await createDocumentRequest({
         fromUserId: "user-1",
@@ -365,7 +349,7 @@ describe("documentVault", () => {
       });
 
       expect(id).toBe("req-id");
-      expect(createDoc).toHaveBeenCalledWith(
+      expect(createDocument).toHaveBeenCalledWith(
         "documentRequests",
         expect.objectContaining({ status: "pending" }),
       );
@@ -375,7 +359,7 @@ describe("documentVault", () => {
   describe("respondToDocumentRequest", () => {
     it("should update request status to uploaded", async () => {
       await respondToDocumentRequest("req-1", "uploaded", "doc-1");
-      expect(updateDocById).toHaveBeenCalledWith(
+      expect(updateDocument).toHaveBeenCalledWith(
         "documentRequests",
         "req-1",
         expect.objectContaining({
@@ -387,7 +371,7 @@ describe("documentVault", () => {
 
     it("should update request status to cancelled", async () => {
       await respondToDocumentRequest("req-1", "cancelled");
-      expect(updateDocById).toHaveBeenCalledWith(
+      expect(updateDocument).toHaveBeenCalledWith(
         "documentRequests",
         "req-1",
         expect.objectContaining({ status: "cancelled" }),

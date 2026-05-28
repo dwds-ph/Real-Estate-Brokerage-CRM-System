@@ -1,11 +1,6 @@
-import {
-  where,
-  orderBy,
-  type QueryConstraint,
-} from "firebase/firestore";
+import { where, orderBy, type QueryConstraint } from "firebase/firestore";
 import {
   subscribeToQuery,
-  subscribeToCollection,
   createDocument,
   updateDocument,
   deleteDocument,
@@ -20,7 +15,9 @@ export function subscribeLicensesForAgent(
   callback: (licenses: License[]) => void,
   onError?: (error: string) => void,
 ) {
-  if (!agentId) return () => {};
+  if (!agentId) {
+    return () => {};
+  }
 
   const constraints: QueryConstraint[] = [
     where("agentId", "==", agentId),
@@ -34,9 +31,7 @@ export function subscribeAllLicenses(
   callback: (licenses: License[]) => void,
   onError?: (error: string) => void,
 ) {
-  const constraints: QueryConstraint[] = [
-    orderBy("expiryDate", "asc"),
-  ];
+  const constraints: QueryConstraint[] = [orderBy("expiryDate", "asc")];
   return subscribeToQuery<License>(COLLECTIONS.LICENSES, constraints, callback, onError);
 }
 
@@ -81,12 +76,14 @@ export async function deleteLicense(licenseId: string) {
 
 export function computeLicenseStatus(expiryDate: number): LicenseStatus {
   const now = Date.now();
-  const daysUntilExpiry = Math.floor(
-    (expiryDate - now) / (1000 * 60 * 60 * 24),
-  );
+  const daysUntilExpiry = Math.floor((expiryDate - now) / (1000 * 60 * 60 * 24));
 
-  if (daysUntilExpiry < 0) return "expired";
-  if (daysUntilExpiry <= 30) return "expiring-soon";
+  if (daysUntilExpiry < 0) {
+    return "expired";
+  }
+  if (daysUntilExpiry <= 30) {
+    return "expiring-soon";
+  }
   return "active";
 }
 
@@ -98,10 +95,7 @@ export function isExpired(expiryDate: number): boolean {
   return Date.now() > expiryDate;
 }
 
-export function isExpiringSoon(
-  expiryDate: number,
-  thresholdDays: number = 30,
-): boolean {
+export function isExpiringSoon(expiryDate: number, thresholdDays: number = 30): boolean {
   const days = getDaysUntilExpiry(expiryDate);
   return days >= 0 && days <= thresholdDays;
 }
@@ -122,8 +116,7 @@ export function getLicenseTypeLabel(type: LicenseType): string {
 export function getLicenseStatusColor(status: LicenseStatus): string {
   const colors: Record<LicenseStatus, string> = {
     active: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-    "expiring-soon":
-      "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+    "expiring-soon": "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
     expired: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
     renewed: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
   };

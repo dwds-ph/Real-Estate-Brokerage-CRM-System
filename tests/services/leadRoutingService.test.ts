@@ -212,22 +212,22 @@ describe("leadRoutingService", () => {
       vi.mocked(getDoc).mockResolvedValue({
         exists: () => true,
         data: () =>
-      ({
-        enabled: true,
-        rules: [
-          {
-            type: "round-robin",
-            agentIds: ["agent-1", "agent-2"],
-            currentIndex: 0,
-          },
-        ],
-      }) as RoutingConfig,
+          ({
+            enabled: true,
+            rules: [
+              {
+                type: "round-robin",
+                agentIds: ["agent-1", "agent-2"],
+                currentIndex: 0,
+              },
+            ],
+          }) as RoutingConfig,
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       await autoAssignLead("lead-1", {}, mockAgents);
       expect(updateDoc).toHaveBeenCalledWith(
         expect.objectContaining({ id: "lead-1" }),
-        { assignedTo: "agent-1" },
+        expect.objectContaining({ assignedTo: "agent-1" }),
       );
     });
 

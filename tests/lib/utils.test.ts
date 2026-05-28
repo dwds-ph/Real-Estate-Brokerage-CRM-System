@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   cn,
   formatCurrency,
@@ -28,9 +28,7 @@ describe("cn", () => {
 
   it("handles multiple conditional classes", () => {
     const active = true;
-    expect(cn("btn", active && "btn-primary", !active && "btn-secondary")).toBe(
-      "btn btn-primary",
-    );
+    expect(cn("btn", active && "btn-primary", !active && "btn-secondary")).toBe("btn btn-primary");
   });
 
   it("handles empty/falsy values", () => {
@@ -164,7 +162,6 @@ describe("generateId", () => {
     expect(typeof id).toBe("string");
     expect(id.length).toBeGreaterThan(0);
   });
-});
 });
 
 describe("getLeadStatusColor", () => {

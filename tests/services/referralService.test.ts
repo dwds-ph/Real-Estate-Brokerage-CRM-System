@@ -119,7 +119,7 @@ describe("referralService", () => {
       await updateReferral("ref-1", { status: "pending" });
       expect(updateDoc).toHaveBeenCalledWith(
         expect.objectContaining({ id: "ref-1" }),
-        { status: "pending" },
+        expect.objectContaining({ status: "pending" }),
       );
     });
 

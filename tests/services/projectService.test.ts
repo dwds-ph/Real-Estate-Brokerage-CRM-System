@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Mock } from "vitest";
 import {
   subscribeProjects,
   subscribeProjectsForAgent,
@@ -25,13 +24,7 @@ import {
   getMilestoneStatusColor,
   getMilestoneStatusLabel,
 } from "@/services/projectService";
-import type {
-  Project,
-  Unit,
-  PaymentMilestone,
-  ProjectStatus,
-  UnitStatus,
-} from "@/types";
+import type { Project, PaymentMilestone, ProjectStatus, UnitStatus } from "@/types";
 
 // ─── Mock firebase/firestore ─────────────────────────────────────────
 
@@ -65,9 +58,7 @@ vi.mock("@/lib/firebase", () => ({
 
 const now = Date.now();
 
-function makeMockSnapshot(
-  docs: Array<{ id: string; data: () => Record<string, unknown> }>,
-) {
+function makeMockSnapshot(docs: Array<{ id: string; data: () => Record<string, unknown> }>) {
   return {
     docs: docs.map((d) => ({
       id: d.id,
@@ -123,52 +114,6 @@ function sampleProject(overrides: Partial<Project> = {}): Project {
   };
 }
 
-function sampleUnit(overrides: Partial<Unit> = {}): Unit {
-  return {
-    id: "unit-1",
-    projectId: "project-1",
-    projectName: "Sunrise Residences",
-    phaseId: "phase-1",
-    phaseName: "Phase 1",
-    block: "A",
-    lot: "101",
-    floor: 5,
-    model: "Studio",
-    area: 30,
-    price: 3500000,
-    status: "available",
-    buyerName: undefined,
-    buyerContact: undefined,
-    agentId: undefined,
-    agentName: undefined,
-    dealId: undefined,
-    notes: undefined,
-    createdBy: "user-1",
-    createdAt: now,
-    updatedAt: now,
-    ...overrides,
-  };
-}
-
-function sampleMilestone(
-  overrides: Partial<PaymentMilestone> = {},
-): PaymentMilestone {
-  return {
-    id: "milestone-1",
-    projectId: "project-1",
-    unitId: "unit-1",
-    name: "Reservation Fee",
-    amount: 50000,
-    dueDate: now + 86400000,
-    paidDate: undefined,
-    status: "pending",
-    notes: undefined,
-    createdAt: now,
-    updatedAt: now,
-    ...overrides,
-  };
-}
-
 // ─── Tests ───────────────────────────────────────────────────────────
 
 describe("projectService", () => {
@@ -187,17 +132,12 @@ describe("projectService", () => {
 
       subscribeProjects(vi.fn());
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "projects",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "projects");
       expect(mockOrderBy).toHaveBeenCalledWith("createdAt", "desc");
-      expect(mockQuery).toHaveBeenCalledWith(
-        "projects-collection",
-        "orderBy-createdAt-desc",
-      );
+      expect(mockQuery).toHaveBeenCalledWith("projects-collection", "orderBy-createdAt-desc");
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -270,15 +210,8 @@ describe("projectService", () => {
 
       subscribeProjectsForAgent("agent-1", vi.fn());
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "projects",
-      );
-      expect(mockWhere).toHaveBeenCalledWith(
-        "assignedTo",
-        "array-contains",
-        "agent-1",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "projects");
+      expect(mockWhere).toHaveBeenCalledWith("assignedTo", "array-contains", "agent-1");
       expect(mockOrderBy).toHaveBeenCalledWith("createdAt", "desc");
       expect(mockQuery).toHaveBeenCalledWith(
         "projects-collection",
@@ -291,6 +224,7 @@ describe("projectService", () => {
       );
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -313,9 +247,7 @@ describe("projectService", () => {
       const callback = vi.fn();
       subscribeProjectsForAgent("agent-1", callback);
 
-      expect(callback).toHaveBeenCalledWith([
-        { id: "p1", name: "My Project", status: "ongoing" },
-      ]);
+      expect(callback).toHaveBeenCalledWith([{ id: "p1", name: "My Project", status: "ongoing" }]);
     });
 
     it("should handle empty snapshot", () => {
@@ -364,10 +296,7 @@ describe("projectService", () => {
 
       const id = await createProject(projectInput);
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "projects",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "projects");
       expect(mockAddDoc).toHaveBeenCalledWith(
         "projects-collection",
         expect.objectContaining({
@@ -426,11 +355,7 @@ describe("projectService", () => {
         status: "completed",
       });
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "projects",
-        "project-1",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "projects", "project-1");
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         { id: "project-1" },
         expect.objectContaining({
@@ -473,11 +398,7 @@ describe("projectService", () => {
 
       await deleteProject("project-to-delete");
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "projects",
-        "project-to-delete",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "projects", "project-to-delete");
       expect(mockDeleteDoc).toHaveBeenCalledWith({ id: "project-to-delete" });
       expect(mockDeleteDoc).toHaveBeenCalledOnce();
     });
@@ -509,6 +430,7 @@ describe("projectService", () => {
       );
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -592,6 +514,7 @@ describe("projectService", () => {
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
         expect.any(Function),
+        expect.any(Function),
       );
     });
 
@@ -613,9 +536,7 @@ describe("projectService", () => {
       const callback = vi.fn();
       subscribeUnitsByStatus("project-1", "reserved", callback);
 
-      expect(callback).toHaveBeenCalledWith([
-        { id: "u1", block: "B", status: "reserved" },
-      ]);
+      expect(callback).toHaveBeenCalledWith([{ id: "u1", block: "B", status: "reserved" }]);
     });
 
     it("should handle empty snapshot", () => {
@@ -715,11 +636,7 @@ describe("projectService", () => {
         buyerName: "Juan Dela Cruz",
       });
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "units",
-        "unit-1",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "units", "unit-1");
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         { id: "unit-1" },
         expect.objectContaining({
@@ -750,11 +667,7 @@ describe("projectService", () => {
 
       await deleteUnit("unit-to-delete");
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "units",
-        "unit-to-delete",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "units", "unit-to-delete");
       expect(mockDeleteDoc).toHaveBeenCalledWith({ id: "unit-to-delete" });
       expect(mockDeleteDoc).toHaveBeenCalledOnce();
     });
@@ -772,10 +685,7 @@ describe("projectService", () => {
 
       subscribeMilestones("unit-1", vi.fn());
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "paymentMilestones",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "paymentMilestones");
       expect(mockWhere).toHaveBeenCalledWith("unitId", "==", "unit-1");
       expect(mockOrderBy).toHaveBeenCalledWith("dueDate", "asc");
       expect(mockQuery).toHaveBeenCalledWith(
@@ -785,6 +695,7 @@ describe("projectService", () => {
       );
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -858,10 +769,7 @@ describe("projectService", () => {
 
       subscribeProjectMilestones("project-1", vi.fn());
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "paymentMilestones",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "paymentMilestones");
       expect(mockWhere).toHaveBeenCalledWith("projectId", "==", "project-1");
       expect(mockOrderBy).toHaveBeenCalledWith("dueDate", "asc");
       expect(mockQuery).toHaveBeenCalledWith(
@@ -875,6 +783,7 @@ describe("projectService", () => {
       );
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -897,9 +806,7 @@ describe("projectService", () => {
       const callback = vi.fn();
       subscribeProjectMilestones("project-1", callback);
 
-      expect(callback).toHaveBeenCalledWith([
-        { id: "m1", name: "Reservation", status: "paid" },
-      ]);
+      expect(callback).toHaveBeenCalledWith([{ id: "m1", name: "Reservation", status: "paid" }]);
     });
 
     it("should handle empty snapshot", () => {
@@ -937,10 +844,7 @@ describe("projectService", () => {
 
       const id = await createMilestone(milestoneInput);
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "paymentMilestones",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "paymentMilestones");
       expect(mockAddDoc).toHaveBeenCalledWith(
         "milestones-collection",
         expect.objectContaining({
@@ -987,11 +891,7 @@ describe("projectService", () => {
 
       await updateMilestone("milestone-1", { status: "paid", paidDate: now });
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "paymentMilestones",
-        "milestone-1",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "paymentMilestones", "milestone-1");
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         { id: "milestone-1" },
         expect.objectContaining({
@@ -1286,9 +1186,7 @@ describe("projectService", () => {
     });
 
     it("should fall back to pending color for unknown status", () => {
-      const color = getMilestoneStatusColor(
-        "unknown" as PaymentMilestone["status"],
-      );
+      const color = getMilestoneStatusColor("unknown" as PaymentMilestone["status"]);
       expect(color).toContain("bg-gray-100");
     });
   });
@@ -1313,9 +1211,7 @@ describe("projectService", () => {
     });
 
     it("should return raw status for unknown status", () => {
-      expect(
-        getMilestoneStatusLabel("unknown" as PaymentMilestone["status"]),
-      ).toBe("unknown");
+      expect(getMilestoneStatusLabel("unknown" as PaymentMilestone["status"])).toBe("unknown");
     });
   });
 });

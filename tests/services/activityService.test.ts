@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Mock } from "vitest";
 import {
   subscribeActivityForLead,
   subscribeActivityForDeal,
@@ -7,7 +6,6 @@ import {
   createActivityLog,
   deleteActivityLog,
 } from "@/services/activityService";
-import type { ActivityLog } from "@/types";
 
 // ─── Mock firebase/firestore ─────────────────────────────────────────
 
@@ -39,32 +37,13 @@ vi.mock("@/lib/firebase", () => ({
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
-function makeMockSnapshot(
-  docs: Array<{ id: string; data: () => Record<string, unknown> }>,
-) {
+function makeMockSnapshot(docs: Array<{ id: string; data: () => Record<string, unknown> }>) {
   return {
     docs: docs.map((d) => ({
       id: d.id,
       data: d.data,
       exists: true,
     })),
-  };
-}
-
-function sampleActivityLog(overrides: Partial<ActivityLog> = {}): ActivityLog {
-  return {
-    id: "log-1",
-    type: "note",
-    title: "Called client",
-    description: "Discussed property options",
-    leadId: "lead-1",
-    dealId: undefined,
-    listingId: undefined,
-    createdBy: "user-1",
-    createdByName: "Alice",
-    duration: undefined,
-    createdAt: Date.now() - 60000,
-    ...overrides,
   };
 }
 
@@ -96,10 +75,7 @@ describe("activityService", () => {
 
       subscribeActivityForLead("lead-1", vi.fn());
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "activityLogs",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "activityLogs");
       expect(mockWhere).toHaveBeenCalledWith("leadId", "==", "lead-1");
       expect(mockOrderBy).toHaveBeenCalledWith("createdAt", "desc");
       expect(mockLimit).toHaveBeenCalledWith(50);
@@ -111,6 +87,7 @@ describe("activityService", () => {
       );
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -222,10 +199,7 @@ describe("activityService", () => {
 
       subscribeActivityForDeal("deal-1", vi.fn());
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "activityLogs",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "activityLogs");
       expect(mockWhere).toHaveBeenCalledWith("dealId", "==", "deal-1");
       expect(mockOrderBy).toHaveBeenCalledWith("createdAt", "desc");
       expect(mockLimit).toHaveBeenCalledWith(50);
@@ -237,6 +211,7 @@ describe("activityService", () => {
       );
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -343,10 +318,7 @@ describe("activityService", () => {
 
       subscribeRecentActivity("broker-1", vi.fn());
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "activityLogs",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "activityLogs");
       expect(mockWhere).toHaveBeenCalledWith("createdBy", "==", "broker-1");
       expect(mockOrderBy).toHaveBeenCalledWith("createdAt", "desc");
       expect(mockLimit).toHaveBeenCalledWith(20);
@@ -358,6 +330,7 @@ describe("activityService", () => {
       );
       expect(mockOnSnapshot).toHaveBeenCalledWith(
         "query-ref",
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -492,10 +465,7 @@ describe("activityService", () => {
 
       const id = await createActivityLog(logInput);
 
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        "activityLogs",
-      );
+      expect(mockCollection).toHaveBeenCalledWith(expect.anything(), "activityLogs");
       expect(mockAddDoc).toHaveBeenCalledWith(
         "activity-collection",
         expect.objectContaining({
@@ -545,11 +515,7 @@ describe("activityService", () => {
 
       await deleteActivityLog("log-to-delete");
 
-      expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        "activityLogs",
-        "log-to-delete",
-      );
+      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "activityLogs", "log-to-delete");
       expect(mockDeleteDoc).toHaveBeenCalledWith({ id: "log-to-delete" });
       expect(mockDeleteDoc).toHaveBeenCalledOnce();
     });
