@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useLeads, useCollection, updateDocById } from "@/hooks/useFirestore";
 import { Lead, LeadStatus, Deal, Mortgage } from "@/types";
+import { toast } from "@/components/ui/Toast";
 
 export function useDealsPage() {
   const { userProfile } = useAuth();
@@ -28,17 +29,22 @@ export function useDealsPage() {
       if (!draggingId) return;
       const now = Date.now();
       const lead = allLeads.find((l) => l.id === draggingId) as Lead;
-      await updateDocById("leads", draggingId, {
-        status: newStatus,
-        activityTimeline: [
-          ...(lead?.activityTimeline || []),
-          {
-            action: `Moved to ${newStatus}`,
-            timestamp: now,
-            by: userProfile?.displayName || "Unknown",
-          },
-        ],
-      });
+      try {
+        await updateDocById("leads", draggingId, {
+          status: newStatus,
+          activityTimeline: [
+            ...(lead?.activityTimeline || []),
+            {
+              action: `Moved to ${newStatus}`,
+              timestamp: now,
+              by: userProfile?.displayName || "Unknown",
+            },
+          ],
+        });
+        toast("success", "Deal moved", `Moved to ${newStatus}`);
+      } catch {
+        toast("error", "Failed to move deal");
+      }
       setDraggingId(null);
     },
     [draggingId, allLeads, userProfile],

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -38,11 +38,30 @@ const navItems = [
   { to: "/cma", label: "CMA", icon: "📊" },
   { to: "/seed-data", label: "Seed Data", icon: "🌱" },
 ];
+
 export default function AppLayout() {
   const { userProfile, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile vs desktop on mount and adjust sidebar
+  useEffect(() => {
+    const check = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (mobile) setSidebarOpen(false);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // Close sidebar on navigation (mobile)
+  const handleNavClick = () => {
+    if (isMobile) setSidebarOpen(false);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -51,12 +70,24 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen bg-background">
+      {/* Mobile overlay backdrop */}
+      {isMobile && sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Sidebar */}
       <aside
         aria-label="Main navigation"
         className={cn(
-          "flex flex-col border-r bg-card transition-all duration-300",
-          sidebarOpen ? "w-56" : "w-16",
+          "flex flex-col border-r bg-card transition-all duration-300 z-50",
+          sidebarOpen
+            ? "w-56 translate-x-0"
+            : "w-56 -translate-x-full lg:w-16 lg:translate-x-0",
+          isMobile && "fixed inset-y-0 left-0 shadow-xl",
         )}
       >
         {/* Logo */}
@@ -81,6 +112,7 @@ export default function AppLayout() {
               key={item.to}
               to={item.to}
               aria-label={item.label}
+              onClick={handleNavClick}
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
@@ -90,8 +122,10 @@ export default function AppLayout() {
                 )
               }
             >
-              <span className="text-lg">{item.icon}</span>
-              {sidebarOpen && <span>{item.label}</span>}
+              <span className="text-lg shrink-0">{item.icon}</span>
+              {(sidebarOpen || !isMobile) && (
+                <span className="truncate">{item.label}</span>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -99,12 +133,15 @@ export default function AppLayout() {
         {/* Bottom */}
         <div className="border-t p-2 space-y-1">
           <button
-            onClick={() => navigate("/settings")}
+            onClick={() => {
+              navigate("/settings");
+              handleNavClick();
+            }}
             aria-label="Settings"
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
-            <span className="text-lg">⚙️</span>
-            {sidebarOpen && <span>Settings</span>}
+            <span className="text-lg shrink-0">⚙️</span>
+            {(sidebarOpen || !isMobile) && <span>Settings</span>}
           </button>
           <button
             onClick={toggleTheme}
@@ -113,19 +150,23 @@ export default function AppLayout() {
             }
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
-            <span className="text-lg">{theme === "dark" ? "☀️" : "🌙"}</span>
-            {sidebarOpen && <span>{theme === "dark" ? "Light" : "Dark"}</span>}
+            <span className="text-lg shrink-0">
+              {theme === "dark" ? "☀️" : "🌙"}
+            </span>
+            {(sidebarOpen || !isMobile) && (
+              <span>{theme === "dark" ? "Light" : "Dark"}</span>
+            )}
           </button>
           <button
             onClick={handleLogout}
             aria-label="Logout"
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
           >
-            <span className="text-lg">🚪</span>
-            {sidebarOpen && <span>Logout</span>}
+            <span className="text-lg shrink-0">🚪</span>
+            {(sidebarOpen || !isMobile) && <span>Logout</span>}
           </button>
 
-          {sidebarOpen && userProfile && (
+          {(sidebarOpen || !isMobile) && userProfile && (
             <div className="px-3 py-2">
               <p className="text-xs font-medium truncate">
                 {userProfile.displayName}
@@ -137,11 +178,11 @@ export default function AppLayout() {
           )}
         </div>
 
-        {/* Collapse button */}
+        {/* Desktop collapse button */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-          className="absolute bottom-4 left-4 hidden rounded-full border bg-background p-1 text-xs lg:block"
+          className="absolute bottom-4 left-4 hidden rounded-full border bg-background p-1 text-xs lg:block hover:bg-muted transition-colors"
         >
           {sidebarOpen ? "◀" : "▶"}
         </button>
@@ -150,10 +191,31 @@ export default function AppLayout() {
       {/* Main content */}
       <main className="flex-1 overflow-y-auto">
         {/* Top bar */}
-        <div className="flex items-center justify-end gap-2 border-b bg-card px-6 py-2">
+        <div className="flex items-center justify-between gap-2 border-b bg-card px-4 py-2 lg:px-6">
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+            className="lg:hidden rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+          <div className="flex-1" />
           <NotificationBell />
         </div>
-        <div className="mx-auto max-w-7xl p-6">
+        <div className="mx-auto max-w-7xl p-4 lg:p-6">
           <Outlet />
         </div>
       </main>

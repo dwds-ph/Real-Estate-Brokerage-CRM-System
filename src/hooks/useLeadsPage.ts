@@ -10,6 +10,7 @@ import {
 } from "@/hooks/useFirestore";
 import { autoAssignLead } from "@/services/leadRoutingService";
 import { Lead, LeadStatus, LeadSource, LeadScore, AppUser } from "@/types";
+import { toast } from "@/components/ui/Toast";
 
 export function useLeadsPage() {
   const { userProfile } = useAuth();
@@ -87,8 +88,10 @@ export function useLeadsPage() {
 
         if (editingId) {
           await updateDocById("leads", editingId, data);
+          toast("success", "Lead updated", `Updated ${form.name}`);
         } else {
           const newLeadId = await createDoc("leads", data);
+          toast("success", "Lead created", `Added ${form.name}`);
           // Auto-assign based on routing rules
           if (newLeadId) {
             await autoAssignLead(newLeadId, data, agents);
@@ -97,6 +100,11 @@ export function useLeadsPage() {
         resetForm();
       } catch (err) {
         console.error("Failed to save lead:", err);
+        toast(
+          "error",
+          "Failed to save lead",
+          err instanceof Error ? err.message : "Unknown error",
+        );
       }
     },
     [form, userProfile, editingId, resetForm, agents],
@@ -104,7 +112,16 @@ export function useLeadsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this lead?")) return;
-    await deleteDocById("leads", id);
+    try {
+      await deleteDocById("leads", id);
+      toast("success", "Lead deleted");
+    } catch (err) {
+      toast(
+        "error",
+        "Failed to delete lead",
+        err instanceof Error ? err.message : "Unknown error",
+      );
+    }
   };
 
   const editLead = (lead: Lead) => {
