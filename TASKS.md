@@ -233,6 +233,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ lint ✓ build ✓
 
 **Files created:**
+
 - `src/types/index.ts` — Project, ProjectPhase, ProjectStatus, ProjectType, Unit, UnitStatus, PaymentMilestone types
 - `src/services/projectService.ts`
 - `src/components/projects/ProjectCard.tsx` / `ProjectList.tsx` / `ProjectForm.tsx` / `ProjectDetail.tsx`
@@ -264,6 +265,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ lint ✓ build ✓
 
 **Files created:**
+
 - `src/lib/commissionEngine.ts`
 - `src/services/commissionPlanService.ts`
 - `src/components/commissions/CommissionBreakdown.tsx`
@@ -272,6 +274,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `src/components/commissions/index.ts`
 
 **Files modified:**
+
 - `src/types/index.ts` — added CommissionBreakdown, CommissionSplitConfig, CommissionPeriodSummary types
 - `src/pages/CommissionsPage.tsx` — complete overhaul with 4-tab layout
 
@@ -289,11 +292,13 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ build ✓
 
 **Files created:**
+
 - `src/lib/matchingEngine.ts`
 - `src/components/matching/LeadMatchPanel.tsx`
 - `src/components/matching/index.ts`
 
 **Files modified:**
+
 - `src/pages/LeadDetailPage.tsx` — added LeadMatchPanel to detail view
 
 ---
@@ -312,12 +317,14 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ build ✓
 
 **Files created:**
+
 - `src/services/payoutService.ts`
 - `src/components/payouts/PayoutDashboard.tsx`
 - `src/components/payouts/index.ts`
 - `src/pages/PayoutsPage.tsx`
 
 **Files modified:**
+
 - `src/types/index.ts` — enhanced Payout type
 - `src/App.tsx` — added /payouts route (lazy loaded)
 - `src/components/layout/AppLayout.tsx` — added Payouts nav entry
@@ -337,12 +344,14 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ build ✓
 
 **Files created:**
+
 - `src/lib/csvImport.ts`
 - `src/components/import/ImportWizard.tsx`
 - `src/components/import/index.ts`
 - `src/pages/ImportPage.tsx`
 
 **Files modified:**
+
 - `src/App.tsx` — added /import route (lazy loaded)
 - `src/components/layout/AppLayout.tsx` — added Import nav entry
 
@@ -360,6 +369,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ build ✓
 
 **Files modified:**
+
 - `src/pages/ClientPortalPage.tsx` — complete rewrite (115 → ~690 lines)
 
 ---
@@ -376,6 +386,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ build ✓
 
 **Files modified:**
+
 - `src/pages/DashboardPage.tsx` — added Smart Reminders section + data fetching
 
 ---
@@ -406,6 +417,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ build ✓
 
 **Files created:**
+
 - `src/types/index.ts` — Task, TaskStatus, TaskPriority, ActivityLog, CallLog, Checklist, ChecklistTemplate types
 - `src/services/taskService.ts`
 - `src/services/activityService.ts`
@@ -421,6 +433,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `src/pages/TasksPage.tsx`
 
 **Files modified:**
+
 - `src/App.tsx` — added /tasks route (lazy loaded)
 - `src/components/layout/AppLayout.tsx` — added Tasks nav entry
 - `src/pages/LeadDetailPage.tsx` — integrated ActivityTimeline
@@ -447,6 +460,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ lint ✓ build ✓
 
 **Files created:**
+
 - `src/lib/mapUtils.ts`
 - `src/components/map/PropertyMap.tsx`
 - `src/components/map/MapFilters.tsx`
@@ -455,6 +469,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `src/pages/MapPage.tsx`
 
 **Files modified:**
+
 - `src/App.tsx` — added /map route (lazy loaded)
 - `src/components/layout/AppLayout.tsx` — added Map nav entry
 - `src/pages/ListingDetailPage.tsx` — added "Open in Map" button
@@ -485,6 +500,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ lint ✓ build ✓
 
 **Files created:**
+
 - `src/lib/loanEngine.ts`
 - `src/components/loans/LoanCalculator.tsx`
 - `src/components/loans/AmortizationSchedule.tsx`
@@ -494,6 +510,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `src/pages/LoanCalculatorPage.tsx`
 
 **Files modified:**
+
 - `src/App.tsx` — added /loans route (lazy loaded)
 - `src/components/layout/AppLayout.tsx` — added Loan Calculator nav entry
 - `src/pages/ListingDetailPage.tsx` — added "Calculate Financing" button
@@ -520,6 +537,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ lint ✓ build ✓
 
 **Files created:**
+
 - `src/types/index.ts` — LeadSource, AgentGoal, GoalPeriod, SourceAnalytics types
 - `src/services/goalService.ts`
 - `src/lib/sourceAnalytics.ts`
@@ -532,6 +550,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `src/pages/AnalyticsPage.tsx`
 
 **Files modified:**
+
 - `src/App.tsx` — added /analytics route (lazy loaded)
 - `src/components/layout/AppLayout.tsx` — added Analytics nav entry
 - `src/types/index.ts` — added source field to Lead
@@ -564,6 +583,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ lint ✓ build ✓
 
 **Files created:**
+
 - `src/types/index.ts` — CoBroker, CoBrokerDeal, SplitAgreement, AgentTeam, TeamMember, Branch, BranchType types
 - `src/services/coBrokerService.ts`
 - `src/services/teamService.ts`
@@ -581,6 +601,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `src/pages/CoBrokeragePage.tsx`
 
 **Files modified:**
+
 - `src/App.tsx` — added /cobrokerage route (lazy loaded)
 - `src/components/layout/AppLayout.tsx` — added Co-Brokerage nav entry
 - `firestore.rules` — added rules for new collections
@@ -603,6 +624,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **20.8** Validate: typecheck ✓ lint ✓ build ✓
 
 **Files created:**
+
 - `src/lib/syndication.ts`
 - `src/components/syndication/QRCodeGenerator.tsx`
 - `src/components/syndication/ListingSheet.tsx`
@@ -611,6 +633,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `src/components/syndication/index.ts`
 
 **Files modified:**
+
 - `src/pages/ListingDetailPage.tsx` — added SyndicationPanel
 - `src/pages/ClientPortalPage.tsx` — added portal access QR
 - `package.json` — added qrcode.react
@@ -640,6 +663,7 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - [x] **Validation:** typecheck ✓ lint ✓ build ✓
 
 **Files created:**
+
 - `src/types/index.ts` — PropertyDocument, DocumentCategory, ComplianceChecklist, ComplianceItem, CMReport types
 - `src/services/documentVaultService.ts`
 - `src/services/complianceService.ts`
@@ -655,12 +679,13 @@ All features below are **purely client-side** (React + Firestore + Firebase Stor
 - `src/pages/CMAPage.tsx`
 
 **Files modified:**
+
 - `src/App.tsx` — added /documents, /compliance, /cma routes (lazy loaded)
 - `src/components/layout/AppLayout.tsx` — added Documents, Compliance, CMA nav entries
 - `firestore.rules` — added rules for new collections
 
 ---
 
-## 🏁 All **21 Phases Complete** ✅ — 37+ Modules, 200+ Components, 40+ Services
+## 🏁 All **21 Phases Complete** ✅ — 50+ Modules, 250+ Components, 50+ Services
 
-The CRM is a comprehensive, production-ready system covering the full real estate brokerage lifecycle: leads → tours → deals → commissions → payouts → compliance, with advanced features including market analysis, loan calculators, property maps, document vault, smart reminders, PWA offline support, client portal, bulk import, and agent performance tracking.
+The CRM is a comprehensive, production-ready system covering the full real estate brokerage lifecycle: leads → tours → deals → commissions → payouts → compliance → documents → market analysis, with advanced features including property map view, loan calculators, agent analytics, co-brokerage management, QR/listing syndication, document vault, CMA reports, smart reminders, PWA offline support, client portal, bulk import, and agent performance tracking.

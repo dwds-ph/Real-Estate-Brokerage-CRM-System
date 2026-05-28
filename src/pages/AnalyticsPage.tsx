@@ -225,7 +225,10 @@ export default function AnalyticsPage() {
           <>
             {/* Lead Sources */}
             {activeTab === "sources" && (
-              <div className="rounded-lg border bg-card p-6">
+              <div
+                data-testid="lead-source-analytics"
+                className="rounded-lg border bg-card p-6"
+              >
                 <h2 className="text-lg font-semibold mb-4">
                   Lead Source Analytics
                 </h2>
