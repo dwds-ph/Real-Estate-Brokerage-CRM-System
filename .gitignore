@@ -39,3 +39,6 @@ coverage/
 
 # Misc
 *.tsbuildinfo
+test-results/
+playwright-report/
+start-vite.sh

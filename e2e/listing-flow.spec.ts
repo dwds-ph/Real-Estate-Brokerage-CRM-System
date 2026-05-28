@@ -6,7 +6,9 @@ test.describe("Listing management E2E", () => {
     await seedTestUsers();
   });
 
-  test("create listing → verify detail → generate brochure → verify brochure renders", async ({ page }) => {
+  test("create listing → verify detail → generate brochure → verify brochure renders", async ({
+    page,
+  }) => {
     await loginAs(page, TEST_USERS.broker.email, TEST_USERS.broker.password);
 
     // ── Navigate to listings ───────────────────────────────────────
@@ -40,24 +42,34 @@ test.describe("Listing management E2E", () => {
     }
 
     await page.click('button[type="submit"]');
-    await expect(page.locator("text=E2E Test Property")).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator("text=E2E Test Property")).toBeVisible({
+      timeout: 5_000,
+    });
 
     // ── Open listing detail ────────────────────────────────────────
     await page.click("text=E2E Test Property");
     await page.waitForTimeout(500);
-    await expect(page.locator("text=3,500,000").or(page.locator("text=₱3.5M"))).toBeVisible({ timeout: 3_000 });
+    await expect(
+      page.locator("text=3,500,000").or(page.locator("text=₱3.5M")),
+    ).toBeVisible({ timeout: 3_000 });
 
     // ── Generate brochure ──────────────────────────────────────────
-    const brochureBtn = page.locator("text=Brochure,text=Generate Brochure,text=Share");
+    const brochureBtn = page.locator(
+      "text=Brochure,text=Generate Brochure,text=Share",
+    );
     if (await brochureBtn.isVisible()) {
       await brochureBtn.first().click();
       await page.waitForTimeout(500);
 
       // Check for shareable link or brochure preview
-      const linkField = page.locator('input[readonly], a[href*="brochure"]').first();
+      const linkField = page
+        .locator('input[readonly], a[href*="brochure"]')
+        .first();
       if (await linkField.isVisible()) {
         // Verify it's a URL
-        const linkValue = await linkField.inputValue().catch(() => (await linkField.getAttribute("href")) || "");
+        const linkValue = await linkField
+          .inputValue()
+          .catch(async () => (await linkField.getAttribute("href")) || "");
         expect(linkValue).toContain("brochure");
       }
     }
@@ -68,6 +80,8 @@ test.describe("Listing management E2E", () => {
 
     // ── Return to listings ─────────────────────────────────────────
     await page.click("text=Listings");
-    await expect(page.locator("text=E2E Test Property")).toBeVisible({ timeout: 3_000 });
+    await expect(page.locator("text=E2E Test Property")).toBeVisible({
+      timeout: 3_000,
+    });
   });
 });

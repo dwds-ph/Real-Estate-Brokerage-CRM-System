@@ -5,6 +5,29 @@ echo "🚀 Real Estate CRM — Deploy Script"
 echo "==================================="
 echo ""
 
+# ─── FIRST-TIME SETUP GUIDE ──────────────────────────────────────────
+# Before running this script for the first time:
+#
+#   1. Create a Firebase project in the console:
+#      https://console.firebase.google.com
+#
+#   2. Enable: Authentication (Email/Password), Firestore, Storage, Hosting
+#
+#   3. Get your Firebase config values from Project Settings → General → Web App
+#
+#   4. Create .env with those values (see .env.example):
+#      cp .env.example .env
+#      # Edit .env with your 6 Firebase config values
+#
+#   5. Link the project:
+#      firebase use --add
+#
+#   6. Optional: Generate a service account key for CI/CD:
+#      Project Settings → Service Accounts → Generate new private key
+#
+#   7. Run me!  ./deploy.sh
+# ──────────────────────────────────────────────────────────────────────
+
 # 1. Check prerequisites
 command -v firebase >/dev/null 2>&1 || { echo "❌ firebase-tools not found. Run: npm install -g firebase-tools"; exit 1; }
 
