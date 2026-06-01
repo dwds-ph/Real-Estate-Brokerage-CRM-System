@@ -42,3 +42,4 @@ coverage/
 test-results/
 playwright-report/
 start-vite.sh
+.yarn/install-state.gz
