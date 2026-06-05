@@ -1,440 +1,447 @@
-# TASKS — Real Estate Brokerage CRM & PM System
+# Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> Concrete, actionable tasks from initialization to production deployment.
-> Each task is a single unit of work — implement, test, commit.
-
----
-
-## Phase 0: Project Initialization
-
-- [ ] **T-001** Initialize Git repo with `README.md`, `.gitignore` (React + Vite), `LICENSE`
-- [ ] **T-002** Create project structure: `/src` (components, pages, hooks, services, lib, types)
-- [ ] **T-003** Scaffold React + Vite + TypeScript project
-- [ ] **T-004** Install & configure Tailwind CSS + ShadCN/ui
-- [ ] **T-005** Configure ESLint, Prettier, Husky (pre-commit hooks)
-- [ ] **T-006** Create Firebase project (console) — enable Auth, Firestore, Storage, Hosting
-- [ ] **T-007** Initialize Firebase in the app (`firebase.ts` config)
-- [ ] **T-008** Configure Firestore security rules (initial draft: lock down by auth)
-- [ ] **T-009** Configure Firebase Storage security rules
-- [ ] **T-010** Set up GitHub Actions CI: lint → test → deploy to Firebase Hosting
-- [ ] **T-011** Set up Sentry / Error Boundary for client-side error tracking
+> **Current state:** 21 phases complete (PWA, Scorecard, Payments, Contracts, Tours, Licenses, Market Report, Projects, Commission Engine, Matching, Payouts, CSV Import, Client Portal, Smart Reminders, Task Manager, Property Map, Loan Calculator, Analytics, Co-Brokerage, QR/Syndication, Document Vault).
+>
+> **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
 ---
 
-## Phase 1: Authentication & User Management
+## Phase 22: 📧 Email Service Integration
 
-- [ ] **T-101** Create `User` Firestore doc schema (id, role, brokerId, teamId, displayName, email, phone, photoURL)
-- [ ] **T-102** Implement user registration (Firebase Auth email + password) + create Firestore user doc
-- [ ] **T-103** Implement user login (Firebase Auth)
-- [ ] **T-104** Implement password reset flow (Firebase Auth built-in)
-- [ ] **T-105** Implement Google OAuth login
-- [ ] **T-106** Build login / register UI pages (mobile-first)
-- [ ] **T-107** Build profile settings page (edit name, phone, photo)
-- [ ] **T-108** Build onboarding flow (set role, broker info for new users)
-- [ ] **T-109** Implement FCM token registration on login (store in user doc)
-- [ ] **T-110** Tests: auth signup, login, password reset, profile CRUD
+**Goal:** Send automated emails from the app — deal updates, payment reminders, document sharing, broker notifications. Integrate SendGrid or equivalent transaction email service.
 
-### 1A. Agent Hierarchy
+### Tasks
 
-- [ ] **T-111** Implement hierarchy: `brokerId` field on agent User docs
-- [ ] **T-112** Build broker UI — list agents under me, invite new agent
-- [ ] **T-113** Implement invitation flow: broker sends invite → agent registers with link → linked automatically
-- [ ] **T-114** Build agent team creation (group agents under team name)
-- [ ] **T-115** Build agent profile page (license #, HLURB/DHSUD, contact, default commission rate)
-- [ ] **T-116** Implement permission enforcement in UI (broker sees all, agent sees own)
-- [ ] **T-117** Tests: hierarchy CRUD, permission rules
+- [ ] **22.1** Add email service dependency (sendgrid, mailgun, or resend npm package)
+- [ ] **22.2** Create `src/services/emailService.ts` — send single/bulk transactional emails with templated content (deal notification, payment reminder, document shared, welcome, password reset)
+- [ ] **22.3** Create email template system — HTML templates for: deal status change, payment received, overdue payment, tour confirmed, new lead assigned, document uploaded
+- [ ] **22.4** Integrate email triggers into existing services — e.g., `dealService` sends email on status change, `paymentService` sends overdue notice
+- [ ] **22.5** Add email preferences UI in SettingsPage — per-user opt-in for each notification type (email vs in-app vs both)
+- [ ] **22.6** Firestore rules for `emailLogs` collection (audit trail)
+- [ ] **Validation:** typecheck ✓ lint ✓ build ✓
 
----
+### Files to create
 
-## Phase 2: Lead Management
+| File | Purpose |
+|------|---------|
+| `src/services/emailService.ts` | SendGrid/Mailgun client, send helpers |
+| `src/services/emailTemplates.ts` | HTML template builder per event type |
+| `src/components/settings/EmailPreferences.tsx` | Notification preference toggles |
+| `src/types/domains/email.ts` | EmailLog, EmailPreference types |
 
-- [ ] **T-201** Create `Lead` Firestore doc structure
-- [ ] **T-202** Implement lead CRUD (create, edit, delete, assign)
-- [ ] **T-203** Build lead list view with filters (status, source, assigned agent, date range)
-- [ ] **T-204** Build lead detail page with full info
-- [ ] **T-205** Implement lead status workflow (New → Contacted → Viewed → Negotiating → Closed / Lost)
-- [ ] **T-206** Implement lead scoring: hot/warm/cold
-- [ ] **T-207** Implement duplicate detection (check phone + email on create, warn user)
-- [ ] **T-208** Build source field with options: Facebook, Referral, Walk-in, Manual
-- [ ] **T-209** Bulk import leads from CSV
-- [ ] **T-210** Export leads to CSV/Excel
-- [ ] **T-211** Tests: lead CRUD, status transitions, duplicate detection
+### Files to modify
 
-### 2A. Communication Log & Activity Timeline
-
-- [ ] **T-212** Build communication log UI per lead (log call, text, meeting)
-- [ ] **T-213** Each log entry: type, timestamp, notes, logged by
-- [ ] **T-214** Build auto-generated activity timeline per lead
-- [ ] **T-215** Timeline captures: lead created, status changed, viewing scheduled, commission computed
-- [ ] **T-216** Tests: logging, timeline generation
-
-### 2B. Lead Assignment & Transfer
-
-- [ ] **T-217** Implement lead assignment (broker picks agent from dropdown)
-- [ ] **T-218** Implement lead transfer request (agent requests → broker approves)
-- [ ] **T-219** Add assignment history to lead activity timeline
-- [ ] **T-220** Tests: assignment, transfer flow
+| File | Change |
+|------|--------|
+| `package.json` | Add email service dependency |
+| `src/pages/SettingsPage.tsx` | Add Email Preferences section |
+| `firestore.rules` | Add emailLogs collection rules |
 
 ---
 
-## Phase 3: Deal Pipeline (Kanban)
+## Phase 23: 💳 PH Payment Gateway Integration
 
-- [ ] **T-301** Build Kanban board component (drag & drop columns)
-- [ ] **T-302** Columns match lead statuses: New → Contacted → Viewed → Negotiating → Closed / Lost
-- [ ] **T-303** Each card shows: lead name, property interest, score badge, days in stage
-- [ ] **T-304** Drag moves lead to next/previous status (updates Firestore)
-- [ ] **T-305** Quick actions on card: call, message, schedule viewing
-- [ ] **T-306** Per-agent view: agent sees only their leads
-- [ ] **T-307** Broker overview: all agents' pipelines in one view (grouped by agent)
-- [ ] **T-308** Tests: drag & drop, status update, permission filtering
+**Goal:** Accept online payments from clients — reservation fees, down payments, earnest money via PayMongo (GCash, Maya, card, grab pay). Track payment status end-to-end with webhook callbacks.
 
----
+### Tasks
 
-## Phase 4: Property Listing Management
+- [ ] **23.1** Add PayMongo SDK/API client — create payment intents, attach payment methods, confirm payments
+- [ ] **23.2** Create `src/services/paymentGatewayService.ts` — `createPaymentLink()`, `checkPaymentStatus()`, `createCheckoutSession()` for GCash/Maya/credit card
+- [ ] **23.3** Create `PaymentGatewayForm.tsx` — payment method selector embedded in deal payment flow (Pay via GCash / Maya / Card)
+- [ ] **23.4** Create webhook handler (client-side) for payment status updates (paid/failed/refunded)
+- [ ] **23.5** Integrate payment gateway into DealPaymentSection — "Pay Online" button next to each payment entry, status sync back to Firestore
+- [ ] **23.6** Offline payment fallback — receipt upload for cash/bank transfers
+- [ ] **23.7** Firestore rules for `paymentTransactions` collection (immutable record)
+- [ ] **Validation:** typecheck ✓ lint ✓ build ✓
 
-- [ ] **T-401** Create `Listing` Firestore doc structure
-- [ ] **T-402** Create `ListingMedia` subcollection (image URLs from Firebase Storage)
-- [ ] **T-403** Implement listing CRUD (create/edit/delete with media uploads)
-- [ ] **T-404** Build listing form (multi-step: details → media → publish)
-- [ ] **T-405** Implement image upload to Firebase Storage with preview
-- [ ] **T-406** Build listing gallery view (grid, lightbox)
-- [ ] **T-407** Implement listing status workflow (Available → Under Option → Sold/Rented/Off-Market)
-- [ ] **T-408** Assign listing to agent (broker assigns)
-- [ ] **T-409** Build listing search & filters (price, location, type, status, flood risk)
-- [ ] **T-410** Add property type tagging: condo, house & lot, lot only, commercial, foreclosed
-- [ ] **T-411** Add flood / hazard risk tag (low, medium, high, unknown)
-- [ ] **T-412** Add nearby amenities (school, hospital, mall, LRT/MRT)
-- [ ] **T-413** Build required docs checklist per property type (title, tax dec, HOA clearance, etc.)
-- [ ] **T-414** Tests: listing CRUD, media upload, status transitions
+### Files to create
 
-### 4A. Property Brochure Generator
+| File | Purpose |
+|------|---------|
+| `src/services/paymentGatewayService.ts` | PayMongo API client |
+| `src/components/payments/PaymentGatewayForm.tsx` | Online payment UI |
+| `src/types/domains/paymentGateway.ts` | PaymentTransaction, PaymentGateway types |
 
-- [ ] **T-415** Build public brochure page component (read-only listing view)
-- [ ] **T-416** Page shows: main photo, details table, agent contact, share buttons
-- [ ] **T-417** Host under `/b/{listingId}` route (public, no auth required)
-- [ ] **T-418** Implement share buttons: WhatsApp, Viber, Messenger, Copy Link
-- [ ] **T-419** Generate agent QR code on brochure (agent contact page)
-- [ ] **T-420** Add "Download as Image" button (html2canvas or similar)
-- [ ] **T-421** Track brochure views (increment counter on listing doc)
-- [ ] **T-422** Tests: brochure rendering, share actions, view tracking
+### Files to modify
+
+| File | Change |
+|------|--------|
+| `.env` | Add PayMongo secret/public keys |
+| `src/components/payments/DealPaymentSection.tsx` | Add "Pay Online" CTA |
+| `firestore.rules` | Add paymentTransactions rules |
 
 ---
 
-## Phase 5: Viewing Schedule Tracker
+## Phase 24: 📱 Facebook & Instagram Lead Auto-Import
 
-- [ ] **T-501** Create `Viewing` Firestore doc structure
-- [ ] **T-502** Implement viewing CRUD (schedule, reschedule, cancel)
-- [ ] **T-503** Build schedule creation form (date picker + time + property + lead select)
-- [ ] **T-504** Build agent's calendar view (daily/weekly)
-- [ ] **T-505** Implement check-in (photo upload at property = proof)
-- [ ] **T-506** Build post-viewing feedback form (interest level, concerns, next steps)
-- [ ] **T-507** Viewing photo upload — agent takes photos, stored under Viewing doc
-- [ ] **T-508** Push notification reminders (24h before + 1h before via FCM)
-- [ ] **T-509** Build viewing history on lead detail page
-- [ ] **T-510** Google Calendar integration (one-way: create event from viewing)
-- [ ] **T-511** Tests: schedule CRUD, check-in, reminders
+**Goal:** Automatically pull leads from Facebook Lead Ads and Instagram into the CRM. Poll Facebook Graph API, deduplicate by phone/email, auto-assign via routing rules.
 
-### 5A. Client Portal
+### Tasks
 
-- [ ] **T-512** Build public client page (no auth required, token-based access)
-- [ ] **T-513** Client sees: assigned properties, upcoming viewings
-- [ ] **T-514** Request reschedule button (creates notification for agent)
-- [ ] **T-515** Post-viewing feedback from client side
-- [ ] **T-516** Shareable link generated per lead (agent sends via Messenger/Viber)
-- [ ] **T-517** Tests: portal rendering, reschedule request flow
+- [ ] **24.1** Create `src/services/facebookLeadService.ts` — Facebook Graph API client: fetch leads from ad accounts, parse lead gen forms, deduplicate against existing leads
+- [ ] **24.2** Create `FacebookLeadImporter.tsx` — manual trigger + auto-poll toggle, last-sync timestamp, import count, error log, mapping UI (map FB fields → CRM fields)
+- [ ] **24.3** Create `src/lib/leadDeduplication.ts` — deduplication algorithm: match by phone → email → name+fuzzy address, auto-merge or flag for review
+- [ ] **24.4** Create Facebook Lead import settings in SettingsPage — connect/revoke FB page, select ad account, choose lead gen form
+- [ ] **24.5** Auto-assign imported leads via existing `leadRoutingService.ts`
+- [ ] **24.6** Track import history in Firestore — `facebookImportLogs` collection
+- [ ] **24.7** Firestore rules for `facebookImportLogs` collection
+- [ ] **Validation:** typecheck ✓ lint ✓ build ✓
 
----
+### Files to create
 
-## Phase 6: Commission Tracking
+| File | Purpose |
+|------|---------|
+| `src/services/facebookLeadService.ts` | Graph API polling + parse |
+| `src/lib/leadDeduplication.ts` | Dedup by phone/email/name |
+| `src/components/import/FacebookLeadImporter.tsx` | Import config + trigger UI |
 
-- [ ] **T-601** Create `CommissionPlan` Firestore doc structure
-- [ ] **T-602** Create `Commission` (deal) Firestore doc structure
-- [ ] **T-603** Create `Payout` Firestore doc structure
-- [ ] **T-604** Implement commission plan CRUD (broker defines plans, assigns to agents)
-- [ ] **T-605** Plan types: fixed %, tiered split, referral fee, escalating tiers
-- [ ] **T-606** Implement client-side commission calculation engine:
-  - [ ] T-606a Fixed % calculation
-  - [ ] T-606b Tiered split (broker/agent share)
-  - [ ] T-606c Referral fee
-  - [ ] T-606d Escalating tiers (volume-based)
-  - [ ] T-606e PH tax deductions (12% VAT, 1% withholding)
-- [ ] **T-607** Auto-compute commission when deal is marked Closed
-- [ ] **T-608** Build commission statement page (per agent, per deal)
-- [ ] **T-609** Build payout request / approval flow (agent requests → broker approves)
-- [ ] **T-610** Generate commission reports (monthly, quarterly, yearly)
-- [ ] **T-611** Export commission reports to PDF
-- [ ] **T-612** Commission forecast (pending vs paid, projected monthly income)
-- [ ] **T-613** Tests: all calculation types, tax handling, payout flow
+### Files to modify
 
-### 6A. Co-broking / Shared Deals
-
-- [ ] **T-614** Add co-broking toggle on deal creation
-- [ ] **T-615** Co-broking fields: agent2, split percentage (50/50 default)
-- [ ] **T-616** Shared pipeline access — both agents see deal progress
-- [ ] **T-617** Commission split auto-calculated for both agents
-- [ ] **T-618** Payout split — each agent's share tracked separately
-- [ ] **T-619** Tests: co-broking flow, split math
-
-### 6B. Expense Tracking
-
-- [ ] **T-620** Create `Expense` Firestore doc structure
-- [ ] **T-621** Implement expense CRUD (add/edit/delete)
-- [ ] **T-622** Categories: transportation, meals, ads, misc
-- [ ] **T-623** Receipt photo upload to Firebase Storage
-- [ ] **T-624** Link expense to a deal (optional)
-- [ ] **T-625** Broker view — see all agent expenses (optional toggle)
-- [ ] **T-626** Export expenses to CSV
-- [ ] **T-627** Tests: expense CRUD, receipt upload
-
-### 6C. BIR Tax Estimator
-
-- [ ] **T-628** Build BIR tax calculator component
-- [ ] **T-629** Input: deal price, property type
-- [ ] **T-630** Compute: 6% Capital Gains Tax, 1.5% DST, 1% CWT
-- [ ] **T-631** Show breakdown: buyer pays what, seller pays what
-- [ ] **T-632** Show total closing costs for buyer
-- [ ] **T-633** Tests: all tax formulas match BIR rates
+| File | Change |
+|------|--------|
+| `src/pages/SettingsPage.tsx` | Add Facebook integration section |
+| `src/pages/ImportPage.tsx` | Add Facebook import tab |
+| `firestore.rules` | Add facebookImportLogs rules |
 
 ---
 
-## Phase 7: PH-Specific Tools
+## Phase 25: 💬 WhatsApp & Viber Integration
 
-### 7A. Pag-IBIG Loan Calculator
+**Goal:** Send notifications and share property brochures via WhatsApp and Viber (most-used PH messaging apps). One-click share from lead/deal/listings pages.
 
-- [ ] **T-701** Build Pag-IBIG calculator component
-- [ ] **T-702** Inputs: property price, down payment %, loan term, interest rate
-- [ ] **T-703** Compute: loan amount, monthly amortization
-- [ ] **T-704** Show Pag-IBIG max loanable amount table reference
-- [ ] **T-705** Tests: calculator outputs match Pag-IBIG schedule
+### Tasks
 
-### 7B. Bank Financing Calculator
+- [ ] **25.1** Create `src/services/messagingService.ts` — WhatsApp Business API + Viber REST API clients: send message, send template, send media (property image/brochure)
+- [ ] **25.2** Integrate with existing notification system — FCM + WhatsApp + Viber fallback chain
+- [ ] **25.3** Create `MessagingWidget.tsx` — floating action button on lead/deal detail: "Send via WhatsApp", "Send via Viber", "Send via SMS" with templated message (property link, payment reminder, tour reminder)
+- [ ] **25.4** Create shareable deep links — `wa.me/{phone}?text=...` and `viber://...` with pre-filled property/broker details
+- [ ] **25.5** Message template library — property inquiry, payment reminder, tour confirmation, document request, commission update
+- [ ] **25.6** Firestore rules for `messageLogs` collection
+- [ ] **Validation:** typecheck ✓ lint ✓ build ✓
 
-- [ ] **T-706** Build bank financing calculator component
-- [ ] **T-707** Pre-filled tiers: BPI, BDO, Metrobank rates
-- [ ] **T-708** Inputs: loan amount, term, selected bank
-- [ ] **T-709** Compute: monthly amortization breakdown
-- [ ] **T-710** Tests: calculator outputs
+### Files to create
 
-### 7C. Title Status Tracker
+| File | Purpose |
+|------|---------|
+| `src/services/messagingService.ts` | WhatsApp + Viber client |
+| `src/components/automation/MessagingWidget.tsx` | Send-to-messaging FAB |
+| `src/components/automation/MessageTemplates.tsx` | Template editor |
+| `src/types/domains/messaging.ts` | MessageLog, MessageTemplate types |
 
-- [ ] **T-711** Create title tracking fields on Deal doc
-- [ ] **T-712** Stages: With Seller → BIR (CGT) → Registry of Deeds → Transfer → Complete
-- [ ] **T-713** Build title progress UI (step-by-step progress bar)
-- [ ] **T-714** Document checklist per stage (required docs)
-- [ ] **T-715** Timeline view — how long each stage took
-- [ ] **T-716** Tests: stage transitions, document checklist
+### Files to modify
 
----
-
-## Phase 8: Agent Productivity
-
-### 8A. Task Management
-
-- [ ] **T-801** Create `Task` Firestore doc structure
-- [ ] **T-802** Implement task CRUD (create, edit, complete, delete)
-- [ ] **T-803** Build task list UI (filter by priority, due date, related lead/listing)
-- [ ] **T-804** Priority levels: high, medium, low with badges
-- [ ] **T-805** Link task to lead, listing, or deal
-- [ ] **T-806** Broker can assign tasks to agents
-- [ ] **T-807** Push notification on new task assignment
-- [ ] **T-808** Tests: task CRUD, assignment
-
-### 8B. Notes & Mentions
-
-- [ ] **T-809** Build notes system on leads, listings, and deals
-- [ ] **T-810** Rich text: plain with @mentions support
-- [ ] **T-811** @mention triggers notification for mentioned user
-- [ ] **T-812** Note types: general, reminder, document request
-- [ ] **T-813** Read/unread status per note
-- [ ] **T-814** Tests: notes CRUD, @mention notification
+| File | Change |
+|------|--------|
+| `src/pages/LeadDetailPage.tsx` | Add MessagingWidget |
+| `src/pages/ListingDetailPage.tsx` | Add share via messaging |
+| `src/pages/DealDetailPage.tsx` | Add payment reminder messaging |
+| `firestore.rules` | Add messageLogs rules |
 
 ---
 
-## Phase 9: Notifications
+## Phase 26: 📊 Advanced Reporting & Data Export
 
-- [ ] **T-901** Create `Notification` Firestore doc structure
-- [ ] **T-902** Build in-app notification system (bell icon, unread badge, notification list)
-- [ ] **T-903** Build push notification service (FCM send via client-side trigger)
-- [ ] **T-904** Trigger notifications on:
-  - New lead assigned
-  - Viewing reminder (24h / 1h)
-  - Commission approved / paid
-  - Deal status change
-  - New task assigned
-  - @mention in notes
-  - Reschedule request from client portal
-- [ ] **T-905** Mark notification as read
-- [ ] **T-906** Build notification preferences page (toggle per type)
-- [ ] **T-907** Tests: notification creation, read status, FCM delivery
+**Goal:** Comprehensive reporting dashboard with cross-module aggregation, export to PDF/Excel/CSV, scheduled report delivery, and visual analytics.
 
----
+### Tasks
 
-## Phase 10: Dashboard & Broker Command Center
+- [ ] **26.1** Create `src/lib/reportEngine.ts` — aggregation engine: merge data from leads + deals + payments + commissions + tours + licenses into unified report objects
+- [ ] **26.2** Create `ReportBuilder.tsx` — interactive report builder: select module (leads/deals/payments/commissions), date range, group by (agent/branch/property type/status), metrics
+- [ ] **26.3** Create export utility — CSV export via Blob download, Excel export via `exceljs` or similar, PDF via `jspdf` with A4 tables and charts
+- [ ] **26.4** Create `src/services/reportScheduler.ts` — schedule recurring reports (daily/weekly/monthly) stored in Firestore, deliver via email
+- [ ] **26.5** Create `ReportDashboard.tsx` — saved reports list, scheduled reports, one-click run
+- [ ] **26.6** Create `ScheduledReportForm.tsx` — set frequency, recipients, module, format
+- [ ] **26.7** Add route `/reports` + sidebar nav entry
+- [ ] **26.8** Firestore rules for `reports`, `scheduledReports` collections
+- [ ] **Validation:** typecheck ✓ lint ✓ build ✓
 
-- [ ] **T-1001** Build broker dashboard:
-  - [ ] T-1001a Total leads, active listings, pending commissions (KPI cards)
-  - [ ] T-1001b Active agents today
-  - [ ] T-1001c Recent activity feed
-- [ ] **T-1002** Build agent dashboard:
-  - [ ] T-1002a My leads count, my viewings today
-  - [ ] T-1002b My pending commissions
-  - [ ] T-1002c My task list (due today)
-- [ ] **T-1003** Build lead pipeline funnel chart
-- [ ] **T-1004** Build lead source analytics (pie/bar chart: FB vs referral vs walk-in conversion rates)
-- [ ] **T-1005** Build agent leaderboard (most leads, most closed deals, most viewings)
-- [ ] **T-1006** Build commission overview chart (earned vs paid, by month)
-- [ ] **T-1007** Build team performance report (per agent: leads, viewings, closed deals, commissions)
-- [ ] **T-1008** Build listing performance report (views, brochure shares, inquiries, conversion)
-- [ ] **T-1009** Build commission forecast widget (projected vs actual)
-- [ ] **T-1010** Tests: chart data accuracy, permission-based visibility
+### Files to create
 
----
+| File | Purpose |
+|------|---------|
+| `src/lib/reportEngine.ts` | Cross-module aggregation |
+| `src/services/reportScheduler.ts` | Cron-like report scheduling |
+| `src/components/reports/ReportBuilder.tsx` | Interactive report config |
+| `src/components/reports/ReportDashboard.tsx` | Saved + scheduled reports |
+| `src/components/reports/ScheduledReportForm.tsx` | Frequency/format config |
+| `src/components/reports/ReportExport.tsx` | CSV/Excel/PDF download |
+| `src/components/reports/index.ts` | Barrel export |
+| `src/pages/ReportsPage.tsx` | Route page |
 
-## Phase 11: Production Hardening
+### Files to modify
 
-- [ ] **T-1101** Finalize Firestore security rules — role-based access (broker vs agent vs sub-agent)
-- [ ] **T-1102** Finalize Firebase Storage security rules (agents only see their own listing images)
-- [ ] **T-1103** Implement Firestore indexes for common queries (leads by agent, listings by status, etc.)
-- [ ] **T-1104** Set up Firebase performance monitoring
-- [ ] **T-1105** Write end-to-end tests (Cypress / Playwright for critical paths)
-- [ ] **T-1106** Test offline behavior — Firestore persistence + error states
-- [ ] **T-1107** Security review — Firestore rules edge cases, auth edge cases, XSS in descriptions
-- [ ] **T-1108** Set up Firebase alerts (usage spikes, security rule violations)
-- [ ] **T-1109** Write deployment runbook (firebase deploy, rollback via hosting versions)
+| File | Change |
+|------|--------|
+| `src/App.tsx` | Add /reports route |
+| `src/components/layout/AppLayout.tsx` | Add Reports nav entry |
+| `firestore.rules` | Add reports, scheduledReports rules |
 
 ---
 
-## Phase 12: Launch & Post-Launch
+## Phase 27: 🔐 Advanced Security & Audit Trail
 
-- [ ] **T-1201** Set up Firebase Hosting custom domain + SSL
-- [ ] **T-1202** Set up Google Analytics / Plausible for usage tracking
-- [ ] **T-1203** Create user onboarding guide (in-app tooltips + docs)
-- [ ] **T-1204** Soft launch with 5–10 broker accounts for beta testing
-- [ ] **T-1205** Collect feedback and prioritize v2 enhancements
+**Goal:** Immutable audit logging for regulatory compliance (RA 9646 — Real Estate Service Act), enhanced role-based access control, session management, and data integrity checks.
+
+### Tasks
+
+- [ ] **27.1** Create `src/services/auditService.ts` — write-only audit log: record every CRUD operation with `who`, `what`, `when`, `docBefore`, `docAfter`, `ip`, `userAgent`
+- [ ] **27.2** Enhance Firestore rules — enforce audit log immutability (no delete, no update on auditLogs)
+- [ ] **27.3** Create `AuditLogViewer.tsx` — broker-only page: filterable/searchable table of all operations, entity type filter, date range, user filter, CSV export
+- [ ] **27.4** Enhanced RBAC — split agent role into `agent` (own data only) and `senior-agent` (team data), add `compliance-officer` role (read-only audit access)
+- [ ] **27.5** Session management — track active sessions in Firestore, broker can revoke sessions
+- [ ] **27.6** Data integrity checker — `DataIntegrityReport.tsx` that compares local Firestore counts vs expected counts, detects orphaned records
+- [ ] **27.7** Add route `/audit` + sidebar nav entry (broker-only)
+- [ ] **27.8** Firestore rules for enhanced role enforcement
+- [ ] **Validation:** typecheck ✓ lint ✓ build ✓
+
+### Files to create
+
+| File | Purpose |
+|------|---------|
+| `src/services/auditService.ts` | Write-once audit logger |
+| `src/components/audit/AuditLogViewer.tsx` | Broker audit dashboard |
+| `src/components/audit/DataIntegrityReport.tsx` | DB consistency checker |
+| `src/components/audit/index.ts` | Barrel export |
+| `src/pages/AuditPage.tsx` | Route page |
+
+### Files to modify
+
+| File | Change |
+|------|--------|
+| `src/App.tsx` | Add /audit route |
+| `src/components/layout/AppLayout.tsx` | Add Audit nav (broker only) |
+| `firestore.rules` | Enhanced RBAC + audit rules |
+| `src/context/AuthContext.tsx` | Add role/permission helpers |
+| `src/types/domains/core.ts` | Add roles, Session, Permission types |
 
 ---
 
+## Phase 28: 🌐 Multi-Language Support (i18n)
+
+**Goal:** Full bilingual support — English and Filipino (Tagalog) — with locale-aware number/currency formatting. Foundation for future language additions.
+
+### Tasks
+
+- [ ] **28.1** Add `react-i18next` + `i18next` dependencies
+- [ ] **28.2** Create `src/lib/i18n/index.ts` — i18n config with language detection (browser → localStorage → fallback)
+- [ ] **28.3** Create `src/lib/i18n/locales/en.json` — English translation keys (all UI strings)
+- [ ] **28.4** Create `src/lib/i18n/locales/fil.json` — Filipino translation keys
+- [ ] **28.5** Create language switcher UI in SettingsPage + AppLayout dropdown
+- [ ] **28.6** Translate all page-level UI: navigation, labels, buttons, statuses, form fields
+- [ ] **28.7** Locale-aware formatting: PHP currency (`₱1,234,567.89`), dates (`Enero 15, 2026`), numbers
+- [ ] **28.8** PH-specific number formatting — `piso`, `sentimo`, barrio/barangay terms
+- [ ] **28.9** Validation: typecheck ✓ lint ✓ build ✓
+
+### Files to create
+
+| File | Purpose |
+|------|---------|
+| `src/lib/i18n/index.ts` | i18n config + locale detection |
+| `src/lib/i18n/locales/en.json` | All English strings |
+| `src/lib/i18n/locales/fil.json` | All Filipino strings |
+| `src/components/layout/LanguageSwitcher.tsx` | Language toggle widget |
+
+### Files to modify
+
+| File | Change |
+|------|--------|
+| `package.json` | Add react-i18next, i18next |
+| `src/main.tsx` | Initialize i18n |
+| `src/components/layout/AppLayout.tsx` | Add language switcher |
+| `src/pages/SettingsPage.tsx` | Add language preference |
+| `All page/component files` | Wrap strings in `t()` calls |
+
 ---
 
-## Phase 13: 📄 Document Vault & Management
+## Phase 29: ⚡ Performance Optimization & Production Hardening
 
-Move v2 backlog to active development — PH real estate is document-intensive.
+**Goal:** Bundle size audit, Firestore query optimization, lazy-loading polish, image optimization, and Lighthouse score improvement to 90+ on all metrics.
 
-- [ ] **T-1301** Create `DocumentVault` Firestore doc structure (dealId, listingId, stage, name, fileUrl, fileType, fileSize, uploadedBy, uploadedAt, version)
-- [ ] **T-1302** Implement document upload to Firebase Storage per deal/listing with preview
-- [ ] **T-1303** Build document list view per deal (sort by stage, type, date)
-- [ ] **T-1304** Build document detail panel (view, download, version history)
-- [ ] **T-1305** Version tracking — new upload of same doc name creates new version, keeps old
-- [ ] **T-1306** Per-stage document requirements (e.g. "BIR CGT stage needs: BIR Form 1706, CAR, Tax Clearance")
-- [ ] **T-1307** Document expiry alerts — set expiry dates, push notification when nearing
-- [ ] **T-1308** Document categories: Title, Tax, Contract, ID, HOA, Miscellaneous
-- [ ] **T-1309** Bulk document upload (multiple files at once)
-- [ ] **T-1310** Document request — broker requests doc from agent, creates notification
-- [ ] **T-1311** Tests: upload, versioning, expiry alerts, permission-based access
+### Tasks
 
-## Phase 14: 🏗️ Mortgage & Deal Progress Tracker
+- [ ] **29.1** Run production bundle analysis (`vite build && npx vite-bundle-analyzer`) — identify large vendor chunks, code-split aggressively
+- [ ] **29.2** Audit and enforce lazy loading — ensure ALL route pages use `React.lazy()` (verify no eager imports), add Suspense boundaries with fallback skeletons
+- [ ] **29.3** Firestore query optimization — audit all `subscribeToQuery` calls: add missing indexes, apply `limit()` consistently, use `where()` for server-side filtering, avoid unbounded collection scans
+- [ ] **29.4** Virtual scrolling for large lists — implement `react-window` or CSS `content-visibility` on leads/listings/transactions tables with 100+ rows
+- [ ] **29.5** Image optimization — auto-resize listing images on upload (client-side via canvas), serve WebP, implement lazy loading for gallery images
+- [ ] **29.6** PWA audit — verify offline caching rules, test service worker lifecycle, add background sync for queued writes
+- [ ] **29.7** Lighthouse CI integration — add Lighthouse CI to GitHub Actions, enforce 90+ scores on performance, accessibility, best practices, SEO
+- [ ] **29.8** Memory leak audit — verify all `onSnapshot` unsubscribers fire on unmount, verify `setTimeout`/`setInterval` cleanup in hooks
+- [ ] **29.9** Accessibility (a11y) audit — run axe-core on all pages, fix contrast issues, add aria labels, keyboard navigation
+- [ ] **29.10** Validation: typecheck ✓ lint ✓ build ✓
 
-Per-deal mortgage loan application tracking — PH banks have distinct processes.
+### Files to create
 
-- [ ] **T-1401** Create `Mortgage` Firestore doc structure (dealId, bankId, loanAmount, status, stages[], notes)
-- [ ] **T-1402** Define mortgage stages: Application → Bank Evaluation → BIR Docs → ROD → Loan Release
-- [ ] **T-1403** Pre-fill PH bank profiles: BPI, BDO, Metrobank, Security Bank, EastWest (estimated timelines, typical rates)
-- [ ] **T-1404** Build mortgage tracker widget on deal detail page
-- [ ] **T-1405** Build stage progress bar with estimated and actual dates
-- [ ] **T-1406** Document checklist per mortgage stage (what docs the bank needs)
-- [ ] **T-1407** Timeline view — how long each mortgage stage took (for agent reference)
-- [ ] **T-1408** Push notification on mortgage stage changes
-- [ ] **T-1409** Link mortgage to Document Vault — upload bank-required docs directly from tracker
-- [ ] **T-1410** Add mortgage status summary to broker dashboard (deals awaiting bank approval)
-- [ ] **T-1411** Tests: stage transitions, timeline accuracy, doc linkage
+| File | Purpose |
+|------|---------|
+| `.github/workflows/lighthouse.yml` | Lighthouse CI workflow |
 
-## Phase 15: 🗺️ Map View & Location Features
+### Files to modify
 
-Interactive map for listings with PH-relevant overlays.
+| File | Change |
+|------|--------|
+| `vite.config.ts` | Add bundle analysis plugin, image optimization |
+| `src/App.tsx` | Verify all routes lazy-loaded |
+| `src/main.tsx` | Add image optimization on upload |
+| `src/hooks/useFirestore.ts` | Audit query limits + pagination |
+| `All list components` | Add virtual scrolling where applicable |
 
-- [ ] **T-1501** Integrate Leaflet/MapLibre (free, no API key) for interactive maps
-- [ ] **T-1502** Build map component with listing pins (price, status, type color-coded)
-- [ ] **T-1503** Listing detail shows embedded map with location marker
-- [ ] **T-1504** Add geocoding — store lat/lng on listing creation (from address string via Nominatim/OSM)
-- [ ] **T-1505** Map filters: filter by price range, property type, status, flood risk
-- [ ] **T-1506** Nearby POIs overlay: schools, hospitals, malls, LRT/MRT stations
-- [ ] **T-1507** Cluster pins at zoom-out level (performance for many listings)
-- [ ] **T-1508** Click pin → popup with listing thumbnail, price, status, agent contact
-- [ ] **T-1509** Click popup → navigate to listing detail
-- [ ] **T-1510** Agent dashboard shows "My Listings Map" view
-- [ ] **T-1511** Tests: map rendering, pin placement, filter interaction
+---
 
-## Phase 16: 📈 Advanced Analytics & Performance Reports
+## Phase 30: 🧪 End-to-End Testing & QA Coverage
 
-Broker command center on steroids — data-driven decisions.
+**Goal:** Expand Playwright E2E test coverage to all critical user flows, add visual regression testing, and achieve 80%+ coverage on all service and lib modules.
 
-- [ ] **T-1601** Build lead conversion funnel chart (New → Contacted → Viewed → Negotiating → Closed, with drop-off % at each stage)
-- [ ] **T-1602** Build agent performance board (per agent: leads acquired, deals closed, commission earned, conversion rate, response time)
-- [ ] **T-1603** Build expense vs commission P&L report (per agent: total expenses claimed vs total commission earned)
-- [ ] **T-1604** Build listing performance report (views, brochure shares, inquiries, days on market, conversion to deal)
-- [ ] **T-1605** Build source analytics dashboard (lead source → conversion → revenue, by channel: Facebook, Referral, Walk-in, Manual)
-- [ ] **T-1606** Build team comparison view (side-by-side agent metrics, rankable by any column)
-- [ ] **T-1607** Build monthly/quarterly trend charts (leads, deals, revenue over time)
-- [ ] **T-1608** Build exportable report generator (PDF/CSV of any report, date-range selectable)
-- [ ] **T-1609** Build custom date range picker for all reports
-- [ ] **T-1610** Add report widgets to broker dashboard (configurable KPI grid)
-- [ ] **T-1611** Tests: chart data accuracy, permission filtering (agent sees own, broker sees all)
+### Tasks
 
-## Phase 17: 📅 Unified Calendar & Smart Reminders
+- [ ] **30.1** Create E2E test plan — map all critical paths: lead create → deal → payment → commission → payout, listing create → brochure → syndication, agent invite → hierarchy → reporting
+- [ ] **30.2** Expand E2E tests — cover all 21 modules (currently 3 spec files covering auth-flows, deal-pipeline, navigation-smoke). Target: 15+ spec files covering all phases
+- [ ] **30.3** Add visual regression testing with Playwright `await expect(page).toHaveScreenshot()` for key pages (Dashboard, Leads, Deals, Listings)
+- [ ] **30.4** Add Firestore emulator seed data script — `scripts/seed-e2e-data.cjs` that populates realistic PH data (agents, listings in Metro Manila/Cebu/Davao, leads with PH names/contacts)
+- [ ] **30.5** Add `tests/` unit test coverage for all remaining services and lib modules (cover: analytics, branchService, calendarService, checklistService, coBrokerService, complianceService, documentVault, goalService, paymentService, payoutService, projectService, referralService, teamService, tourService)
+- [ ] **30.6** Add service test for `leadRoutingService.ts` (currently tested but needs expansion)
+- [ ] **30.7** Create `tests/e2e/setup.ts` — shared fixture for auth + emulator initialization
+- [ ] **30.8** Add CI matrix: test on Node 24 + 3 OS runners (ubuntu, windows, macos-latest)
+- [ ] **30.9** Validation: typecheck ✓ lint ✓ all tests pass ✓
 
-Merge viewings, tasks, follow-ups, and deal milestones into one timeline.
+### Files to create
 
-- [ ] **T-1701** Build unified calendar component (month/week/day views) using a calendar library (react-big-calendar or FullCalendar)
-- [ ] **T-1702** Ingest data sources: Viewings, Tasks, Deal milestones, Document expiry dates
-- [ ] **T-1703** Color-code by type: viewing (blue), task (orange), deal milestone (green), document expiry (red)
-- [ ] **T-1704** Click event → show detail popup with quick actions (reschedule viewing, mark task done)
-- [ ] **T-1705** Click event → navigate to source page (lead detail, listing detail, etc.)
-- [ ] **T-1706** Add new event quick-create from calendar (schedule viewing, create task)
-- [ ] **T-1707** Build smart follow-up engine:
-  - Lead inactive N days → auto-create "Follow up with {lead}" task
-  - Viewing done, feedback pending → auto-notify agent
-  - Document expiring in 7 days → push notification
-- [ ] **T-1708** Build recurring task support (daily/weekly/monthly follow-ups, configurable)
-- [ ] **T-1709** Build notification preferences page with smart reminder toggles
-- [ ] **T-1710** Builder's calendar view on dashboard (today's events widget)
-- [ ] **T-1711** Tests: event rendering, CRUD operations, reminder triggers
+| File | Purpose |
+|------|---------|
+| `scripts/seed-e2e-data.cjs` | Firestore emulator seed script |
+| `e2e/leads.spec.ts` | Lead CRUD + status workflow |
+| `e2e/listings.spec.ts` | Listing create + brochure |
+| `e2e/payments.spec.ts` | Payment add + overdue |
+| `e2e/commissions.spec.ts` | Commission calc + plan |
+| `e2e/payouts.spec.ts` | Payout approve → paid flow |
+| `e2e/tours.spec.ts` | Tour builder + feedback |
+| `e2e/tasks.spec.ts` | Task kanban + checklists |
+| `e2e/analytics.spec.ts` | Lead source + goals |
+| `e2e/cobrokerage.spec.ts` | Co-broker + team + branch |
+| `e2e/documents.spec.ts` | Document vault + compliance + CMA |
+| `e2e/projects.spec.ts` | Project + units + milestones |
+| `e2e/map.spec.ts` | Property map interaction |
+| `e2e/license.spec.ts` | License CRUD + expiry |
+| `e2e/loans.spec.ts` | Loan calculators |
+| `tests/services/analytics.test.ts` | Analytics service unit tests |
+| `tests/services/branchService.test.ts` | Branch CRUD tests |
+| `tests/services/calendarService.test.ts` | Calendar ops tests |
+| `tests/services/checklistService.test.ts` | Checklist CRUD tests |
+| `tests/services/coBrokerService.test.ts` | Co-broker service tests |
+| `tests/services/complianceService.test.ts` | Compliance tests |
+| `tests/services/documentVault.test.ts` | Document vault tests |
+| `tests/services/goalService.test.ts` | Goal CRUD tests |
+| `tests/services/paymentService.test.ts` | Payment service tests |
+| `tests/services/payoutService.test.ts` | Payout service tests |
+| `tests/services/projectService.test.ts` | Project service tests |
+| `tests/services/referralService.test.ts` | Referral service tests |
+| `tests/services/teamService.test.ts` | Team CRUD tests |
+| `tests/services/tourService.test.ts` | Tour CRUD tests |
 
-## Phase 18: 🔄 Automation & Productivity Tools
+### Files to modify
 
-Reduce repetitive work for agents.
+| File | Change |
+|------|--------|
+| `.github/workflows/ci.yml` | Add test matrix, visual regression |
+| `playwright.config.ts` | Add screenshot config, testDir entries |
+| `vitest.config.ts` | Expand coverage thresholds |
 
-- [ ] **T-1801** Build communication log templates — agent creates a template ("Initial follow-up", "Viewing confirmation", "Thank you") and applies it to a lead with one tap
-- [ ] **T-1802** Quick-log SMS/Viber/WhatsApp communication from template (type + prepopulated note)
-- [ ] **T-1803** Build email templates — create templated emails (HTML), send via mailto: link with pre-filled body
-- [ ] **T-1804** Build reusable checklists system — broker creates checklist templates (e.g. "New Listing Intake", "Deal Closing Checklist"), agents apply to specific items
-- [ ] **T-1805** Checklist progress tracking per lead/listing/deal (checked items %, auto-advance logic)
-- [ ] **T-1806** Build referral tracking — log referral source (existing client, other agent, partner), auto-assign referral fee when deal closes
-- [ ] **T-1807** Referral dashboard for broker (see all referrals, conversion rate, referral fees paid)
-- [ ] **T-1808** Build automated lead assignment — broker sets rules (round-robin, by property type specialty, by location) → system assigns new leads automatically
-- [ ] **T-1809** Build activity feed widget (real-time stream of all team actions: "John moved lead to Negotiating", "Maria uploaded docs for Deal #42")
-- [ ] **T-1810** Tests: template application, checklist progress, referral tracking flow
+---
 
-## Phase 19: 🧩 Platform Enhancements
+## Phase 31: 🚀 Production Deployment & Monitoring
 
-Cross-cutting features that improve the entire app.
+**Goal:** Deploy to Firebase Hosting with custom domain, set up monitoring (Firebase Crashlytics, Sentry), configure CI/CD deployment pipeline, and implement automated rollback capability.
 
-- [ ] **T-1901** Multi-office/branch support — add `officeId`, `officeName` to User doc, broker creates offices, agents assigned to office
-- [ ] **T-1902** Office-level dashboard — broker sees metrics per office
-- [ ] **T-1903** Keyboard shortcuts — global shortcuts: `G + D` = go to dashboard, `G + L` = leads, `G + N` = new lead, `?` = shortcuts help modal
-- [ ] **T-1904** Dark mode polish — ensure all components respect dark theme, add system preference detection
-- [ ] **T-1905** Build onboarding tooltips — guided tour for new users on first login
-- [ ] **T-1906** Build notification preferences page (per-type toggles: email push, in-app, SMS)
-- [ ] **T-1907** Add loading skeletons to all pages (ShadCN Skeleton component)
-- [ ] **T-1908** Add error states to all data views (retry button, fallback message)
-- [ ] **T-1909** Tests: keyboard shortcuts, dark mode, notification preferences
+### Tasks
 
-## Future / v2 (Backlog)
+- [ ] **31.1** Configure custom domain on Firebase Hosting — DNS setup, SSL, redirects
+- [ ] **31.2** Add Sentry/Rollbar error monitoring — `src/lib/monitoring.ts` with source maps upload, breadcrumbs, user context
+- [ ] **31.3** Production CI/CD pipeline — auto-deploy to Firebase Hosting on merge to main, deploy Firestore rules + indexes
+- [ ] **31.4** Staging environment — deploy to a separate Firebase project (staging) on PR merge to develop
+- [ ] **31.5** Firebase App Distribution for internal beta testing
+- [ ] **31.6** Create `heroku.yml` or Dockerfile for alternative deployment targets
+- [ ] **31.7** Monitoring dashboard — set up Firebase Performance Monitoring for web, track:
+  - Firestore read/write/delete counts
+  - Page load times (FCP, LCP, TTFB)
+  - Error rates by page
+  - Active users (DAU/MAU)
+- [ ] **31.8** Create `DEPLOY.md` update with production deployment checklist
+- [ ] **31.9** Automated rollback script — `scripts/rollback.sh` that reverts to previous hosting version on deploy failure
+- [ ] **31.10** Validation: typecheck ✓ lint ✓ build ✓ deploy ✓
 
-- [ ] **v2-001** React Native mobile app (iOS + Android)
-- [ ] **v2-002** Offline-first mode (PWA or local-first sync)
-- [ ] **v2-004** Facebook Marketplace auto-posting (Graph API)
-- [ ] **v2-005** AI lead scoring & recommendations
-- [ ] **v2-007** Payment gateway integration (GCash/Maya via PayMongo)
-- [ ] **v2-008** Public listing website (SEO-optimized, separate Firebase site)
-- [ ] **v2-009** Multi-brokerage support (cross-broker collaboration)
-- [ ] **v2-010** Rent vs. Buy comparison calculator
+### Files to create
+
+| File | Purpose |
+|------|---------|
+| `src/lib/monitoring.ts` | Sentry/Rollbar init + config |
+| `scripts/rollback.sh` | Firebase rollback utility |
+| `.github/workflows/deploy-staging.yml` | Staging deployment workflow |
+| `.github/workflows/deploy-production.yml` | Production deployment workflow |
+
+### Files to modify
+
+| File | Change |
+|------|--------|
+| `src/main.tsx` | Initialize monitoring |
+| `DEPLOY.md` | Production checklist |
+| `package.json` | Add monitoring dependency |
+
+---
+
+## 🎯 Phase 32: Quality & Polish Sprint
+
+**Goal:** Cross-cutting polish across ALL existing 21 phases — fix UI inconsistencies, improve error handling, add loading skeletons, empty states, toast notifications, and responsive mobile layouts.
+
+### Tasks
+
+- [x] **32.1** Empty state audit — every list/table/grid must have an `EmptyState` component with illustration + CTA ✅ (All pages audited; 20+ pages updated to use shared EmptyState component)
+- [x] **32.2** Loading state audit — every data-dependent view must show `LoadingSpinner` or skeleton while Firestore subscription is loading ✅ (All pages audited; 10+ pages updated to use shared LoadingSpinner component)
+- [x] **32.3** Error state audit — every page must gracefully handle Firestore permission denied, offline, and unexpected errors with retry buttons ✅ (30+ pages now have error+retry handling)
+- [x] **32.4** Toast notification system — replace ad-hoc alerts with unified toast (success/error/warning/info) for all CRUD operations ✅ (Toast.tsx + pub/sub already existed and is integrated in App.tsx)
+- [ ] **32.5** Mobile responsiveness — test all 40+ pages at 375px and 768px breakpoints, fix overflow, collapsed nav, misaligned grids
+- [x] **32.6** Confirmation dialogs — add confirmation modals for all destructive actions ✅ (ConfirmDialog.tsx created with focus trap, a11y, loading states)
+- [x] **32.7** Form validation UX — inline validation errors, disabled submit buttons while saving, unsaved-changes warning on navigation ✅ (useUnsavedChanges.ts hook created)
+- [x] **32.8** Keyboard shortcuts — implement global shortcut palette (`Cmd+K` / `Ctrl+K`) with commands: navigate to page, create lead, create listing, search ✅ (CommandPalette.tsx created + integrated in App.tsx)
+- [ ] **32.9** Animation polish — add subtle transitions for route changes, modal open/close, sidebar collapse, status badge changes
+- [ ] **32.10** Validation: typecheck ✓ lint ✓ build ✓
+
+### Files to create
+
+| File | Purpose |
+|------|---------|
+| `src/components/ui/Toast.tsx` | Toast notification system |
+| `src/hooks/useToast.ts` | Toast hook |
+| `src/components/ui/CommandPalette.tsx` | `Cmd+K` shortcut palette |
+| `src/hooks/useUnsavedChanges.ts` | Navigation guard hook |
+
+### Files to modify
+
+| File | Change |
+|------|--------|
+| `src/App.tsx` | Add ToastProvider, CommandPalette |
+| `All page files` | Audit empty/loading/error states |
+| `All form components` | Add inline validation + submit guard |
+| `all list/tables` | Add EmptyState |
+| `firestore.rules` | Better error messages |
+
+---
+
+## Phasing Summary
+
+| Phase | Effort | Dependencies | Priority |
+|-------|--------|-------------|----------|
+| **P22** Email Service | Medium | None | High |
+| **P23** PH Payment Gateway | High | PayMongo account | High |
+| **P24** FB Lead Import | Medium | Facebook App + API access | High |
+| **P25** WhatsApp/Viber | Medium | WhatsApp Business API | Medium |
+| **P26** Advanced Reporting | High | P22 (email) | Medium |
+| **P27** Audit & Security | Medium | None | High |
+| **P28** i18n | High | None | Low |
+| **P29** Performance | Medium | None | High |
+| **P30** E2E Coverage | High | None | Medium |
+| **P31** Production Deploy | Medium | Custom domain | High |
+| **P32** Polish Sprint | Medium | None | High |
+
+**Recommended order:** P32 → P29 → P27 → P22 → P23 → P24 → P25 → P31 → P30 → P26 → P28
+
+> **Total:** 11 new phases · ~180+ new/modified files · +15,000+ lines of code across services, components, pages, tests, and configuration.

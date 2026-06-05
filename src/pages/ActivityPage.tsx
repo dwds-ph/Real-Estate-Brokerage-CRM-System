@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCollection } from "@/hooks/useFirestore";
+import { LoadingSpinner, EmptyState } from "@/components/ui";
 import { AuditLog, AppUser } from "@/types";
 import { formatDateTime } from "@/lib/utils";
 
@@ -78,17 +79,15 @@ export default function ActivityPage() {
 
       {/* Activity List */}
       {loading ? (
-        <div className="flex justify-center py-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
+        <LoadingSpinner size="md" />
       ) : error ? (
         <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 text-sm text-red-600 dark:text-red-400">
           Failed to load activity feed. {error}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-          {search ? "No activity matches your search." : "No activity yet."}
-        </div>
+        <EmptyState
+          title={search ? "No activity matches your search." : "No activity yet."}
+        />
       ) : (
         <div className="space-y-2">
           {filtered.map((entry) => (

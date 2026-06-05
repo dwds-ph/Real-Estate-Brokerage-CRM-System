@@ -153,26 +153,44 @@ export default function ClientPortalPage() {
   const { leadToken } = useParams<{ leadToken: string }>();
 
   // 1. Load the Lead
-  const { data: lead, loading: leadLoading } = useDoc<Lead>("leads", leadToken);
+  const {
+    data: lead,
+    loading: leadLoading,
+    error: leadError,
+  } = useDoc<Lead>("leads", leadToken);
 
   // 2. Load related Deals (filtered server-side via Firestore query constraints)
-  const { data: allDeals, loading: dealsLoading } = useCollection<Deal>(
+  const {
+    data: allDeals,
+    loading: dealsLoading,
+    error: dealsError,
+  } = useCollection<Deal>(
     "deals",
     leadToken ? [where("leadId", "==", leadToken)] : [],
   );
 
   // 3. Load Payments, Tours, and Documents (full collections, filtered client-side)
-  const { data: allPayments, loading: paymentsLoading } =
-    useCollection<Payment>("payments", []);
-  const { data: allTours, loading: toursLoading } = useCollection<Tour>(
-    "tours",
-    [],
-  );
-  const { data: allDocuments, loading: docsLoading } =
-    useCollection<VaultDocument>("vaultDocuments", []);
+  const {
+    data: allPayments,
+    loading: paymentsLoading,
+    error: paymentsError,
+  } = useCollection<Payment>("payments", []);
+  const {
+    data: allTours,
+    loading: toursLoading,
+    error: toursError,
+  } = useCollection<Tour>("tours", []);
+  const {
+    data: allDocuments,
+    loading: docsLoading,
+    error: docsError,
+  } = useCollection<VaultDocument>("vaultDocuments", []);
 
   // 4. If lead has an assigned agent, load their profile
-  const { data: agentProfile } = useDoc<AppUser>(
+  const {
+    data: agentProfile,
+    error: agentError,
+  } = useDoc<AppUser>(
     "users",
     lead?.assignedTo,
   );
@@ -219,6 +237,30 @@ export default function ClientPortalPage() {
 
   if (loading) {
     return <Spinner />;
+  }
+
+  // ─── Error ────────────────────────────────────────────────────
+
+  const fetchError = leadError || dealsError || paymentsError || toursError || docsError || agentError;
+
+  if (fetchError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="mx-auto max-w-md text-center space-y-4 px-6">
+          <span className="text-5xl">⚠️</span>
+          <h1 className="text-2xl font-bold">Something went wrong</h1>
+          <p className="text-muted-foreground">
+            Failed to load portal data: {fetchError}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!lead) {

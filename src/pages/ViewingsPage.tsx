@@ -5,10 +5,11 @@ import { createDoc, updateDocById } from "@/hooks/useFirestore";
 import { Viewing, ViewingStatus } from "@/types";
 import { formatDateTime, cn } from "@/lib/utils";
 import { toast } from "@/components/ui/Toast";
+import { LoadingSpinner } from "@/components/ui";
 
 export default function ViewingsPage() {
   const { userProfile } = useAuth();
-  const { data: viewings } = useCollection<Viewing>("viewings", []);
+  const { data: viewings, loading, error } = useCollection<Viewing>("viewings", []);
   const [showForm, setShowForm] = useState(false);
 
   const [form, setForm] = useState({
@@ -54,6 +55,26 @@ export default function ViewingsPage() {
   const past = viewings
     .filter((v) => (v as Viewing).status !== "scheduled")
     .sort((a, b) => (b as Viewing).scheduledAt - (a as Viewing).scheduledAt);
+
+  if (loading) {
+    return <LoadingSpinner size="lg" message="Loading viewings..." />;
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:bg-red-950/20">
+        <p className="text-red-700 dark:text-red-400 mb-3">
+          Failed to load viewings: {error}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

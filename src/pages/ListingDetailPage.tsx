@@ -10,8 +10,24 @@ import { ContractGenerator } from "@/components/contracts/ContractGenerator";
 export default function ListingDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: listing, loading } = useDoc<Listing>("listings", id);
+  const { data: listing, loading, error } = useDoc<Listing>("listings", id);
   const [showContractGen, setShowContractGen] = useState(false);
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:bg-red-950/20">
+        <p className="text-red-700 dark:text-red-400 mb-3">
+          Failed to load listing: {error}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

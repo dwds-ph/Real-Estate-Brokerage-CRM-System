@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 export default function AgentsPage() {
   const { userProfile } = useAuth();
-  const { data: agents, loading } = useAgents(userProfile?.id);
+  const { data: agents, loading, error: agentsError } = useAgents(userProfile?.id);
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteName, setInviteName] = useState("");
@@ -137,6 +137,21 @@ export default function AgentsPage() {
             {saving ? "Sending..." : "Send Invitation"}
           </button>
         </form>
+      )}
+
+      {/* Error State */}
+      {agentsError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:bg-red-950/20">
+          <p className="text-red-700 dark:text-red-400 mb-3">
+            Failed to load agents: {agentsError}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
       )}
 
       {/* Team List */}

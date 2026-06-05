@@ -5,7 +5,25 @@ import { formatCurrency, getListingStatusColor, cn } from "@/lib/utils";
 
 export default function BrochurePage() {
   const { listingId } = useParams();
-  const { data: listing, loading } = useDoc<Listing>("listings", listingId);
+  const { data: listing, loading, error } = useDoc<Listing>("listings", listingId);
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center max-w-md dark:bg-red-950/20">
+          <p className="text-red-700 dark:text-red-400 mb-3">
+            Failed to load property: {error}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

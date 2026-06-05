@@ -10,7 +10,7 @@ import PropertyMap, { type ListingMarker } from "@/components/map/PropertyMap";
 export default function ListingsPage() {
   const navigate = useNavigate();
   const { userProfile } = useAuth();
-  const { data: listings, loading } = useListings(userProfile?.id);
+  const { data: listings, loading, error } = useListings(userProfile?.id);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<ListingStatus | "all">("all");
@@ -438,6 +438,21 @@ export default function ListingsPage() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:bg-red-950/20">
+          <p className="text-red-700 dark:text-red-400 mb-3">
+            Failed to load listings: {error}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
       )}
 
       {/* Map View */}

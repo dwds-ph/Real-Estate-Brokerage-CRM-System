@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useCollection, deleteDocById } from "@/hooks/useFirestore";
 import { Mortgage, MortgageStatus } from "@/types";
 import { formatCurrency, timeAgo, cn } from "@/lib/utils";
+import { LoadingSpinner, EmptyState } from "@/components/ui";
 import MortgageTracker from "@/components/mortgage/MortgageTracker";
 import MortgageForm from "@/components/mortgage/MortgageForm";
 
@@ -133,9 +134,7 @@ export default function MortgagePage() {
 
       {/* Loading */}
       {loading && (
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
+        <LoadingSpinner size="md" />
       )}
 
       {/* Error */}
@@ -147,27 +146,19 @@ export default function MortgagePage() {
 
       {/* Empty State */}
       {!loading && !error && mortgages.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 text-muted-foreground">
-          <span className="text-5xl mb-4">🏦</span>
-          <p className="text-lg font-medium">
-            {statusFilter === "all"
-              ? "No mortgages tracked yet"
-              : `No ${statusFilter} mortgages`}
-          </p>
-          <p className="text-sm mt-1">
-            {statusFilter === "all"
-              ? "Add a mortgage to start tracking bank loan progress."
-              : "Try changing the filter."}
-          </p>
-          {statusFilter === "all" && (
+        <EmptyState
+          icon="🏦"
+          title={statusFilter === "all" ? "No mortgages tracked yet" : `No ${statusFilter} mortgages`}
+          description={statusFilter === "all" ? "Add a mortgage to start tracking bank loan progress." : "Try changing the filter."}
+          action={statusFilter === "all" ? (
             <button
               onClick={() => setShowForm(true)}
-              className="mt-4 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               + New Mortgage
             </button>
-          )}
-        </div>
+          ) : undefined}
+        />
       )}
 
       {/* Mortgage List */}

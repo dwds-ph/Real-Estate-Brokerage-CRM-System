@@ -4,6 +4,7 @@ import { useCollection, createDoc, deleteDocById } from "@/hooks/useFirestore";
 import { Expense, ExpenseCategory } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { toast } from "@/components/ui/Toast";
+import { LoadingSpinner, EmptyState } from "@/components/ui";
 
 const CATEGORIES: { value: ExpenseCategory; label: string; icon: string }[] = [
   { value: "transportation", label: "Transportation", icon: "🚗" },
@@ -166,13 +167,9 @@ export default function ExpensesPage() {
 
       {/* Expense List */}
       {loading ? (
-        <div className="flex justify-center py-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
+        <LoadingSpinner size="md" />
       ) : expenses.length === 0 ? (
-        <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-          No expenses recorded
-        </div>
+        <EmptyState title="No expenses recorded" />
       ) : (
         <div className="space-y-2">
           {[...expenses]

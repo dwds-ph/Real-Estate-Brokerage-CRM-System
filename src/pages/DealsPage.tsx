@@ -31,6 +31,10 @@ export default function DealsPage() {
     handleDrop,
   } = useDealsPage();
 
+  // NOTE: useDealsPage does not expose an error property; data fetching
+  // errors from internal hooks are not surfaced here. Drag-and-drop
+  // operations handle errors via toast internally.
+
   if (loading) {
     return (
       <div className="flex justify-center py-8">

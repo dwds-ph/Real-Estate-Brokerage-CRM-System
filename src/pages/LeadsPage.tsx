@@ -8,6 +8,7 @@ import LeadRoutingRules from "@/components/automation/LeadRoutingRules";
 import { LeadFilters } from "@/components/leads/LeadFilters";
 import { LeadForm } from "@/components/leads/LeadForm";
 import { LeadList } from "@/components/leads/LeadList";
+import { LoadingSpinner, EmptyState } from "@/components/ui";
 
 export default function LeadsPage() {
   const navigate = useNavigate();
@@ -30,8 +31,34 @@ export default function LeadsPage() {
     editLead,
     leads,
     loading,
+    error,
   } = useLeadsPage();
   const [showRoutingRules, setShowRoutingRules] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <LoadingSpinner message="Loading leads..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+          <p className="text-lg font-semibold text-red-800">Failed to load leads</p>
+          <p className="mt-1 text-sm text-red-600">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -81,15 +108,34 @@ export default function LeadsPage() {
         />
       )}
 
-      {/* Lead Cards */}
-      <LeadList
-        leads={filtered as Lead[]}
-        loading={loading}
-        search={search}
-        onEdit={editLead}
-        onDelete={handleDelete}
-        onNavigate={(id) => navigate(`/leads/${id}`)}
-      />
+      {/* Empty State or Lead Cards */}
+      {leads.length === 0 ? (
+        <EmptyState
+          icon="👥"
+          title="No leads yet"
+          description="Import from CSV or add manually."
+          action={
+            <button
+              onClick={() => {
+                resetForm();
+                setShowForm(true);
+              }}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              + Add Lead
+            </button>
+          }
+        />
+      ) : (
+        <LeadList
+          leads={filtered as Lead[]}
+          loading={loading}
+          search={search}
+          onEdit={editLead}
+          onDelete={handleDelete}
+          onNavigate={(id) => navigate(`/leads/${id}`)}
+        />
+      )}
 
       {/* Lead Routing Rules Modal */}
       <LeadRoutingRules

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import {
-  subscribePropertyDocuments,
   createDocument,
   uploadDocumentFile,
 } from "@/services/documentVaultService";
@@ -49,16 +48,23 @@ export default function DocumentsPage() {
     if (!brokerId) {return;}
     setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
     setError(null);
-    const unsub = subscribePropertyDocuments(
-      brokerId,
-      selectedListingId || undefined,
-      (items) => {
-        setDocuments(items);
+    const q = query(
+      collection(db, "propertyDocuments"),
+      where("brokerId", "==", brokerId),
+      ...(selectedListingId ? [where("listingId", "==", selectedListingId)] : []),
+      orderBy("createdAt", "desc"),
+    );
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        setDocuments(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as PropertyDocument[]);
+        setLoading(false);
+      },
+      (err) => {
+        setError(err.message);
         setLoading(false);
       },
     );
-    // subscribePropertyDocuments doesn't support error callback,
-    // but we set loading false on any data change
     return unsub;
   }, [brokerId, selectedListingId]);
 
@@ -106,14 +112,30 @@ export default function DocumentsPage() {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-          {error}
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-center dark:bg-red-950/20">
+          <p className="text-red-700 dark:text-red-400 mb-3">
+            {error}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Retry
+          </button>
         </div>
       )}
 
       {listingsError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-          Failed to load listings: {listingsError}
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-center dark:bg-red-950/20">
+          <p className="text-red-700 dark:text-red-400 mb-3">
+            Failed to load listings: {listingsError}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Retry
+          </button>
         </div>
       )}
 

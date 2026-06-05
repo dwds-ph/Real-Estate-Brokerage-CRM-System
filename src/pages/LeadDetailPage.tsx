@@ -24,7 +24,7 @@ export default function LeadDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { userProfile } = useAuth();
-  const { data: lead, loading } = useDoc<Lead>("leads", id);
+  const { data: lead, loading, error } = useDoc<Lead>("leads", id);
   const [commText, setCommText] = useState("");
   const [commType, setCommType] = useState<CommLogEntry["type"]>("call");
   const [saving, setSaving] = useState(false);
@@ -38,6 +38,22 @@ export default function LeadDetailPage() {
     });
     return unsub;
   }, [id]);
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:bg-red-950/20">
+        <p className="text-red-700 dark:text-red-400 mb-3">
+          Failed to load lead: {error}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

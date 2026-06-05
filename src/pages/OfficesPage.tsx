@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { LoadingSpinner, EmptyState } from "@/components/ui";
 import {
   getOffices,
   createOffice,
@@ -195,15 +196,9 @@ export default function OfficesPage() {
 
       {/* Office List */}
       {loading ? (
-        <div className="flex justify-center py-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
+        <LoadingSpinner size="md" />
       ) : offices.length === 0 ? (
-        <div className="rounded-lg border bg-card p-8 text-center">
-          <p className="text-muted-foreground">
-            No offices yet. Create your first office!
-          </p>
-        </div>
+        <EmptyState title="No offices yet." description="Create your first office!" />
       ) : (
         <div className="space-y-3">
           {offices.map((office) => (

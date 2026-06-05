@@ -61,6 +61,7 @@ const defaultLeadsData = {
   editLead: vi.fn(),
   leads: [],
   loading: false,
+  error: null,
 };
 
 const renderPage = () =>
@@ -80,7 +81,7 @@ describe("LeadsPage", () => {
     renderPage();
     expect(screen.getByText("Leads")).toBeInTheDocument();
     expect(screen.getByTestId("lead-filters")).toBeInTheDocument();
-    expect(screen.getByTestId("lead-list")).toBeInTheDocument();
+    expect(screen.getByText("No leads yet")).toBeInTheDocument();
   });
 
   it("shows leads list count", () => {
@@ -94,7 +95,7 @@ describe("LeadsPage", () => {
 
   it("shows empty state", () => {
     renderPage();
-    expect(screen.getByText("0 total leads")).toBeInTheDocument();
+    expect(screen.getByText("No leads yet")).toBeInTheDocument();
   });
 
   it("shows New Lead button", () => {

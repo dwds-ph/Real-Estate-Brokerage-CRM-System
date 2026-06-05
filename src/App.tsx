@@ -7,6 +7,7 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import ShortcutsHelpModal from "@/components/ShortcutsHelpModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ToastContainer } from "@/components/ui/Toast";
+import CommandPalette from "@/components/ui/CommandPalette";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import AppLayout from "@/components/layout/AppLayout";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
@@ -93,6 +94,7 @@ function App() {
         <OfflineIndicator />
         <AppContent />
         <AppKeyboardShortcuts />
+        <CommandPalette />
         <ToastContainer />
         <Suspense fallback={<PageLoader />}>
           <ErrorBoundary>

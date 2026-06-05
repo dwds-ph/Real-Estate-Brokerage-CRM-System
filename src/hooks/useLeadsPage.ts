@@ -14,7 +14,7 @@ import { toast } from "@/components/ui/Toast";
 
 export function useLeadsPage() {
   const { userProfile } = useAuth();
-  const { data: leads, loading } = useLeads(userProfile?.id);
+  const { data: leads, loading, error } = useLeads(userProfile?.id);
   const { data: agents } = useCollection<AppUser>("users");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -160,6 +160,7 @@ export function useLeadsPage() {
     editLead,
     leads: leads as Lead[],
     loading,
+    error,
     agents,
   };
 }

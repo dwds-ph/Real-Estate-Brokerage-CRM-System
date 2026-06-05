@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { LoadingSpinner, EmptyState } from "@/components/ui";
 import { ChecklistTemplate } from "@/types";
 import {
   fetchChecklistTemplates,
@@ -291,13 +292,9 @@ export default function ChecklistTemplatesPage() {
 
       {/* Template List */}
       {loading ? (
-        <div className="flex justify-center py-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
+        <LoadingSpinner size="md" />
       ) : templates.length === 0 ? (
-        <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-          No checklist templates yet. Create your first one!
-        </div>
+        <EmptyState title="No checklist templates yet." description="Create your first one!" />
       ) : (
         <div className="grid gap-4">
           {templates.map((tpl) => (

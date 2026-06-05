@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCollection, updateDocById } from "@/hooks/useFirestore";
+import { LoadingSpinner, EmptyState } from "@/components/ui";
 import { AppNotification } from "@/types";
 import { formatDateTime, timeAgo, cn } from "@/lib/utils";
 
@@ -101,13 +102,9 @@ export default function NotificationsPage() {
 
       {/* Notification List */}
       {loading ? (
-        <div className="flex justify-center py-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
+        <LoadingSpinner size="md" />
       ) : filtered.length === 0 ? (
-        <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-          No notifications here yet.
-        </div>
+        <EmptyState title="No notifications here yet." />
       ) : (
         <div className="space-y-2">
           {filtered.map((n) => {

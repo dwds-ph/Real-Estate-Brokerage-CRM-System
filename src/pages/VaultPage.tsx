@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useVaultPage } from "@/hooks/useVaultPage";
 import { cn, formatDateTime } from "@/lib/utils";
+import { LoadingSpinner, EmptyState } from "@/components/ui";
 import { DocumentDetail } from "@/components/documents/DocumentDetail";
 import DocumentList from "@/components/documents/DocumentList";
 import DocumentRequestModal from "@/components/documents/DocumentRequestModal";
@@ -212,17 +213,13 @@ export default function VaultPage() {
           {activeTab === "requests" && (
             <div className="space-y-4">
               {reqsLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                </div>
+                <LoadingSpinner size="md" />
               ) : myRequests.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                  <span className="text-4xl mb-2">📥</span>
-                  <p className="text-sm font-medium">No document requests</p>
-                  <p className="text-xs">
-                    Request documents from your team using the button above.
-                  </p>
-                </div>
+                <EmptyState
+                  icon="📥"
+                  title="No document requests"
+                  description="Request documents from your team using the button above."
+                />
               ) : (
                 <div className="divide-y rounded-lg border">
                   {myRequests.map((req) => (
