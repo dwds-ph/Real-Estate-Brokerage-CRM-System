@@ -246,6 +246,7 @@ export const COLLECTIONS = {
   REFERRALS: "referrals",
   LEADS_ROUTING_RULES: "leadRoutingRules",
   SEED_DATA: "seedData",
+  SCHEDULED_REPORTS: "scheduledReports",
   EMAIL_LOGS: "emailLogs",
   EMAIL_PREFERENCES: "emailPreferences",
 } as const;

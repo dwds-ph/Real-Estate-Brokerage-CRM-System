@@ -9,16 +9,28 @@
  *  - Results table with rows and summary
  *  - Export buttons (CSV / PDF)
  *  - Loading, error, and empty states
+ *  - Scheduled Reports section (Phase 26)
  */
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useCollection } from "@/hooks/useFirestore";
+import { useAuth } from "@/context/AuthContext";
 import type { Lead, Deal, Payment, CommissionPlan } from "@/types";
 import {
   generateReport,
   type ReportFilter,
 } from "@/lib/reportEngine";
 import { exportToCSV, exportToPDF } from "./ReportExport";
+import ReportBuilder from "./ReportBuilder";
+import ScheduledReportForm from "./ScheduledReportForm";
+import {
+  getScheduledReports,
+  deleteScheduledReport,
+  toggleScheduledReport,
+  scheduleReport,
+  frequencyLabel,
+  type ScheduledReport,
+} from "@/services/reportScheduler";
 
 // ─── Constants ──────────────────────────────────────────────────────────
 
@@ -58,6 +70,8 @@ function defaultEnd(): number {
 // ─── Component ──────────────────────────────────────────────────────────
 
 export default function ReportDashboard() {
+  const { userProfile } = useAuth();
+
   // Filters
   const [module, setModule] = useState<ReportFilter["module"]>("leads");
   const [groupBy, setGroupBy] = useState<ReportFilter["groupBy"]>("status");
@@ -134,17 +148,86 @@ export default function ReportDashboard() {
     exportToPDF(report.title, report.rows, report.summary);
   }, [report]);
 
+  // ─── Scheduled Reports State ───────────────────────────────────────
+
+  const [schedules, setSchedules] = useState<ScheduledReport[]>([]);
+  const [schedulesLoaded, setSchedulesLoaded] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showBuilder, setShowBuilder] = useState(false);
+
+  useEffect(() => {
+    if (!userProfile?.id) return;
+    getScheduledReports(userProfile.id)
+      .then((list) => {
+        setSchedules(list);
+        setSchedulesLoaded(true);
+      })
+      .catch(() => setSchedulesLoaded(true));
+  }, [userProfile?.id]);
+
+  const handleDeleteSchedule = useCallback(
+    async (reportId: string) => {
+      await deleteScheduledReport(reportId);
+      setSchedules((prev) => prev.filter((s) => s.id !== reportId));
+    },
+    [],
+  );
+
+  const handleToggleSchedule = useCallback(
+    async (reportId: string, isActive: boolean) => {
+      await toggleScheduledReport(reportId, isActive);
+      setSchedules((prev) =>
+        prev.map((s) => (s.id === reportId ? { ...s, isActive } : s)),
+      );
+    },
+    [],
+  );
+
+  const handleSaveSchedule = useCallback(
+    async () => {
+      // Re-fetch after save
+      if (!userProfile?.id) return;
+      const list = await getScheduledReports(userProfile.id);
+      setSchedules(list);
+      setShowForm(false);
+    },
+    [userProfile?.id],
+  );
+
   // ─── Render ──────────────────────────────────────────────────────────
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">📊 Reports</h1>
-        <p className="text-muted-foreground">
-          Generate cross-module reports with CSV and PDF export.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">📊 Reports</h1>
+          <p className="text-muted-foreground">
+            Generate cross-module reports with CSV and PDF export.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowBuilder((v) => !v)}
+          className="rounded-lg border bg-background px-4 py-2 text-sm font-medium hover:bg-muted"
+        >
+          {showBuilder ? "Hide Templates" : "📁 Templates"}
+        </button>
       </div>
+
+      {/* Report Builder Templates (collapsible) */}
+      {showBuilder && (
+        <ReportBuilder
+          onSelectTemplate={(template, range) => {
+            setModule(template.config.module);
+            setGroupBy(template.config.groupBy);
+            setDateStart(range.start());
+            setDateEnd(range.end());
+            setReportRun(false);
+            setShowBuilder(false);
+          }}
+        />
+      )}
 
       {/* Filter Controls */}
       <div className="rounded-lg border bg-card p-4 space-y-4">
@@ -266,7 +349,7 @@ export default function ReportDashboard() {
       {/* Results area */}
       {!reportRun && !loading && (
         <div className="rounded-lg border bg-card p-12 text-center text-muted-foreground">
-          <p className="text-lg">Select filters and click "Run Report" to generate data.</p>
+          <p className="text-lg">Select filters and click &quot;Run Report&quot; to generate data.</p>
         </div>
       )}
 
@@ -378,6 +461,118 @@ export default function ReportDashboard() {
           Failed to generate report. Please try again.
         </div>
       )}
+
+      {/* ─── Scheduled Reports Section ──────────────────────────────── */}
+      <div className="rounded-lg border bg-card p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">🕐 Scheduled Reports</h2>
+            <p className="text-xs text-muted-foreground">
+              Set up recurring report generation and delivery.
+            </p>
+          </div>
+          {!showForm && (
+            <button
+              type="button"
+              onClick={() => setShowForm(true)}
+              className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              + New Schedule
+            </button>
+          )}
+        </div>
+
+        {showForm && (
+          <ScheduledReportForm
+            onSave={async (data) => {
+              if (!userProfile?.id) return;
+              await scheduleReport({
+                ...data,
+                userId: userProfile.id,
+              });
+              await handleSaveSchedule();
+            }}
+            onCancel={() => setShowForm(false)}
+          />
+        )}
+
+        {/* Scheduled reports list */}
+        {!schedulesLoaded ? (
+          <div className="flex justify-center py-4">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          </div>
+        ) : schedules.length === 0 && !showForm ? (
+          <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+            No scheduled reports yet. Create one to get recurring insights.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {schedules.map((sched) => (
+              <div
+                key={sched.id}
+                className="flex items-center justify-between rounded-lg border bg-background px-4 py-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-block h-2 w-2 rounded-full ${
+                        sched.isActive ? "bg-green-500" : "bg-gray-300"
+                      }`}
+                    />
+                    <p className="truncate text-sm font-medium">
+                      {sched.title}
+                    </p>
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <span>
+                      {sched.module} · by {sched.groupBy}
+                    </span>
+                    <span>
+                      {frequencyLabel(
+                        sched.frequency,
+                        sched.dayOfWeek,
+                        sched.dayOfMonth,
+                      )}
+                    </span>
+                    <span className="uppercase">{sched.format}</span>
+                    {sched.recipients.length > 0 && (
+                      <span>{sched.recipients.length} recipient(s)</span>
+                    )}
+                    {sched.nextScheduledAt && (
+                      <span>
+                        Next:{" "}
+                        {new Date(sched.nextScheduledAt).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 ml-3">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleToggleSchedule(sched.id, !sched.isActive)
+                    }
+                    className={`rounded px-2 py-1 text-xs font-medium transition-colors ${
+                      sched.isActive
+                        ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400"
+                        : "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
+                    }`}
+                  >
+                    {sched.isActive ? "Pause" : "Activate"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSchedule(sched.id)}
+                    className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete. Phase 32 (Polish Sprint) at 90%. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅ (29.6 PWA + 29.7 Lighthouse CI done). **Phase 26 (Advanced Reporting) at ~60%** (engine, dashboard, export, route done; scheduler + builder remain).
+> **Current state:** 21 phases complete. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 22 (Email Service) COMPLETE** ✅. Phase 30 (E2E Coverage) at ~40% (seed data + test plan + setup done). Phase 32 (Polish Sprint) at 90%.
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -145,11 +145,14 @@
 
 ### Tasks
 
-- [x] **26.1** Create `src/lib/reportEngine.ts` — cross-module aggregation engine: aggregateLeadsBySource, aggregateDealsByStatus, aggregatePaymentsByStatus, aggregateCommissions, generateReport dispatcher ✅
-- [x] **26.3** Create export utility — `ReportExport.tsx` with CSV export (Blob download) and PDF export (jspdf + jspdf-autotable) ✅
-- [x] **26.5** Create `ReportDashboard.tsx` — module selector, date range, group-by, results table with summary cards, CSV/PDF export, loading/error/empty states ✅
+- [x] **26.1** Create `src/lib/reportEngine.ts` — cross-module aggregation engine ✅
+- [x] **26.2** Create `ReportBuilder.tsx` — 6 pre-built report templates with preset filters ✅
+- [x] **26.3** Create export utility — CSV + PDF export via jspdf-autotable ✅
+- [x] **26.4** Create `src/services/reportScheduler.ts` — ScheduledReport CRUD + schedule computation ✅
+- [x] **26.5** Create `ReportDashboard.tsx` — full report dashboard with module selector, results, export ✅
+- [x] **26.6** Create `ScheduledReportForm.tsx` — frequency/format/recipients config ✅
 - [x] **26.7** Add route `/reports` + sidebar nav entry ✅
-- [ ] **26.8** Firestore rules for `reports`, `scheduledReports` collections
+- [x] **26.8** Firestore rules for `scheduledReports` collection ✅
 - [ ] **Validation:** typecheck ✓ lint ✓ build ✓
 
 ### Files to create
@@ -291,15 +294,15 @@
 
 ### Tasks
 
-- [ ] **30.1** Create E2E test plan — map all critical paths: lead create → deal → payment → commission → payout, listing create → brochure → syndication, agent invite → hierarchy → reporting
-- [ ] **30.2** Expand E2E tests — cover all 21 modules (currently 3 spec files covering auth-flows, deal-pipeline, navigation-smoke). Target: 15+ spec files covering all phases
-- [ ] **30.3** Add visual regression testing with Playwright `await expect(page).toHaveScreenshot()` for key pages (Dashboard, Leads, Deals, Listings)
-- [ ] **30.4** Add Firestore emulator seed data script — `scripts/seed-e2e-data.cjs` that populates realistic PH data (agents, listings in Metro Manila/Cebu/Davao, leads with PH names/contacts)
-- [ ] **30.5** Add `tests/` unit test coverage for all remaining services and lib modules (cover: analytics, branchService, calendarService, checklistService, coBrokerService, complianceService, documentVault, goalService, paymentService, payoutService, projectService, referralService, teamService, tourService)
-- [ ] **30.6** Add service test for `leadRoutingService.ts` (currently tested but needs expansion)
-- [ ] **30.7** Create `tests/e2e/setup.ts` — shared fixture for auth + emulator initialization
-- [ ] **30.8** Add CI matrix: test on Node 24 + 3 OS runners (ubuntu, windows, macos-latest)
-- [ ] **30.9** Validation: typecheck ✓ lint ✓ all tests pass ✓
+- [x] **30.1** Create E2E test plan — `e2e/test-plan.md` with 14 user flow categories, 55+ test cases, data dependency diagrams ✅
+- [ ] **30.2** Expand E2E tests — cover all 21 modules (currently 3 spec files)
+- [ ] **30.3** Add visual regression testing
+- [x] **30.4** Add Firestore emulator seed data script — `scripts/seed-e2e-data.cjs` with 11 collections of realistic PH data (PH names, +63 phones, Metro Manila/Cebu/Davao addresses, PHP amounts) ✅
+- [ ] **30.5** Add unit test coverage for remaining services
+- [ ] **30.6** Expand leadRoutingService tests
+- [x] **30.7** Create `tests/e2e/setup.ts` — shared fixture with auto-login (broker/agent) and auto-seed data ✅
+- [ ] **30.8** Add CI matrix
+- [ ] **30.9** Validation
 
 ### Files to create
 
