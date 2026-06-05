@@ -14,3 +14,5 @@ export * from "./domains/cobrokerage";
 export * from "./domains/calendar";
 export * from "./domains/automation";
 export * from "./domains/audit";
+export * from "./domains/email";
+export * from "./domains/session";

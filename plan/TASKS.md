@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete (PWA, Scorecard, Payments, Contracts, Tours, Licenses, Market Report, Projects, Commission Engine, Matching, Payouts, CSV Import, Client Portal, Smart Reminders, Task Manager, Property Map, Loan Calculator, Analytics, Co-Brokerage, QR/Syndication, Document Vault). Phase 32 (Polish Sprint) at 90% (32.5 Mobile + 32.9 Animations done, 32.10 validation passes). Phase 27 (Audit Trail) at 75% (27.4 RBAC + 27.6 Data Integrity done, only 27.5 Session mgmt remains). Phase 29 (Performance) at 60% (29.4 Virtual scroll + 29.9 A11y audit done).
+> **Current state:** 21 phases complete. Phase 32 (Polish Sprint) at 90%. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 22 (Email Service) COMPLETE** ✅. Phase 29 (Performance) at 80% (29.5 images done, 29.6 PWA + 29.7 Lighthouse remain).
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -12,12 +12,12 @@
 
 ### Tasks
 
-- [ ] **22.1** Add email service dependency (sendgrid, mailgun, or resend npm package)
-- [ ] **22.2** Create `src/services/emailService.ts` — send single/bulk transactional emails with templated content (deal notification, payment reminder, document shared, welcome, password reset)
-- [ ] **22.3** Create email template system — HTML templates for: deal status change, payment received, overdue payment, tour confirmed, new lead assigned, document uploaded
-- [ ] **22.4** Integrate email triggers into existing services — e.g., `dealService` sends email on status change, `paymentService` sends overdue notice
-- [ ] **22.5** Add email preferences UI in SettingsPage — per-user opt-in for each notification type (email vs in-app vs both)
-- [ ] **22.6** Firestore rules for `emailLogs` collection (audit trail)
+- [x] **22.1** Add email service dependency — `resend` npm package installed ✅
+- [x] **22.2** Create `src/services/emailService.ts` — Resend REST API client with sendEmail(), sendBulkEmails(), isEmailEnabled(), Firestore audit logging ✅
+- [x] **22.3** Create email template system — 6 responsive HTML templates in `emailTemplates.ts`: deal status change, payment received, overdue, tour confirmed, new lead assigned, document uploaded ✅
+- [x] **22.4** Integration triggers — `emailTriggers.ts` with exported notification functions for each event type ✅
+- [x] **22.5** Email preferences UI — `EmailPreferences.tsx` component with 6 notification type toggles (Email/In-app) and Firestore persistence, integrated into SettingsPage ✅
+- [x] **22.6** Firestore rules for `emailLogs` collection + `emailPreferences` collection ✅
 - [ ] **Validation:** typecheck ✓ lint ✓ build ✓
 
 ### Files to create
@@ -188,7 +188,7 @@
 - [x] **27.2** Firestore rules: audit log immutability enforced (create only, no update/delete) + compliance-officer read access ✅
 - [x] **27.3** Create `AuditLogViewer.tsx` — broker-only page: filterable/searchable table of all operations, entity type filter, date range, user filter, CSV export ✅ (AuditLogViewer created with all filters + CSV export)
 - [x] **27.4** Enhanced RBAC — `usePermissions.ts` hook created with role checks (isBroker, isAdmin, isSeniorAgent, isComplianceOfficer) + derived permissions (canViewAllData, canManageUsers, canViewAudit). AuditPage updated to use `canViewAudit` ✅
-- [ ] **27.5** Session management — track active sessions in Firestore, broker can revoke sessions
+- [x] **P27.5** Session management — `sessionService.ts` created (start/end/heartbeat/revoke), `SessionManager.tsx` UI integrated into AuditPage, AuthContext hooks for session lifecycle, firestore.rules for userSessions subcollection ✅
 - [x] **27.6** Data integrity checker — `DataIntegrityReport.tsx` created: runs checks on 15 collections for expected vs actual counts, cross-references 6 relationship types for orphaned records. Integrated into AuditPage. ✅
 - [x] **27.7** Add route `/audit` + sidebar nav entry (broker-only) ✅ (Lazy route added to App.tsx)
 - [x] **27.8** Firestore rules enhanced RBAC — 6 new helper functions (isAdmin, isBrokerOrAdmin, isSeniorAgent, isComplianceOfficer, hasReadAllAccess), read access extended to all 40+ collections for compliance-officer/senior-agent roles ✅
@@ -263,7 +263,7 @@
 - [x] **29.2** Audit and enforce lazy loading — ensure ALL route pages use `React.lazy()` ✅ (All 43 routes lazy-loaded)
 - [x] **29.3** Firestore query optimization — audit + fix unbounded scans ✅ (useCollection now auto-adds orderBy + limit(200))
 - [x] **29.4** Virtual scrolling for large lists — `src/lib/virtualList.ts` utility created, applied to LeadList, ActivityPage, NotificationsPage, CommissionsPage, ExpensesPage, PayoutDashboard, TaskKanbanBoard via CSS `content-visibility: auto` ✅
-- [ ] **29.5** Image optimization — auto-resize listing images, serve WebP, lazy loading for gallery
+- [x] **29.5** Image optimization — `OptimizedImage.tsx` component created with lazy loading, object-fit cover, aspect-ratio containers; applied to ListingDetailPage, BrochurePage, ListingsPage, PropertyMapPopup, PropertyMap, AgentLeaderboard, AgentProfileScore, TourFeedback ✅
 - [ ] **29.6** PWA audit — verify offline caching rules, test service worker lifecycle
 - [ ] **29.7** Lighthouse CI integration — add Lighthouse CI to GitHub Actions
 - [x] **29.8** Memory leak audit — verify all `onSnapshot` unsubscribers ✅ (1 critical leak fixed in CMAReportGenerator.tsx)

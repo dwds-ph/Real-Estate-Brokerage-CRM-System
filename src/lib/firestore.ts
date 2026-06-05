@@ -246,6 +246,8 @@ export const COLLECTIONS = {
   REFERRALS: "referrals",
   LEADS_ROUTING_RULES: "leadRoutingRules",
   SEED_DATA: "seedData",
+  EMAIL_LOGS: "emailLogs",
+  EMAIL_PREFERENCES: "emailPreferences",
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];

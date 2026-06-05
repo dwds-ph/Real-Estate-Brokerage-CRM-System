@@ -1,4 +1,5 @@
 import { formatCurrency } from "@/lib/utils";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface ListingPopup {
   id?: string;
@@ -19,10 +20,11 @@ export default function PropertyMapPopup({ listing, onViewDetails }: Props) {
   return (
     <div className="text-sm min-w-[180px]">
       {listing.images?.[0] && (
-        <img
+        <OptimizedImage
           src={listing.images[0]}
-          alt={listing.title}
-          className="w-full h-24 object-cover rounded mb-2"
+          alt={listing.title ?? "Property image"}
+          aspectRatio="4/3"
+          containerClassName="w-full rounded mb-2"
         />
       )}
       <p className="font-semibold truncate">{listing.title}</p>

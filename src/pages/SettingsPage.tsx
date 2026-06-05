@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { db, auth } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
+import EmailPreferences from "@/components/settings/EmailPreferences";
 
 export default function SettingsPage() {
   const { user, userProfile, refreshProfile } = useAuth();
@@ -254,6 +255,9 @@ export default function SettingsPage() {
           User ID: <code className="text-xs">{userProfile.id}</code>
         </p>
       </section>
+
+      {/* Email & In-App Preferences */}
+      <EmailPreferences />
     </div>
   );
 }

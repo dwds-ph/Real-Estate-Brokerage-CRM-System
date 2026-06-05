@@ -4,7 +4,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { useCollection } from "@/hooks/useFirestore";
 import { where, orderBy, limit } from "firebase/firestore";
 import { LoadingSpinner, EmptyState } from "@/components/ui";
-import { AuditLogViewer, DataIntegrityReport } from "@/components/audit";
+import { AuditLogViewer, DataIntegrityReport, SessionManager } from "@/components/audit";
 import type { AuditLogEntry } from "@/types";
 import { formatDateTime } from "@/lib/utils";
 
@@ -137,6 +137,9 @@ export default function AuditPage() {
       </div>
 
       <AuditLogViewer logs={logs} loading={false} error={null} />
+
+      {/* ─── Session Management ──────────────────────────────── */}
+      <SessionManager />
 
       {/* ─── Data Integrity Report ──────────────────────────── */}
       <DataIntegrityReport />

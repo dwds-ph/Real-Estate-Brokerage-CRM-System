@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useDoc } from "@/hooks/useFirestore";
 import { Listing } from "@/types";
 import { formatCurrency, getListingStatusColor, cn } from "@/lib/utils";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export default function BrochurePage() {
   const { listingId } = useParams();
@@ -52,10 +53,11 @@ export default function BrochurePage() {
         {/* Hero Image */}
         <div className="rounded-xl overflow-hidden mb-6 shadow-lg">
           {listing.media && listing.media.length > 0 ? (
-            <img
+            <OptimizedImage
               src={listing.media[0]}
               alt={listing.title}
-              className="w-full h-72 md:h-96 object-cover"
+              aspectRatio="16/9"
+              containerClassName="w-full rounded-xl shadow-lg"
             />
           ) : (
             <div className="h-72 md:h-96 bg-gradient-to-br from-primary/30 to-primary/5 flex items-center justify-center">

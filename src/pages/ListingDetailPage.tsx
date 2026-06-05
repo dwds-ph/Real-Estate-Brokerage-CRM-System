@@ -6,6 +6,7 @@ import { formatCurrency, getListingStatusColor, cn } from "@/lib/utils";
 import PropertyMap from "@/components/map/PropertyMap";
 import ChecklistWidget from "@/components/automation/ChecklistWidget";
 import { ContractGenerator } from "@/components/contracts/ContractGenerator";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export default function ListingDetailPage() {
   const { id } = useParams();
@@ -58,10 +59,11 @@ export default function ListingDetailPage() {
         {/* Hero */}
         <div className="rounded-lg overflow-hidden">
           {listing.media && listing.media.length > 0 ? (
-            <img
+            <OptimizedImage
               src={listing.media[0]}
               alt={listing.title}
-              className="w-full h-64 object-cover"
+              aspectRatio="16/9"
+              containerClassName="w-full rounded-lg"
             />
           ) : (
             <div className="h-64 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">

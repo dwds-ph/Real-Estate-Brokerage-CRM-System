@@ -6,6 +6,7 @@ import { createDoc, updateDocById, deleteDocById } from "@/hooks/useFirestore";
 import { Listing, ListingStatus, PropertyType, FloodRisk } from "@/types";
 import { formatCurrency, getListingStatusColor, cn } from "@/lib/utils";
 import PropertyMap, { type ListingMarker } from "@/components/map/PropertyMap";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export default function ListingsPage() {
   const navigate = useNavigate();
@@ -504,12 +505,13 @@ export default function ListingsPage() {
                 }}
               >
                 {/* Image Placeholder */}
-                <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
                   {listing.media && listing.media.length > 0 ? (
-                    <img
+                    <OptimizedImage
                       src={listing.media[0]}
                       alt={listing.title}
-                      className="h-full w-full object-cover"
+                      aspectRatio="4/3"
+                      containerClassName="h-full w-full"
                     />
                   ) : (
                     <span className="text-4xl text-muted-foreground/30">

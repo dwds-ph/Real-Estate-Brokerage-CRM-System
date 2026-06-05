@@ -112,7 +112,8 @@ export default function PropertyMap({
                   <img
                     src={listing.images[0]}
                     alt={listing.title}
-                    className="w-full h-24 object-cover rounded mb-2"
+                    loading="lazy"
+                    className="w-full h-24 object-cover object-center rounded mb-2"
                   />
                 )}
                 <p className="font-semibold">{listing.title}</p>

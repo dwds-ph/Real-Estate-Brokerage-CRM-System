@@ -238,7 +238,8 @@ export default function TourFeedback({
                     <img
                       src={url}
                       alt={`Tour photo ${i + 1}`}
-                      className="h-16 w-16 rounded-lg object-cover"
+                      loading="lazy"
+                      className="h-16 w-16 rounded-lg object-cover object-center"
                     />
                   </div>
                 ))}

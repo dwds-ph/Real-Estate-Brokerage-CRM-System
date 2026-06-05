@@ -125,6 +125,19 @@ service cloud.firestore {
       allow create: if isOwner(userId) && requireFields(['email', 'role', 'name', 'brokerId']);
       allow update: if isOwner(userId) || isBroker();
       allow delete: if false;
+
+      // ─── User Sessions (subcollection) ──────────────────────────
+      //   create:  self only
+      //   read:    self, broker, or compliance-officer/senior-agent
+      //   update:  self only (heartbeat / end session) or broker (revoke)
+      //   delete:  NEVER (only revoke via update)
+      // ─────────────────────────────────────────────────────────────
+      match /sessions/{sessionId} {
+        allow create: if isOwner(userId);
+        allow read:   if isOwner(userId) || isBrokerOrAdmin();
+        allow update: if isOwner(userId) || isBrokerOrAdmin();
+        allow delete: if false;
+      }
     }
 
     // -----------------------------------------------------------------------
@@ -667,6 +680,34 @@ service cloud.firestore {
       allow create: if isBroker();
       allow update: if isBroker();
       allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
+    // EMAIL LOGS  — append-only audit trail for sent emails
+    //   create:  any authenticated user (logged by email service)
+    //   read:    self (userId matches) or broker/admin
+    //   update:  NEVER (immutable log)
+    //   delete:  NEVER (immutable log)
+    // -----------------------------------------------------------------------
+    match /emailLogs/{logId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && (request.auth.uid == resource.data.userId || isBrokerOrAdmin());
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // EMAIL PREFERENCES  — per-user notification settings
+    //   read:    self only
+    //   create:  self only
+    //   update:  self only
+    //   delete:  NEVER (user clears toggles instead)
+    // -----------------------------------------------------------------------
+    match /emailPreferences/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
     }
 
   }

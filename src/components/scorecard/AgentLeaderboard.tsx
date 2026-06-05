@@ -46,7 +46,8 @@ const AgentLeaderboardItem = memo(function AgentLeaderboardItem({
               <img
                 src={agent.photoURL}
                 alt={`${agent.displayName}'s avatar`}
-                className="h-10 w-10 rounded-full object-cover"
+                loading="lazy"
+                className="h-10 w-10 rounded-full object-cover object-center"
               />
             ) : (
               agent.displayName.charAt(0).toUpperCase()
