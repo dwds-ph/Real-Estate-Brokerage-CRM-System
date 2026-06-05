@@ -98,11 +98,11 @@ export default function LeadRoutingRules({ open, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl rounded-lg border bg-card p-6 shadow-lg max-h-[80vh] overflow-y-auto"
+        className="w-full max-w-xl rounded-lg border bg-card p-6 shadow-lg max-h-[80vh] overflow-y-auto animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">

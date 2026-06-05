@@ -93,12 +93,14 @@ export default function CommissionsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Commissions</h1>
-        <p className="text-sm text-muted-foreground">
-          {closedDeals.length} closed deals | ₱{totalVolume.toLocaleString()}{" "}
-          total volume | ₱{totalPaid.toLocaleString()} paid
-        </p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Commissions</h1>
+          <p className="text-sm text-muted-foreground">
+            {closedDeals.length} closed deals | ₱{totalVolume.toLocaleString()}{" "}
+            total volume | ₱{totalPaid.toLocaleString()} paid
+          </p>
+        </div>
       </div>
 
       {dataError && (

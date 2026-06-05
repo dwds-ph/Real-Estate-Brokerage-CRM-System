@@ -84,7 +84,7 @@ export default function CMAPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Comparative Market Analysis</h1>
           <p className="text-sm text-muted-foreground">
@@ -93,7 +93,7 @@ export default function CMAPage() {
         </div>
         <button
           onClick={() => setShowGenerator(true)}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground self-start sm:self-auto"
         >
           + New CMA
         </button>

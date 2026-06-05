@@ -47,7 +47,7 @@ export default function MarketPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">Market Report</h1>
         </div>
         <div className="flex justify-center py-24">
@@ -61,7 +61,7 @@ export default function MarketPage() {
   if (error) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">Market Report</h1>
         </div>
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
@@ -82,7 +82,7 @@ export default function MarketPage() {
   if (!hasListings && !hasDeals) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">Market Report</h1>
         </div>
         <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
@@ -112,7 +112,7 @@ export default function MarketPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Market Report</h1>
           <p className="text-muted-foreground">

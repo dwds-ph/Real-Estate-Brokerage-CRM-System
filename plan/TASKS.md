@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete (PWA, Scorecard, Payments, Contracts, Tours, Licenses, Market Report, Projects, Commission Engine, Matching, Payouts, CSV Import, Client Portal, Smart Reminders, Task Manager, Property Map, Loan Calculator, Analytics, Co-Brokerage, QR/Syndication, Document Vault).
+> **Current state:** 21 phases complete (PWA, Scorecard, Payments, Contracts, Tours, Licenses, Market Report, Projects, Commission Engine, Matching, Payouts, CSV Import, Client Portal, Smart Reminders, Task Manager, Property Map, Loan Calculator, Analytics, Co-Brokerage, QR/Syndication, Document Vault). Phase 32 (Polish Sprint) at 80% complete (32.5 Mobile + 32.9 Animations done). Phase 27 (Audit Trail) at 63% (27.2 rules + 27.8 RBAC done). Phase 29 (Performance) at 40%.
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -185,13 +185,13 @@
 ### Tasks
 
 - [x] **27.1** Create `src/services/auditService.ts` — write-only audit log: record every CRUD operation with `who`, `what`, `when`, `docBefore`, `docAfter`, `ip`, `userAgent` ✅ (auditService.ts created with createAuditLog, subscribeAuditLogs, getAuditLogsForEntity)
-- [ ] **27.2** Enhance Firestore rules — enforce audit log immutability (no delete, no update on auditLogs)
+- [x] **27.2** Firestore rules: audit log immutability enforced (create only, no update/delete) + compliance-officer read access ✅
 - [x] **27.3** Create `AuditLogViewer.tsx` — broker-only page: filterable/searchable table of all operations, entity type filter, date range, user filter, CSV export ✅ (AuditLogViewer created with all filters + CSV export)
 - [ ] **27.4** Enhanced RBAC — split agent role into `agent` (own data only) and `senior-agent` (team data), add `compliance-officer` role (read-only audit access)
 - [ ] **27.5** Session management — track active sessions in Firestore, broker can revoke sessions
 - [ ] **27.6** Data integrity checker — `DataIntegrityReport.tsx` that compares local Firestore counts vs expected counts, detects orphaned records
 - [x] **27.7** Add route `/audit` + sidebar nav entry (broker-only) ✅ (Lazy route added to App.tsx)
-- [ ] **27.8** Firestore rules for enhanced role enforcement
+- [x] **27.8** Firestore rules enhanced RBAC — 6 new helper functions (isAdmin, isBrokerOrAdmin, isSeniorAgent, isComplianceOfficer, hasReadAllAccess), read access extended to all 40+ collections for compliance-officer/senior-agent roles ✅
 - [ ] **Validation:** typecheck ✓ lint ✓ build ✓
 
 ### Files to create
@@ -398,12 +398,12 @@
 - [x] **32.2** Loading state audit — every data-dependent view must show `LoadingSpinner` or skeleton while Firestore subscription is loading ✅ (All pages audited; 10+ pages updated to use shared LoadingSpinner component)
 - [x] **32.3** Error state audit — every page must gracefully handle Firestore permission denied, offline, and unexpected errors with retry buttons ✅ (30+ pages now have error+retry handling)
 - [x] **32.4** Toast notification system — replace ad-hoc alerts with unified toast (success/error/warning/info) for all CRUD operations ✅ (Toast.tsx + pub/sub already existed and is integrated in App.tsx)
-- [ ] **32.5** Mobile responsiveness — test all 40+ pages at 375px and 768px breakpoints, fix overflow, collapsed nav, misaligned grids
+- [x] **32.5** Mobile responsiveness — all 31+ pages now responsive: headers stack vertically on mobile (`flex-col sm:flex-row`), grids adjust columns, buttons wrap, overflow fixed ✅
 - [x] **32.6** Confirmation dialogs — add confirmation modals for all destructive actions ✅ (ConfirmDialog.tsx created with focus trap, a11y, loading states)
 - [x] **32.7** Form validation UX — inline validation errors, disabled submit buttons while saving, unsaved-changes warning on navigation ✅ (useUnsavedChanges.ts hook created)
 - [x] **32.8** Keyboard shortcuts — implement global shortcut palette (`Cmd+K` / `Ctrl+K`) with commands: navigate to page, create lead, create listing, search ✅ (CommandPalette.tsx created + integrated in App.tsx)
-- [ ] **32.9** Animation polish — add subtle transitions for route changes, modal open/close, sidebar collapse, status badge changes
-- [ ] **32.10** Validation: typecheck ✓ lint ✓ build ✓
+- [x] **32.9** Animation polish — added CSS keyframes (fade-in, fade-in-up, scale-in, slide-in-right, badge-pulse, slide-out-right), applied to all 12 modal/dialog components, toast exit animation, page transitions via Outlet wrapper, StatusBadge pulse ✅
+- [ ] **32.10** Validation: typecheck ✓ (passes) · build ✓ (passes) · tests ✓ (82/82 pass) · lint ⏳ (times out in Docker)
 
 ### Files to create
 

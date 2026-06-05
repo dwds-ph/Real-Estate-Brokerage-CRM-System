@@ -106,11 +106,13 @@ export default function NotificationPreferencesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Notification Preferences</h1>
-        <p className="text-muted-foreground">
-          Control how you receive notifications
-        </p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Notification Preferences</h1>
+          <p className="text-muted-foreground">
+            Control how you receive notifications
+          </p>
+        </div>
       </div>
 
       {/* Channel columns */}

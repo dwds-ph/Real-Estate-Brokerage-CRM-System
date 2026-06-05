@@ -52,9 +52,11 @@ function ToastIcon({ type }: { type: Toast["type"] }) {
 function ToastItem({
   toast,
   onDismiss,
+  isExiting,
 }: {
   toast: Toast;
   onDismiss: (id: string) => void;
+  isExiting?: boolean;
 }) {
   const borderColors = {
     success: "border-l-green-500",
@@ -75,6 +77,7 @@ function ToastItem({
       className={cn(
         "flex items-start gap-3 rounded-lg border bg-card p-4 shadow-lg",
         "border-l-4 animate-in slide-in-from-right-2",
+        isExiting && "animate-slide-out-right",
         borderColors[toast.type],
       )}
     >
@@ -100,6 +103,7 @@ function ToastItem({
 
 export function ToastContainer() {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [exitingToasts, setExitingToasts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const unsub = subscribeToasts((t) => {
@@ -109,7 +113,17 @@ export function ToastContainer() {
   }, []);
 
   const dismiss = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    // Start exit animation
+    setExitingToasts((prev) => new Set(prev).add(id));
+    // Remove after animation completes
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+      setExitingToasts((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 250);
   }, []);
 
   if (toasts.length === 0) {return null;}
@@ -117,7 +131,7 @@ export function ToastContainer() {
   return (
     <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]">
       {toasts.map((t) => (
-        <ToastItem key={t.id} toast={t} onDismiss={dismiss} />
+        <ToastItem key={t.id} toast={t} onDismiss={dismiss} isExiting={exitingToasts.has(t.id)} />
       ))}
     </div>
   );

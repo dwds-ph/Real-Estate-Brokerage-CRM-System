@@ -9,7 +9,7 @@ export default function CalendarPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Calendar</h1>
           <p className="text-muted-foreground">
@@ -18,7 +18,7 @@ export default function CalendarPage() {
         </div>
         <button
           onClick={() => setQuickCreateOpen(true)}
-          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors self-start sm:self-auto flex items-center gap-2"
         >
           <svg
             className="h-4 w-4"

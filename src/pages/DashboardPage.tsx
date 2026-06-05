@@ -219,7 +219,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">Dashboard</h1>
         </div>
         <div className="flex justify-center py-24">
@@ -233,7 +233,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">Dashboard</h1>
         </div>
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
@@ -265,7 +265,7 @@ export default function DashboardPage() {
   if (!hasAnyData) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">Dashboard</h1>
           {userProfile && (
             <p className="text-sm text-muted-foreground">
@@ -301,7 +301,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Page Title */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         {userProfile && (
           <p className="text-sm text-muted-foreground">

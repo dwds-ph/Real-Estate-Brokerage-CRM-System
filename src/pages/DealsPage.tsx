@@ -45,7 +45,7 @@ export default function DealsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Deal Pipeline</h1>
           <p className="text-muted-foreground">
@@ -54,7 +54,7 @@ export default function DealsPage() {
         </div>
         <button
           onClick={() => navigate("/leads")}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 self-start sm:self-auto"
         >
           + New Lead
         </button>
@@ -73,7 +73,7 @@ export default function DealsPage() {
       {isBroker && (
         <div className="rounded-lg border bg-card p-6">
           <h2 className="text-lg font-semibold mb-4">Broker Overview</h2>
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-center">
             {(
               [
                 "new",

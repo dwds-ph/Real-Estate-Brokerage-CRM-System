@@ -104,8 +104,8 @@ export default function ProjectForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-card p-6 shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-card p-6 shadow-xl animate-scale-in">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">
             {project ? "Edit Project" : "New Project"}

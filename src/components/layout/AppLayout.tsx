@@ -74,7 +74,7 @@ export default function AppLayout() {
       {/* Mobile overlay backdrop */}
       {isMobile && sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50"
+          className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -216,7 +216,7 @@ export default function AppLayout() {
           <div className="flex-1" />
           <NotificationBell />
         </div>
-        <div className="mx-auto max-w-7xl p-4 lg:p-6">
+        <div className="mx-auto max-w-7xl p-4 lg:p-6 animate-fade-in-up">
           <Outlet />
         </div>
       </main>

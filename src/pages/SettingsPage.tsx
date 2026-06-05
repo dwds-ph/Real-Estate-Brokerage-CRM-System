@@ -73,11 +73,13 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your profile and preferences
-        </p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Settings</h1>
+          <p className="text-muted-foreground">
+            Manage your profile and preferences
+          </p>
+        </div>
       </div>
 
       {/* Profile */}

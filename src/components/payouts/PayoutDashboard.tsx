@@ -497,8 +497,8 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
 
       {/* ── Confirmation modal ─────────────────────────────────────── */}
       {confirmAction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="mx-4 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-fade-in">
+          <div className="mx-4 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg animate-scale-in">
             <h3 className="text-lg font-semibold">
               {confirmAction.type === "approve"
                 ? "Bulk Approve Payouts"

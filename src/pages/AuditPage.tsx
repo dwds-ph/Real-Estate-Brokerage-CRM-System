@@ -119,7 +119,7 @@ export default function AuditPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Audit Trail</h1>
           <p className="text-muted-foreground">
@@ -129,7 +129,7 @@ export default function AuditPage() {
         <button
           onClick={exportCSV}
           disabled={logs.length === 0}
-          className="rounded-lg border bg-card px-4 py-2 text-xs font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-lg border bg-card px-4 py-2 text-xs font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed self-start sm:self-auto"
         >
           ⬇ Export CSV
         </button>

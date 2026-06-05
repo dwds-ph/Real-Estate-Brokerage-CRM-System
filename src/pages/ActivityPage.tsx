@@ -54,26 +54,28 @@ export default function ActivityPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2 items-center">
-        {(["all", "create", "update", "delete"] as ActionFilter[]).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
-              filter === f
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-card hover:bg-muted"
-            }`}
-          >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
-          </button>
-        ))}
+      <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-start sm:items-center">
+        <div className="flex flex-wrap gap-2">
+          {(["all", "create", "update", "delete"] as ActionFilter[]).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
+                filter === f
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card hover:bg-muted"
+              }`}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search activity..."
-          className="ml-auto rounded-lg border bg-background px-3 py-1.5 text-xs w-48"
+          className="rounded-lg border bg-background px-3 py-1.5 text-xs w-full sm:w-48"
         />
       </div>
 

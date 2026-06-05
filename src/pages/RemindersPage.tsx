@@ -59,11 +59,13 @@ export default function RemindersPage() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <div>
-        <h1 className="text-2xl font-bold">Smart Reminder Preferences</h1>
-        <p className="text-muted-foreground">
-          Configure which automated reminders appear on the calendar
-        </p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Smart Reminder Preferences</h1>
+          <p className="text-muted-foreground">
+            Configure which automated reminders appear on the calendar
+          </p>
+        </div>
       </div>
 
       {/* Toggle cards */}

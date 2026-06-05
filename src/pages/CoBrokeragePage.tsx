@@ -210,14 +210,14 @@ export default function CoBrokeragePage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Co-Brokerage & Teams</h1>
         <button
           onClick={() => {
             setShowForm(true);
             setEditingBroker(undefined);
           }}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground self-start sm:self-auto"
         >
           + New
         </button>

@@ -63,28 +63,30 @@ export default function LeadsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Leads</h1>
           <p className="text-muted-foreground">{leads.length} total leads</p>
         </div>
-        <button
-          onClick={() => {
-            resetForm();
-            setShowForm(!showForm);
-          }}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-        >
-          {showForm ? "Cancel" : "+ New Lead"}
-        </button>
-        {userProfile?.role === "broker" && (
+        <div className="flex flex-wrap gap-2">
           <button
-            onClick={() => setShowRoutingRules(true)}
-            className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+            onClick={() => {
+              resetForm();
+              setShowForm(!showForm);
+            }}
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            🚦 Routing Rules
+            {showForm ? "Cancel" : "+ New Lead"}
           </button>
-        )}
+          {userProfile?.role === "broker" && (
+            <button
+              onClick={() => setShowRoutingRules(true)}
+              className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+            >
+              🚦 Routing Rules
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filters & Search */}

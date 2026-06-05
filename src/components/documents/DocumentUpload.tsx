@@ -113,8 +113,8 @@ export default function DocumentUpload({
   if (!open) {return null;}
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-lg rounded-xl border bg-card p-6 shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in">
+      <div className="w-full max-w-lg rounded-xl border bg-card p-6 shadow-xl animate-scale-in">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Upload Document</h2>
           <button

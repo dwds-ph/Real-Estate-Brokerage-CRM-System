@@ -104,7 +104,7 @@ export default function MapPage() {
   if (loading) {
     return (
       <div className="h-[calc(100vh-8rem)] flex flex-col">
-        <div className="flex items-center justify-between mb-2 shrink-0">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-2 shrink-0">
           <div>
             <h1 className="text-xl font-bold">Property Map</h1>
           </div>
@@ -120,7 +120,7 @@ export default function MapPage() {
   if (error) {
     return (
       <div className="h-[calc(100vh-8rem)] flex flex-col">
-        <div className="flex items-center justify-between mb-2 shrink-0">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-2 shrink-0">
           <h1 className="text-xl font-bold">Property Map</h1>
         </div>
         <div className="flex-1 flex items-center justify-center">
@@ -143,7 +143,7 @@ export default function MapPage() {
   if (listings.length === 0) {
     return (
       <div className="h-[calc(100vh-8rem)] flex flex-col">
-        <div className="flex items-center justify-between mb-2 shrink-0">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-2 shrink-0">
           <div>
             <h1 className="text-xl font-bold">Property Map</h1>
           </div>
@@ -168,7 +168,7 @@ export default function MapPage() {
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col">
-      <div className="flex items-center justify-between mb-2 shrink-0">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-2 shrink-0">
         <div>
           <h1 className="text-xl font-bold">Property Map</h1>
           <p className="text-xs text-muted-foreground">
@@ -178,12 +178,11 @@ export default function MapPage() {
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={cn(
-            "rounded-lg border px-3 py-1.5 text-xs font-medium",
+            "rounded-lg border px-3 py-1.5 text-xs font-medium self-start sm:self-auto",
             showFilters
               ? "bg-primary/10 border-primary"
               : "bg-card hover:bg-muted",
-          )}
-        >
+          )}>
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>
       </div>

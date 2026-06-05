@@ -1,4 +1,4 @@
-export type UserRole = "broker" | "agent" | "sub-agent";
+export type UserRole = "broker" | "agent" | "sub-agent" | "senior-agent" | "compliance-officer" | "admin";
 
 export interface AppUser {
   id: string;

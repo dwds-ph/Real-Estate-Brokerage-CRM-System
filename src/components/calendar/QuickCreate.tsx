@@ -125,11 +125,11 @@ export default function QuickCreate({ open, onClose }: QuickCreateProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-fade-in"
       onClick={handleClose}
     >
       <div
-        className="w-full max-w-md rounded-xl border bg-card p-6 shadow-lg"
+        className="w-full max-w-md rounded-xl border bg-card p-6 shadow-lg animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">

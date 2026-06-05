@@ -232,7 +232,7 @@ export default function TasksPage() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Tasks</h1>
           <p className="text-sm text-muted-foreground">
@@ -245,7 +245,7 @@ export default function TasksPage() {
             setEditingTask(null);
             setShowForm(!showForm);
           }}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 self-start sm:self-auto"
         >
           {showForm ? "✕ Close" : "+ New Task"}
         </button>
@@ -393,13 +393,13 @@ export default function TasksPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 pt-1">
+              <div className="flex flex-col sm:flex-row gap-2 pt-1">
                 <button
                   onClick={() => {
                     setEditingTask(selectedTask);
                     setShowForm(true);
                   }}
-                  className="flex-1 rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-muted"
+                  className="rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-muted"
                 >
                   Edit
                 </button>
@@ -412,7 +412,7 @@ export default function TasksPage() {
                     )
                   }
                   className={cn(
-                    "flex-1 rounded-lg border px-3 py-1.5 text-xs font-medium",
+                    "rounded-lg border px-3 py-1.5 text-xs font-medium",
                     showChecklistPanel === selectedTask.id
                       ? "bg-primary/10 border-primary"
                       : "hover:bg-muted",

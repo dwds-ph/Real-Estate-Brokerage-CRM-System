@@ -132,7 +132,7 @@ export default function OfficesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Offices</h1>
           <p className="text-muted-foreground">Manage your office locations</p>
@@ -144,7 +144,7 @@ export default function OfficesPage() {
             setName("");
             setAddress("");
           }}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 self-start sm:self-auto"
         >
           {showForm ? "Cancel" : "+ Add Office"}
         </button>

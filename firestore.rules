@@ -40,6 +40,31 @@ service cloud.firestore {
       return isAuthenticated() && safeGetUserRole() in ['agent', 'sub-agent', 'broker'];
     }
 
+    // --- New role helpers (P27.8 RBAC enhancement) ---
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && safeGetUserRole() == 'admin';
+    }
+
+    function isBrokerOrAdmin() {
+      return isAuthenticated() && safeGetUserRole() in ['broker', 'admin'];
+    }
+
+    function isSeniorAgent() {
+      return isAuthenticated() && safeGetUserRole() == 'senior-agent';
+    }
+
+    function isComplianceOfficer() {
+      return isAuthenticated() && safeGetUserRole() == 'compliance-officer';
+    }
+
+    function hasReadAllAccess() {
+      return isAuthenticated() && safeGetUserRole() in ['broker', 'senior-agent', 'compliance-officer', 'admin'];
+    }
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
@@ -90,13 +115,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // USERS
-    //   read:    self or same broker org
+    //   read:    self, same broker org, or compliance-officer/senior-agent
     //   create:  self only (sign-up flow)
     //   update:  self or broker
     //   delete:  NEVER — deactivate instead
     // -----------------------------------------------------------------------
     match /users/{userId} {
-      allow read: if isAuthenticated() && (isOwner(userId) || isSameBrokerOrg(userId));
+      allow read: if isAuthenticated() && (isOwner(userId) || isSameBrokerOrg(userId)) || hasReadAllAccess();
       allow create: if isOwner(userId) && requireFields(['email', 'role', 'name', 'brokerId']);
       allow update: if isOwner(userId) || isBroker();
       allow delete: if false;
@@ -104,13 +129,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // OFFICES
-    //   read:    agents/brokers in the owning org
+    //   read:    agents/brokers in the owning org, compliance-officer, senior-agent
     //   create:  broker only
     //   update:  broker only (same org)
     //   delete:  broker only (same org)
     // -----------------------------------------------------------------------
     match /offices/{officeId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['name', 'address', 'phone', 'brokerId']);
       allow update: if isBroker() && inMyOrg(resource);
       allow delete: if isBroker() && inMyOrg(resource);
@@ -118,13 +143,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // LEADS
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or assigned agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /leads/{leadId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['name', 'contact', 'brokerId']);
       allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
       allow delete: if isBroker();
@@ -132,7 +157,7 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // LISTINGS
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or assigned agent
     //   delete:  broker only
@@ -140,14 +165,14 @@ service cloud.firestore {
     //   listingMedia (subcollection): agent uploads own, broker manages all
     // -----------------------------------------------------------------------
     match /listings/{listingId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['title', 'price', 'status', 'brokerId']);
       allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
       allow delete: if isBroker();
 
       // Listing Media subcollection
       match /listingMedia/{mediaId} {
-        allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+        allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
         allow create: if isAuthenticated() && requireFields(['url', 'type', 'uploadedBy', 'brokerId']);
         allow update: if isBroker() || resource.data.uploadedBy == request.auth.uid;
         allow delete: if isBroker() || resource.data.uploadedBy == request.auth.uid;
@@ -156,13 +181,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // DEALS
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or creator
     //   delete:  NEVER (critical financial data)
     // -----------------------------------------------------------------------
     match /deals/{dealId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['title', 'status', 'brokerId', 'createdBy']);
       allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
       allow delete: if false;
@@ -170,13 +195,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // PAYMENTS  (per-deal payment/collection tracker)
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or creator
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /payments/{paymentId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['dealId', 'type', 'amount', 'dueDate', 'brokerId']);
       allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
       allow delete: if isBroker();
@@ -184,13 +209,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // COMMISSION PLANS
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /commissionPlans/{planId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['name', 'type', 'brokerId']);
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -198,13 +223,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // PAYOUTS
-    //   read:    broker, same org, or self (agentId)
+    //   read:    broker, same org, self (agentId), or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker only
     //   delete:  NEVER (financial record)
     // -----------------------------------------------------------------------
     match /payouts/{payoutId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['amount', 'agentId', 'brokerId']);
       allow update: if isBroker();
       allow delete: if false;
@@ -212,13 +237,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // VIEWINGS
-    //   read:    broker, same org, or assigned agent
+    //   read:    broker, same org, assigned agent, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or assigned agent
     //   delete:  NEVER (client-relationship record)
     // -----------------------------------------------------------------------
     match /viewings/{viewingId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['listingId', 'date', 'clientName', 'brokerId']);
       allow update: if isBroker() || resource.data.agentId == request.auth.uid;
       allow delete: if false;
@@ -226,13 +251,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // TASKS
-    //   read:    broker, same org, or assigned agent
+    //   read:    broker, same org, assigned agent, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or assigned agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /tasks/{taskId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.assignedTo == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.assignedTo == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['title', 'assignedTo', 'brokerId']);
       allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
       allow delete: if isBroker();
@@ -240,13 +265,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // CALL LOGS  (per-lead/per-deal call tracking)
-    //   read:    broker, same org, or owning agent
+    //   read:    broker, same org, owning agent, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or owning agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /callLogs/{logId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.createdBy == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.createdBy == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['contactName', 'duration', 'brokerId']);
       allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
       allow delete: if isBroker();
@@ -254,13 +279,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // EXPENSES
-    //   read:    broker, same org, or self (agentId)
+    //   read:    broker, same org, self (agentId), or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or owning agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /expenses/{expenseId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['amount', 'category', 'brokerId']);
       allow update: if isBroker() || resource.data.agentId == request.auth.uid;
       allow delete: if isBroker();
@@ -268,13 +293,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // NOTIFICATIONS
-    //   read:    self (userId matches) or broker
+    //   read:    self (userId matches), broker, or compliance-officer/senior-agent
     //   create:  any staff (system-generated)
     //   update:  self only
     //   delete:  NEVER
     // -----------------------------------------------------------------------
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isBroker());
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isBroker()) || hasReadAllAccess();
       allow create: if isAuthenticated();
       allow update: if resource.data.userId == request.auth.uid;
       allow delete: if false;
@@ -282,13 +307,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // AUDIT LOGS  — append-only immutable log
-    //   read:    broker only
+    //   read:    broker or compliance-officer
     //   create:  any staff
     //   update:  NEVER
     //   delete:  NEVER
     // -----------------------------------------------------------------------
     match /auditLogs/{logId} {
-      allow read: if isBroker();
+      allow read: if isBroker() || isComplianceOfficer();
       allow create: if isAuthenticated();
       allow update: if false;
       allow delete: if false;
@@ -296,13 +321,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // REFERRALS
-    //   read:    broker, same org, or assigned agent
+    //   read:    broker, same org, assigned agent, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or assigned agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /referrals/{referralId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['referralName', 'status', 'brokerId']);
       allow update: if isBroker() || resource.data.agentId == request.auth.uid;
       allow delete: if isBroker();
@@ -310,13 +335,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // MORTGAGES  (linked to deals)
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or creator
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /mortgages/{mortgageId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['dealId', 'lender', 'amount', 'status', 'brokerId']);
       allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
       allow delete: if isBroker();
@@ -324,13 +349,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // COMM TEMPLATES  (communication templates)
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /commTemplates/{templateId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['name', 'subject', 'body', 'brokerId']);
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -338,13 +363,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // DOCUMENTS  (document vault — per-deal/per-listing)
-    //   read:    broker, same org, or uploader
+    //   read:    broker, same org, uploader, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or uploader
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /documents/{documentId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.uploadedBy == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.uploadedBy == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['name', 'url', 'dealId', 'brokerId', 'uploadedBy']);
       allow update: if isBroker() || resource.data.uploadedBy == request.auth.uid;
       allow delete: if isBroker();
@@ -352,13 +377,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // CHECKLIST TEMPLATES
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /checklistTemplates/{templateId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['name', 'items', 'brokerId']);
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -366,13 +391,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // CHECKLIST INSTANCES  (linked to deals / leads)
-    //   read:    broker, same org, or assigned agent
+    //   read:    broker, same org, assigned agent, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or assigned agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /checklistInstances/{instanceId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.assignedTo == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.assignedTo == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['templateId', 'assignedTo', 'linkedTo', 'linkedType', 'brokerId']);
       allow update: if isBroker() || resource.data.assignedTo == request.auth.uid;
       allow delete: if isBroker();
@@ -380,13 +405,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // ACTIVITY LOGS  — append-only immutable timeline
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  any staff (append)
     //   update:  NEVER
     //   delete:  NEVER
     // -----------------------------------------------------------------------
     match /activityLogs/{logId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isAuthenticated();
       allow update: if false;
       allow delete: if false;
@@ -394,13 +419,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // PROJECTS  (subdivision / condo developments)
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /projects/{projectId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['name', 'developer', 'totalUnits', 'brokerId']);
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -408,13 +433,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // LICENSES  (license expiry tracker)
-    //   read:    broker, same org, or self (agentId)
+    //   read:    broker, same org, self (agentId), or compliance-officer/senior-agent
     //   create:  broker only (manages team licenses)
     //   update:  broker or owning agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /licenses/{licenseId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid) || hasReadAllAccess();
       allow create: if isBroker();
       allow update: if isBroker() || resource.data.agentId == request.auth.uid;
       allow delete: if isBroker();
@@ -422,13 +447,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // TOURS  (property tour itineraries)
-    //   read:    broker, same org, or owning agent
+    //   read:    broker, same org, owning agent, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or owning agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /tours/{tourId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['title', 'clientName', 'scheduledDate', 'agentId']);
       allow update: if isBroker() || resource.data.agentId == request.auth.uid;
       allow delete: if isBroker();
@@ -436,13 +461,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // LEAD ACTIVITY (subcollection under each lead) — append-only timeline
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  any staff (append)
     //   update:  NEVER
     //   delete:  NEVER
     // -----------------------------------------------------------------------
     match /leads/{leadId}/leadActivity/{activityId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isAuthenticated();
       allow update: if false;
       allow delete: if false;
@@ -450,13 +475,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // PROJECTS  (subdivision / condo development management)
-    //   read:    authenticated user
+    //   read:    authenticated user or compliance-officer/senior-agent
     //   create:  broker only (developer manages own projects)
     //   update:  broker or assigned agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /projects/{projectId} {
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['name', 'developer', 'totalUnits', 'location']);
       allow update: if isBroker() || (isAgent() && resource.data.assignedTo.hasAny([request.auth.uid]));
       allow delete: if isBroker();
@@ -464,13 +489,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // UNITS  (individual lots/units within projects)
-    //   read:    authenticated user
+    //   read:    authenticated user or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker or agent assigned to the project
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /units/{unitId} {
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['projectId', 'block', 'lot', 'area', 'price']);
       allow update: if isBroker() || isAgent();
       allow delete: if isBroker();
@@ -478,13 +503,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // PAYMENT MILESTONES  (payment schedules for units)
-    //   read:    authenticated user
+    //   read:    authenticated user or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker or agent
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /paymentMilestones/{milestoneId} {
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['projectId', 'unitId', 'name', 'amount', 'dueDate']);
       allow update: if isBroker() || isAgent();
       allow delete: if isBroker();
@@ -492,13 +517,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // AGENT GOALS  (sales targets per agent)
-    //   read:    broker, same org, or self
+    //   read:    broker, same org, self, or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /goals/{goalId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.agentId == request.auth.uid) || hasReadAllAccess();
       allow create: if isBroker();
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -506,13 +531,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // CO-BROKERS  (external broker directory)
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /coBrokers/{coBrokerId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['name', 'brokerage', 'phone', 'brokerId']);
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -520,13 +545,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // CO-BROKER DEALS  (cross-brokerage deal splits)
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /coBrokerDeals/{dealId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['dealId', 'coBrokerId', 'splitPercentage']);
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -534,13 +559,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // TEAMS  (agent teams)
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /teams/{teamId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['name', 'teamLeadId', 'brokerId']);
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -548,13 +573,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // BRANCHES  (office/branch locations)
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  broker only
     //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /branches/{branchId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isBroker() && requireFields(['name', 'address', 'city', 'province', 'brokerId']);
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -562,13 +587,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // PROPERTY DOCUMENTS  (per-property document vault)
-    //   read:    broker, same org, or uploader
+    //   read:    broker, same org, uploader, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or uploader
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /propertyDocuments/{docId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.uploadedBy == request.auth.uid);
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource) || resource.data.uploadedBy == request.auth.uid) || hasReadAllAccess();
       allow create: if isAuthenticated() && requireFields(['name', 'fileUrl', 'category', 'brokerId']);
       allow update: if isBroker() || resource.data.uploadedBy == request.auth.uid;
       allow delete: if isBroker();
@@ -576,13 +601,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // COMPLIANCE CHECKLISTS  (deal closing compliance)
-    //   read:    broker, same org, or deal creator
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  any staff
-    //   update:  broker or deal creator
+    //   update:  broker only
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /complianceChecklists/{checklistId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isAuthenticated();
       allow update: if isBroker();
       allow delete: if isBroker();
@@ -590,13 +615,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // CMA REPORTS  (comparative market analysis)
-    //   read:    broker or same org
+    //   read:    broker, same org, or compliance-officer/senior-agent
     //   create:  any staff
     //   update:  broker or creator
     //   delete:  broker only
     // -----------------------------------------------------------------------
     match /cmaReports/{reportId} {
-      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource));
+      allow read: if isAuthenticated() && (isBroker() || inMyOrg(resource)) || hasReadAllAccess();
       allow create: if isAuthenticated();
       allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
       allow delete: if isBroker();
@@ -604,13 +629,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // vaultDocuments — document vault per property
-    //   read:   authenticated + in org
+    //   read:   authenticated + in org, or compliance-officer/senior-agent
     //   create: authenticated
     //   update: broker or creator
     //   delete: broker only
     // -----------------------------------------------------------------------
     match /vaultDocuments/{docId} {
-      allow read: if isAuthenticated() && inMyOrg(resource);
+      allow read: if isAuthenticated() && inMyOrg(resource) || hasReadAllAccess();
       allow create: if isAuthenticated();
       allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
       allow delete: if isBroker();
@@ -618,13 +643,13 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // vaultDocumentVersions — version history of vault documents
-    //   read:   authenticated + in org
+    //   read:   authenticated + in org, or compliance-officer/senior-agent
     //   create: authenticated
     //   update: broker or creator
     //   delete: broker only
     // -----------------------------------------------------------------------
     match /vaultDocumentVersions/{docId} {
-      allow read: if isAuthenticated() && inMyOrg(resource);
+      allow read: if isAuthenticated() && inMyOrg(resource) || hasReadAllAccess();
       allow create: if isAuthenticated();
       allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
       allow delete: if isBroker();
@@ -632,13 +657,16 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // invitations — agent/broker invites
-    //   read:   broker only
+    //   read:   broker or compliance-officer/senior-agent
     //   create: broker only
     //   update: broker only
     //   delete: broker only
     // -----------------------------------------------------------------------
     match /invitations/{inviteId} {
-      allow read, write: if isBroker();
+      allow read: if isBroker() || hasReadAllAccess();
+      allow create: if isBroker();
+      allow update: if isBroker();
+      allow delete: if isBroker();
     }
 
   }

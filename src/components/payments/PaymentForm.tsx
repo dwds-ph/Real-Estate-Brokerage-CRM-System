@@ -111,8 +111,8 @@ export function PaymentForm({
   if (!open) {return null;}
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in">
+      <div className="w-full max-w-md rounded-lg border bg-card p-6 shadow-lg animate-scale-in">
         <h3 className="text-lg font-semibold mb-4">Add Payment</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Payment Type */}

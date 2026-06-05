@@ -485,7 +485,7 @@ export default function ClientPortalPage() {
             ) : (
               <div className="mt-4 space-y-4">
                 {/* Payment summary cards */}
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   <div className="rounded-xl border bg-green-50/50 p-3 text-center dark:bg-green-950/20">
                     <p className="text-xs text-muted-foreground">Paid</p>
                     <p className="text-sm font-bold text-green-600 dark:text-green-400">

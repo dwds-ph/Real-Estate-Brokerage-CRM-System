@@ -78,7 +78,7 @@ export default function ViewingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Viewings</h1>
           <p className="text-muted-foreground">
@@ -87,7 +87,7 @@ export default function ViewingsPage() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 self-start sm:self-auto"
         >
           {showForm ? "Cancel" : "+ Schedule Viewing"}
         </button>
@@ -179,7 +179,7 @@ export default function ViewingsPage() {
                       Lead: {viewing.leadId} | Listing: {viewing.listingId}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => handleStatusChange(viewing.id, "done")}
                       className="rounded-lg bg-green-100 px-3 py-1 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"

@@ -466,11 +466,11 @@ export default function CommandPalette() {
       onClick={() => setOpen(false)}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in" />
 
       {/* Dialog */}
       <div
-        className="relative mx-4 w-full max-w-lg overflow-hidden rounded-xl border bg-background shadow-2xl"
+        className="relative mx-4 w-full max-w-lg overflow-hidden rounded-xl border bg-background shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search input */}
