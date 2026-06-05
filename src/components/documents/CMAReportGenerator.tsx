@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   collection,
   query,
@@ -48,19 +48,29 @@ export default function CMAReportGenerator({ onDone, onCancel }: Props) {
     useState<CMAReportResult | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Load listings
-  useState(() => {
+  // Load listings — subscribe to real-time Firestore updates
+  useEffect(() => {
     if (!brokerId) {return;}
-    onSnapshot(
-      query(
-        collection(db, "listings"),
-        where("brokerId", "==", brokerId),
-        orderBy("createdAt", "desc"),
-      ),
-      (snap) =>
-        setAllListings(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+
+    const q = query(
+      collection(db, "listings"),
+      where("brokerId", "==", brokerId),
+      orderBy("createdAt", "desc"),
     );
-  });
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        setAllListings(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      },
+      (error) => {
+        // eslint-disable-next-line no-console -- Firestore subscription errors are logged for debugging
+        console.error("Error loading listings:", error);
+      },
+    );
+
+    return unsubscribe;
+  }, [brokerId]);
 
   const subject = allListings.find((l) => l.id === subjectId);
   const comparables = allListings.filter((l) => comparableIds.includes(l.id));

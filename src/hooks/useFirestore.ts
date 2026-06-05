@@ -28,7 +28,24 @@ export function useCollection<T extends DocumentData>(
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const q = query(collection(db, collectionName), ...constraints);
+    // Auto-add default constraints to prevent unbounded collection scans.
+    // Only adds orderBy/limit if they aren't already present in the caller's constraints.
+    const hasOrderBy = constraints.some(
+      (c) => c.type === "orderBy",
+    );
+    const hasLimit = constraints.some(
+      (c) => c.type === "limit" || c.type === "limitToLast",
+    );
+
+    const effectiveConstraints: QueryConstraint[] = [...constraints];
+    if (!hasOrderBy) {
+      effectiveConstraints.push(orderBy("createdAt", "desc"));
+    }
+    if (!hasLimit) {
+      effectiveConstraints.push(limit(200));
+    }
+
+    const q = query(collection(db, collectionName), ...effectiveConstraints);
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {

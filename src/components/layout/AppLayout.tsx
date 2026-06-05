@@ -37,6 +37,7 @@ const navItems = [
   { to: "/compliance", label: "Compliance", icon: "✅" },
   { to: "/cma", label: "CMA", icon: "📊" },
   { to: "/seed-data", label: "Seed Data", icon: "🌱" },
+  { to: "/audit", label: "Audit Trail", icon: "🔍" },
 ];
 
 export default function AppLayout() {
