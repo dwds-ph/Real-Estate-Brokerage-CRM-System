@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 22 (Email Service) COMPLETE** ✅. Phase 30 (E2E Coverage) at ~40% (seed data + test plan + setup done). Phase 32 (Polish Sprint) at 90%.
+> **Current state:** 21 phases complete. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 22 (Email Service) COMPLETE** ✅. Phase 30 (E2E Coverage) at ~80% (14 spec files + 6 service test files + seed script + test plan). Phase 32 (Polish Sprint) at 90%.
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -295,12 +295,12 @@
 ### Tasks
 
 - [x] **30.1** Create E2E test plan — `e2e/test-plan.md` with 14 user flow categories, 55+ test cases, data dependency diagrams ✅
-- [ ] **30.2** Expand E2E tests — cover all 21 modules (currently 3 spec files)
+- [x] **30.2** Expand E2E tests — 14 new spec files covering all modules: leads (10 tests), listings (9), payments (4), commissions (7), tours (7), tasks (6), dashboard (9), documents (6), analytics (5), projects (2), cobrokerage (5), licenses (3), loans (3), map (5) ✅
 - [ ] **30.3** Add visual regression testing
-- [x] **30.4** Add Firestore emulator seed data script — `scripts/seed-e2e-data.cjs` with 11 collections of realistic PH data (PH names, +63 phones, Metro Manila/Cebu/Davao addresses, PHP amounts) ✅
-- [ ] **30.5** Add unit test coverage for remaining services
+- [x] **30.4** Add Firestore emulator seed data script ✅
+- [x] **30.5** Add unit test coverage for remaining services — 6 new test files (analytics, branch, coBroker, compliance, goal, team) adding 105 tests, total 611 tests across 25 files ✅
 - [ ] **30.6** Expand leadRoutingService tests
-- [x] **30.7** Create `tests/e2e/setup.ts` — shared fixture with auto-login (broker/agent) and auto-seed data ✅
+- [x] **30.7** Create `tests/e2e/setup.ts` — shared fixture with auto-login and auto-seed ✅
 - [ ] **30.8** Add CI matrix
 - [ ] **30.9** Validation
 
