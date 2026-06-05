@@ -4,6 +4,7 @@ import { useCollection, updateDocById } from "@/hooks/useFirestore";
 import { LoadingSpinner, EmptyState } from "@/components/ui";
 import { AppNotification } from "@/types";
 import { formatDateTime, timeAgo, cn } from "@/lib/utils";
+import { getVirtualListStyle } from "@/lib/virtualList";
 
 const NOTIF_TYPES = [
   { type: "lead", label: "Lead Updates", icon: "👥" },
@@ -106,12 +107,13 @@ export default function NotificationsPage() {
       ) : filtered.length === 0 ? (
         <EmptyState title="No notifications here yet." />
       ) : (
-        <div className="space-y-2">
-          {filtered.map((n) => {
+        <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-12rem)]">
+          {filtered.map((n, index) => {
             const notif = n as AppNotification;
             return (
               <div
                 key={notif.id}
+                style={getVirtualListStyle(index)}
                 onClick={() => !notif.read && markAsRead(notif.id)}
                 className={cn(
                   "rounded-lg border p-4 cursor-pointer transition-colors",

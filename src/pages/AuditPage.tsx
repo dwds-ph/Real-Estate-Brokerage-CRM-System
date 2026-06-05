@@ -1,25 +1,26 @@
 import { useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useCollection } from "@/hooks/useFirestore";
 import { where, orderBy, limit } from "firebase/firestore";
 import { LoadingSpinner, EmptyState } from "@/components/ui";
-import { AuditLogViewer } from "@/components/audit";
+import { AuditLogViewer, DataIntegrityReport } from "@/components/audit";
 import type { AuditLogEntry } from "@/types";
 import { formatDateTime } from "@/lib/utils";
 
 export default function AuditPage() {
   const { userProfile } = useAuth();
-  const isBroker = userProfile?.role === "broker";
+  const { canViewAudit } = usePermissions();
   const orgId = userProfile?.id || userProfile?.brokerId || "";
 
   const constraints = useMemo(() => {
-    if (!isBroker || !orgId) {return [];}
+    if (!canViewAudit || !orgId) {return [];}
     return [
       where("orgId", "==", orgId),
       orderBy("timestamp", "desc"),
       limit(200),
     ];
-  }, [isBroker, orgId]);
+  }, [canViewAudit, orgId]);
 
   const {
     data: logs,
@@ -71,7 +72,7 @@ export default function AuditPage() {
 
   // ─── Access Denied ─────────────────────────────────────────────
 
-  if (!isBroker) {
+  if (!canViewAudit) {
     return (
       <div className="space-y-6">
         <div>
@@ -80,8 +81,8 @@ export default function AuditPage() {
         </div>
         <EmptyState
           icon="🔒"
-          title="Broker Access Required"
-          description="Only brokers can view the audit trail. Contact your broker for access."
+          title="Access Restricted"
+          description="Only brokers and compliance officers can view the audit trail. Contact your broker for access."
         />
       </div>
     );
@@ -136,6 +137,9 @@ export default function AuditPage() {
       </div>
 
       <AuditLogViewer logs={logs} loading={false} error={null} />
+
+      {/* ─── Data Integrity Report ──────────────────────────── */}
+      <DataIntegrityReport />
     </div>
   );
 }

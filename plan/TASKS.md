@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete (PWA, Scorecard, Payments, Contracts, Tours, Licenses, Market Report, Projects, Commission Engine, Matching, Payouts, CSV Import, Client Portal, Smart Reminders, Task Manager, Property Map, Loan Calculator, Analytics, Co-Brokerage, QR/Syndication, Document Vault). Phase 32 (Polish Sprint) at 80% complete (32.5 Mobile + 32.9 Animations done). Phase 27 (Audit Trail) at 63% (27.2 rules + 27.8 RBAC done). Phase 29 (Performance) at 40%.
+> **Current state:** 21 phases complete (PWA, Scorecard, Payments, Contracts, Tours, Licenses, Market Report, Projects, Commission Engine, Matching, Payouts, CSV Import, Client Portal, Smart Reminders, Task Manager, Property Map, Loan Calculator, Analytics, Co-Brokerage, QR/Syndication, Document Vault). Phase 32 (Polish Sprint) at 90% (32.5 Mobile + 32.9 Animations done, 32.10 validation passes). Phase 27 (Audit Trail) at 75% (27.4 RBAC + 27.6 Data Integrity done, only 27.5 Session mgmt remains). Phase 29 (Performance) at 60% (29.4 Virtual scroll + 29.9 A11y audit done).
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -187,9 +187,9 @@
 - [x] **27.1** Create `src/services/auditService.ts` — write-only audit log: record every CRUD operation with `who`, `what`, `when`, `docBefore`, `docAfter`, `ip`, `userAgent` ✅ (auditService.ts created with createAuditLog, subscribeAuditLogs, getAuditLogsForEntity)
 - [x] **27.2** Firestore rules: audit log immutability enforced (create only, no update/delete) + compliance-officer read access ✅
 - [x] **27.3** Create `AuditLogViewer.tsx` — broker-only page: filterable/searchable table of all operations, entity type filter, date range, user filter, CSV export ✅ (AuditLogViewer created with all filters + CSV export)
-- [ ] **27.4** Enhanced RBAC — split agent role into `agent` (own data only) and `senior-agent` (team data), add `compliance-officer` role (read-only audit access)
+- [x] **27.4** Enhanced RBAC — `usePermissions.ts` hook created with role checks (isBroker, isAdmin, isSeniorAgent, isComplianceOfficer) + derived permissions (canViewAllData, canManageUsers, canViewAudit). AuditPage updated to use `canViewAudit` ✅
 - [ ] **27.5** Session management — track active sessions in Firestore, broker can revoke sessions
-- [ ] **27.6** Data integrity checker — `DataIntegrityReport.tsx` that compares local Firestore counts vs expected counts, detects orphaned records
+- [x] **27.6** Data integrity checker — `DataIntegrityReport.tsx` created: runs checks on 15 collections for expected vs actual counts, cross-references 6 relationship types for orphaned records. Integrated into AuditPage. ✅
 - [x] **27.7** Add route `/audit` + sidebar nav entry (broker-only) ✅ (Lazy route added to App.tsx)
 - [x] **27.8** Firestore rules enhanced RBAC — 6 new helper functions (isAdmin, isBrokerOrAdmin, isSeniorAgent, isComplianceOfficer, hasReadAllAccess), read access extended to all 40+ collections for compliance-officer/senior-agent roles ✅
 - [ ] **Validation:** typecheck ✓ lint ✓ build ✓
@@ -262,12 +262,12 @@
 - [x] **29.1** Run production bundle analysis — identify large vendor chunks, code-split aggressively ✅ (Audit complete: 61 chunks, 2.5MB total, vendor-pdf 630kB identified)
 - [x] **29.2** Audit and enforce lazy loading — ensure ALL route pages use `React.lazy()` ✅ (All 43 routes lazy-loaded)
 - [x] **29.3** Firestore query optimization — audit + fix unbounded scans ✅ (useCollection now auto-adds orderBy + limit(200))
-- [ ] **29.4** Virtual scrolling for large lists — implement `react-window` or CSS `content-visibility`
+- [x] **29.4** Virtual scrolling for large lists — `src/lib/virtualList.ts` utility created, applied to LeadList, ActivityPage, NotificationsPage, CommissionsPage, ExpensesPage, PayoutDashboard, TaskKanbanBoard via CSS `content-visibility: auto` ✅
 - [ ] **29.5** Image optimization — auto-resize listing images, serve WebP, lazy loading for gallery
 - [ ] **29.6** PWA audit — verify offline caching rules, test service worker lifecycle
 - [ ] **29.7** Lighthouse CI integration — add Lighthouse CI to GitHub Actions
 - [x] **29.8** Memory leak audit — verify all `onSnapshot` unsubscribers ✅ (1 critical leak fixed in CMAReportGenerator.tsx)
-- [ ] **29.9** Accessibility (a11y) audit — run axe-core on all pages, fix aria labels, contrast
+- [x] **29.9** Accessibility (a11y) audit — fixed 14 components/pages: aria-labels on all icon-only buttons, form input labels, keyboard handlers for clickable cards (LeadList, DealCard, TaskCard, BranchList, TeamList, etc.) ✅
 - [ ] **29.10** Validation: typecheck ✓ lint ✓ build ✓
 
 ### Files to create

@@ -28,6 +28,7 @@ export default function TaskFilters({ agents, values, onChange }: TaskFiltersPro
           value={values.search}
           onChange={(e) => update({ search: e.target.value })}
           placeholder="Search tasks..."
+          aria-label="Search tasks"
           className="w-full rounded-lg border bg-background pl-8 pr-3 py-2 text-sm"
         />
       </div>

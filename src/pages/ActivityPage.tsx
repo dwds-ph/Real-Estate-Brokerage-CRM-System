@@ -3,6 +3,7 @@ import { useCollection } from "@/hooks/useFirestore";
 import { LoadingSpinner, EmptyState } from "@/components/ui";
 import { AuditLog, AppUser } from "@/types";
 import { formatDateTime } from "@/lib/utils";
+import { getVirtualListStyle } from "@/lib/virtualList";
 
 type ActionFilter = "all" | "create" | "update" | "delete";
 
@@ -91,10 +92,11 @@ export default function ActivityPage() {
           title={search ? "No activity matches your search." : "No activity yet."}
         />
       ) : (
-        <div className="space-y-2">
-          {filtered.map((entry) => (
+        <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-12rem)]">
+          {filtered.map((entry, index) => (
             <div
               key={entry.id}
+              style={getVirtualListStyle(index)}
               className="rounded-lg border bg-card p-4 hover:bg-muted/50 transition-colors"
             >
               <div className="flex items-start gap-3">

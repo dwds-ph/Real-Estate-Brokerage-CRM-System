@@ -195,6 +195,7 @@ export default function SettingsPage() {
             </div>
             <button
               onClick={toggleTheme}
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
               className={cn(
                 "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
                 theme === "dark" ? "bg-primary" : "bg-gray-300",

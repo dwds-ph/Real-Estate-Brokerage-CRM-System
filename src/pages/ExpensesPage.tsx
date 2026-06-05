@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCollection, createDoc, deleteDocById } from "@/hooks/useFirestore";
 import { Expense, ExpenseCategory } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getVirtualListStyle } from "@/lib/virtualList";
 import { toast } from "@/components/ui/Toast";
 import { LoadingSpinner, EmptyState } from "@/components/ui";
 
@@ -171,15 +172,16 @@ export default function ExpensesPage() {
       ) : expenses.length === 0 ? (
         <EmptyState title="No expenses recorded" />
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-12rem)]">
           {[...expenses]
             .sort((a, b) => (b as Expense).date - (a as Expense).date)
-            .map((e) => {
+            .map((e, index) => {
               const expense = e as Expense;
               const cat = CATEGORIES.find((c) => c.value === expense.category);
               return (
                 <div
                   key={expense.id}
+                  style={getVirtualListStyle(index)}
                   className="rounded-lg border bg-card p-4 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3">

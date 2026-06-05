@@ -13,7 +13,7 @@ export default function BranchList({ branches, onEdit, onDelete, onViewDetail }:
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {branches.map((b) => (
-        <div key={b.id} className="rounded-lg border bg-card p-4 space-y-2 cursor-pointer hover:shadow-sm" onClick={() => onViewDetail(b)}>
+        <div key={b.id} className="rounded-lg border bg-card p-4 space-y-2 cursor-pointer hover:shadow-sm" onClick={() => onViewDetail(b)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onViewDetail(b); } }}>
           <div className="flex items-start justify-between">
             <div>
               <p className="font-medium text-sm">{b.name}</p>

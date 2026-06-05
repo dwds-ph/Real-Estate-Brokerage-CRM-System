@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { type Payout } from "@/types";
 import { formatCurrency, formatDate, timeAgo, cn } from "@/lib/utils";
+import { getVirtualListStyle } from "@/lib/virtualList";
 import {
   subscribePayouts,
   updatePayoutStatus,
@@ -353,7 +354,7 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
           {activeTab === "paid" && "No paid payouts yet."}
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-16rem)]">
           {/* Select-all header */}
           <div className="flex items-center gap-3 px-1 py-1">
             <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
@@ -370,11 +371,12 @@ export default function PayoutDashboard({ brokerId }: PayoutDashboardProps) {
             </label>
           </div>
 
-          {visiblePayouts.map((payout) => {
+          {visiblePayouts.map((payout, index) => {
             const isSelected = selectedIds.has(payout.id);
             return (
               <div
                 key={payout.id}
+                style={getVirtualListStyle(index, 88)}
                 className={cn(
                   "flex items-start justify-between rounded-lg border p-3 transition-colors",
                   isSelected

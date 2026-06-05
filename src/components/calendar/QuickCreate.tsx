@@ -137,6 +137,7 @@ export default function QuickCreate({ open, onClose }: QuickCreateProps) {
           <button
             onClick={handleClose}
             className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="Close"
           >
             <svg
               className="h-5 w-5"

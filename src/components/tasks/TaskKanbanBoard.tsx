@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { getVirtualListStyle } from "@/lib/virtualList";
 import { type Task, type TaskStatus } from "@/types";
 import TaskCard from "./TaskCard";
 
@@ -63,13 +64,14 @@ function TaskKanbanBoard({
                   No tasks
                 </div>
               ) : (
-                colTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onStatusChange={onStatusChange}
-                    onClick={onTaskClick}
-                  />
+                colTasks.map((task, index) => (
+                  <div key={task.id} style={getVirtualListStyle(index, 88)}>
+                    <TaskCard
+                      task={task}
+                      onStatusChange={onStatusChange}
+                      onClick={onTaskClick}
+                    />
+                  </div>
                 ))
               )}
             </div>

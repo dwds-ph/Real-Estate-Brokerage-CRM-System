@@ -64,6 +64,7 @@ export function LeadFilters({
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
         placeholder="Search leads by name, phone, or email..."
+        aria-label="Search leads by name, phone, or email"
         className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
       />
     </>

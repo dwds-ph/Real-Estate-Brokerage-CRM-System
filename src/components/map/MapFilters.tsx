@@ -51,7 +51,7 @@ export default function MapFilters({ filters, onChange }: Props) {
       </div>
       <div>
         <label className="block text-xs font-medium mb-1">Location</label>
-        <input type="text" value={filters.location} onChange={(e) => update({ location: e.target.value })} className="w-full rounded-lg border bg-background px-2 py-1.5 text-sm" placeholder="Search location..." />
+        <input type="text" value={filters.location} onChange={(e) => update({ location: e.target.value })} className="w-full rounded-lg border bg-background px-2 py-1.5 text-sm" placeholder="Search location..." aria-label="Search location" />
       </div>
     </div>
   );

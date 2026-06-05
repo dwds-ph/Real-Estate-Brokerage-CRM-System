@@ -47,7 +47,7 @@ export default function ComplianceChecklist({ items, onToggle, onUpdateNotes, re
                       {item.required && <span className="shrink-0 rounded bg-red-100 px-1.5 py-0.5 text-[9px] text-red-700">Required</span>}
                     </div>
                     {!readOnly && (
-                      <input type="text" value={item.notes || ""} onChange={(e) => onUpdateNotes(item.id, e.target.value)} className="mt-1 w-full rounded border bg-background px-2 py-1 text-xs" placeholder="Add notes..." />
+                      <input type="text" value={item.notes || ""} onChange={(e) => onUpdateNotes(item.id, e.target.value)} className="mt-1 w-full rounded border bg-background px-2 py-1 text-xs" placeholder="Add notes..." aria-label={`Notes for ${item.label}`} />
                     )}
                   </div>
                 </div>

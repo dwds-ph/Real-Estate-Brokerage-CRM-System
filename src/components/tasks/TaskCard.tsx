@@ -38,6 +38,14 @@ function TaskCard({ task, onStatusChange, onClick }: TaskCardProps) {
         task.status === "done" && "opacity-60",
       )}
       onClick={() => onClick(task)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick(task);
+        }
+      }}
     >
       {/* Title & Priority */}
       <div className="flex items-start justify-between gap-2">

@@ -332,6 +332,7 @@ export default function TasksPage() {
                 <button
                   onClick={() => setSelectedTask(null)}
                   className="text-muted-foreground hover:text-foreground text-sm"
+                  aria-label="Close task detail"
                 >
                   ✕
                 </button>

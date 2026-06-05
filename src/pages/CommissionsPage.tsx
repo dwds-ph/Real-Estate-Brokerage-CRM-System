@@ -3,6 +3,7 @@ import { useCollection } from "@/hooks/useFirestore";
 import { Deal, Payout, AppUser } from "@/types";
 import { computeFullBreakdown } from "@/lib/commissionEngine";
 import { formatCurrency } from "@/lib/utils";
+import { getVirtualListStyle } from "@/lib/virtualList";
 import CommissionBreakdownView from "@/components/commissions/CommissionBreakdown";
 import AgentCommissionSummary from "@/components/commissions/AgentCommissionSummary";
 import CommissionPlanManager from "@/components/commissions/CommissionPlanManager";
@@ -175,11 +176,11 @@ export default function CommissionsPage() {
                 No closed deals yet
               </div>
             ) : (
-              <div className="space-y-2">
-                {sortedDeals.map((deal) => {
+              <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-12rem)]">
+                {sortedDeals.map((deal, index) => {
                   const isSelected = selectedDealId === deal.id;
                   return (
-                    <div key={deal.id}>
+                    <div key={deal.id} style={getVirtualListStyle(index, 88)}>
                       <button
                         onClick={() =>
                           setSelectedDealId(isSelected ? null : deal.id)

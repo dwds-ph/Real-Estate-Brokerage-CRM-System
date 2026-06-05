@@ -231,6 +231,7 @@ export default function ListingsPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by title or city..."
+        aria-label="Search listings by title or city"
         className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
       />
 
@@ -493,6 +494,14 @@ export default function ListingsPage() {
                 key={listing.id}
                 className="rounded-lg border bg-card overflow-hidden hover:shadow-sm transition-shadow cursor-pointer"
                 onClick={() => navigate(`/listings/${listing.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    navigate(`/listings/${listing.id}`);
+                  }
+                }}
               >
                 {/* Image Placeholder */}
                 <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
@@ -551,6 +560,7 @@ export default function ListingsPage() {
                         editListing(listing);
                       }}
                       className="hover:text-foreground"
+                      aria-label={`Edit ${listing.title}`}
                     >
                       ✏️
                     </button>
@@ -560,6 +570,7 @@ export default function ListingsPage() {
                         handleDelete(listing.id);
                       }}
                       className="text-red-500 hover:text-red-700"
+                      aria-label={`Delete ${listing.title}`}
                     >
                       🗑️
                     </button>

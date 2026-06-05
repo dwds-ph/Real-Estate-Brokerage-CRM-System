@@ -19,6 +19,14 @@ export function DealCard({
       draggable
       onDragStart={() => onDragStart(lead.id)}
       onClick={() => onNavigate(`/leads/${lead.id}`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onNavigate(`/leads/${lead.id}`);
+        }
+      }}
       className={cn(
         "rounded-lg border bg-card p-3 cursor-grab active:cursor-grabbing hover:shadow-sm transition-shadow",
         draggingId === lead.id && "opacity-50",

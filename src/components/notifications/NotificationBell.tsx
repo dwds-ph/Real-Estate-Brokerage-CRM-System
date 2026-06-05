@@ -58,6 +58,7 @@ export default function NotificationBell() {
         onClick={() => setOpen(!open)}
         className="relative rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
         title="Notifications"
+        aria-label="Notifications"
       >
         <span className="text-lg">🔔</span>
         {unreadCount > 0 && (

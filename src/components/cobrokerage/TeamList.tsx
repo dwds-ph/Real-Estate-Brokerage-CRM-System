@@ -38,6 +38,14 @@ export default function TeamList({
             key={t.id}
             className="rounded-lg border bg-card p-4 space-y-2 cursor-pointer hover:shadow-sm"
             onClick={() => onViewDetail(t)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onViewDetail(t);
+              }
+            }}
           >
             <div className="flex items-start justify-between">
               <div>

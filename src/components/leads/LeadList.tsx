@@ -1,5 +1,6 @@
 import { Lead } from "@/types";
 import { cn, formatDate, getScoreColor } from "@/lib/utils";
+import { getVirtualListStyle } from "@/lib/virtualList";
 import { StatusBadge } from "./StatusBadge";
 
 export interface LeadListProps {
@@ -38,12 +39,21 @@ export function LeadList({
   }
 
   return (
-    <div className="grid gap-3">
-      {leads.map((lead) => (
+    <div className="grid gap-3 overflow-y-auto max-h-[calc(100vh-12rem)]">
+      {leads.map((lead, index) => (
         <div
           key={lead.id}
+          style={getVirtualListStyle(index)}
           className="rounded-lg border bg-card p-4 hover:shadow-sm transition-shadow cursor-pointer"
           onClick={() => onNavigate(lead.id)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onNavigate(lead.id);
+            }
+          }}
         >
           <div className="flex items-start justify-between">
             <div className="space-y-1">
@@ -83,6 +93,7 @@ export function LeadList({
                   onEdit(lead);
                 }}
                 className="rounded p-1 text-xs text-muted-foreground hover:text-foreground"
+                aria-label={`Edit ${lead.name}`}
               >
                 ✏️
               </button>
@@ -92,6 +103,7 @@ export function LeadList({
                   onDelete(lead.id);
                 }}
                 className="rounded p-1 text-xs text-red-500 hover:text-red-700"
+                aria-label={`Delete ${lead.name}`}
               >
                 🗑️
               </button>
