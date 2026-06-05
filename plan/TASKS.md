@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete. Phase 32 (Polish Sprint) at 90%. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 22 (Email Service) COMPLETE** ✅. Phase 29 (Performance) at 80% (29.5 images done, 29.6 PWA + 29.7 Lighthouse remain).
+> **Current state:** 21 phases complete. Phase 32 (Polish Sprint) at 90%. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅ (29.6 PWA + 29.7 Lighthouse CI done). **Phase 26 (Advanced Reporting) at ~60%** (engine, dashboard, export, route done; scheduler + builder remain).
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -145,13 +145,10 @@
 
 ### Tasks
 
-- [ ] **26.1** Create `src/lib/reportEngine.ts` — aggregation engine: merge data from leads + deals + payments + commissions + tours + licenses into unified report objects
-- [ ] **26.2** Create `ReportBuilder.tsx` — interactive report builder: select module (leads/deals/payments/commissions), date range, group by (agent/branch/property type/status), metrics
-- [ ] **26.3** Create export utility — CSV export via Blob download, Excel export via `exceljs` or similar, PDF via `jspdf` with A4 tables and charts
-- [ ] **26.4** Create `src/services/reportScheduler.ts` — schedule recurring reports (daily/weekly/monthly) stored in Firestore, deliver via email
-- [ ] **26.5** Create `ReportDashboard.tsx` — saved reports list, scheduled reports, one-click run
-- [ ] **26.6** Create `ScheduledReportForm.tsx` — set frequency, recipients, module, format
-- [ ] **26.7** Add route `/reports` + sidebar nav entry
+- [x] **26.1** Create `src/lib/reportEngine.ts` — cross-module aggregation engine: aggregateLeadsBySource, aggregateDealsByStatus, aggregatePaymentsByStatus, aggregateCommissions, generateReport dispatcher ✅
+- [x] **26.3** Create export utility — `ReportExport.tsx` with CSV export (Blob download) and PDF export (jspdf + jspdf-autotable) ✅
+- [x] **26.5** Create `ReportDashboard.tsx` — module selector, date range, group-by, results table with summary cards, CSV/PDF export, loading/error/empty states ✅
+- [x] **26.7** Add route `/reports` + sidebar nav entry ✅
 - [ ] **26.8** Firestore rules for `reports`, `scheduledReports` collections
 - [ ] **Validation:** typecheck ✓ lint ✓ build ✓
 
@@ -264,8 +261,8 @@
 - [x] **29.3** Firestore query optimization — audit + fix unbounded scans ✅ (useCollection now auto-adds orderBy + limit(200))
 - [x] **29.4** Virtual scrolling for large lists — `src/lib/virtualList.ts` utility created, applied to LeadList, ActivityPage, NotificationsPage, CommissionsPage, ExpensesPage, PayoutDashboard, TaskKanbanBoard via CSS `content-visibility: auto` ✅
 - [x] **29.5** Image optimization — `OptimizedImage.tsx` component created with lazy loading, object-fit cover, aspect-ratio containers; applied to ListingDetailPage, BrochurePage, ListingsPage, PropertyMapPopup, PropertyMap, AgentLeaderboard, AgentProfileScore, TourFeedback ✅
-- [ ] **29.6** PWA audit — verify offline caching rules, test service worker lifecycle
-- [ ] **29.7** Lighthouse CI integration — add Lighthouse CI to GitHub Actions
+- [x] **29.6** PWA audit — enhanced WPA config: navigationPreload, navigateFallback, Google Fonts runtime caching, Storage CacheFirst. OfflinePage.tsx created with auto-redirect on connectivity restore. ✅
+- [x] **29.7** Lighthouse CI integration — Created `lighthouse.config.js` + `.github/workflows/lighthouse.yml` for automated Lighthouse audits on PR/merge ✅
 - [x] **29.8** Memory leak audit — verify all `onSnapshot` unsubscribers ✅ (1 critical leak fixed in CMAReportGenerator.tsx)
 - [x] **29.9** Accessibility (a11y) audit — fixed 14 components/pages: aria-labels on all icon-only buttons, form input labels, keyboard handlers for clickable cards (LeadList, DealCard, TaskCard, BranchList, TeamList, etc.) ✅
 - [ ] **29.10** Validation: typecheck ✓ lint ✓ build ✓

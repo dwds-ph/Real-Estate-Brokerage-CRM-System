@@ -38,6 +38,7 @@ const navItems = [
   { to: "/cma", label: "CMA", icon: "📊" },
   { to: "/seed-data", label: "Seed Data", icon: "🌱" },
   { to: "/audit", label: "Audit Trail", icon: "🔍" },
+  { to: "/reports", label: "Reports", icon: "📊" },
 ];
 
 export default function AppLayout() {

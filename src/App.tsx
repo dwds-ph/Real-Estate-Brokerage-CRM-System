@@ -62,7 +62,9 @@ const CompliancePage = lazy(() => import("@/pages/CompliancePage"));
 const CMAPage = lazy(() => import("@/pages/CMAPage"));
 const SeedDataPage = lazy(() => import("@/pages/SeedDataPage"));
 const AuditPage = lazy(() => import("@/pages/AuditPage"));
+const ReportsPage = lazy(() => import("@/pages/ReportsPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const OfflinePage = lazy(() => import("@/pages/OfflinePage"));
 
 function PageLoader() {
   return (
@@ -158,6 +160,8 @@ function App() {
                   />
                   <Route path="/seed-data" element={<SeedDataPage />} />
                   <Route path="/audit" element={<AuditPage />} />
+                  <Route path="/reports" element={<ReportsPage />} />
+                  <Route path="/offline" element={<OfflinePage />} />
                 </Route>
               </Route>
               <Route path="*" element={<NotFoundPage />} />
