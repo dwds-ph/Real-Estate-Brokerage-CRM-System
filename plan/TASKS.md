@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 22 (Email Service) COMPLETE** ✅. Phase 30 (E2E Coverage) at ~80% (14 spec files + 6 service test files + seed script + test plan). Phase 32 (Polish Sprint) at 90%.
+> **Current state:** 21 phases complete. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 28 (i18n Foundation) at ~60%**. **Phase 29 (Performance) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 22 (Email Service) COMPLETE** ✅. Phase 30 (E2E Coverage) at ~85%. Phase 32 (Polish Sprint) at 90%.
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -222,11 +222,11 @@
 
 ### Tasks
 
-- [ ] **28.1** Add `react-i18next` + `i18next` dependencies
-- [ ] **28.2** Create `src/lib/i18n/index.ts` — i18n config with language detection (browser → localStorage → fallback)
-- [ ] **28.3** Create `src/lib/i18n/locales/en.json` — English translation keys (all UI strings)
-- [ ] **28.4** Create `src/lib/i18n/locales/fil.json` — Filipino translation keys
-- [ ] **28.5** Create language switcher UI in SettingsPage + AppLayout dropdown
+- [x] **28.1** Add `react-i18next` + `i18next` dependencies ✅
+- [x] **28.2** Create `src/lib/i18n/index.ts` — i18n config with language detection (localStorage → browser → fallback) ✅
+- [x] **28.3** Create `src/lib/i18n/locales/en.json` — 200+ English translation keys across 20 categories ✅
+- [x] **28.4** Create `src/lib/i18n/locales/fil.json` — 200+ Filipino translation keys (formal Filipino, same structure) ✅
+- [x] **28.5** Create language switcher UI in AppLayout top bar + SettingsPage toggle ✅
 - [ ] **28.6** Translate all page-level UI: navigation, labels, buttons, statuses, form fields
 - [ ] **28.7** Locale-aware formatting: PHP currency (`₱1,234,567.89`), dates (`Enero 15, 2026`), numbers
 - [ ] **28.8** PH-specific number formatting — `piso`, `sentimo`, barrio/barangay terms
@@ -299,7 +299,7 @@
 - [ ] **30.3** Add visual regression testing
 - [x] **30.4** Add Firestore emulator seed data script ✅
 - [x] **30.5** Add unit test coverage for remaining services — 6 new test files (analytics, branch, coBroker, compliance, goal, team) adding 105 tests, total 611 tests across 25 files ✅
-- [ ] **30.6** Expand leadRoutingService tests
+- [x] **30.6** Expand leadRoutingService tests — 52 tests covering specialty rules, location rules, round-robin, edge cases ✅
 - [x] **30.7** Create `tests/e2e/setup.ts` — shared fixture with auto-login and auto-seed ✅
 - [ ] **30.8** Add CI matrix
 - [ ] **30.9** Validation

@@ -3,6 +3,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { updatePassword } from "firebase/auth";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 import { db, auth } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import EmailPreferences from "@/components/settings/EmailPreferences";
@@ -10,6 +11,7 @@ import EmailPreferences from "@/components/settings/EmailPreferences";
 export default function SettingsPage() {
   const { user, userProfile, refreshProfile } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { i18n } = useTranslation();
 
   const [displayName, setDisplayName] = useState(
     userProfile?.displayName || "",
@@ -206,6 +208,33 @@ export default function SettingsPage() {
                 className={cn(
                   "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
                   theme === "dark" ? "translate-x-6" : "translate-x-1",
+                )}
+              />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Language / Wika</p>
+              <p className="text-xs text-muted-foreground">
+                Choose your preferred interface language
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                const newLang = i18n.language === 'en' ? 'fil' : 'en';
+                i18n.changeLanguage(newLang);
+              }}
+              aria-label={`Switch to ${i18n.language === 'en' ? 'Filipino' : 'English'}`}
+              className={cn(
+                "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                i18n.language === 'fil' ? "bg-primary" : "bg-gray-300",
+              )}
+            >
+              <span
+                className={cn(
+                  "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                  i18n.language === 'fil' ? "translate-x-6" : "translate-x-1",
                 )}
               />
             </button>

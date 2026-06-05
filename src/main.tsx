@@ -8,6 +8,7 @@ import App from "./App";
 import { enableMultiTabIndexedDbPersistence } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import "./index.css";
+import "./lib/i18n";
 
 // ── Initialise analytics on app load ─────────────────────────────────
 initAnalytics();

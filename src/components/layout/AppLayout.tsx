@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import NotificationBell from "@/components/notifications/NotificationBell";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -215,7 +216,10 @@ export default function AppLayout() {
             </svg>
           </button>
           <div className="flex-1" />
-          <NotificationBell />
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <NotificationBell />
+          </div>
         </div>
         <div className="mx-auto max-w-7xl p-4 lg:p-6 animate-fade-in-up">
           <Outlet />
