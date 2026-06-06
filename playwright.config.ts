@@ -13,6 +13,10 @@ export default defineConfig({
   timeout: 30_000,
   expect: {
     timeout: 10_000,
+    toHaveScreenshot: {
+      maxDiffPixels: 100,
+      maxDiffPixelRatio: 0.02,
+    },
   },
   use: {
     baseURL: process.env.E2E_BASE_URL || "http://localhost:5173",
@@ -33,6 +37,17 @@ export default defineConfig({
     {
       name: "chromium",
       use: { browserName: "chromium" },
+      dependencies: ["setup"],
+    },
+    {
+      name: "visual-regression",
+      use: {
+        browserName: "chromium",
+        // Capture screenshots on all results (pass + fail) for visual diff reports
+        screenshot: "on",
+      },
+      // Only run tests tagged with @visual
+      grep: /@visual/,
       dependencies: ["setup"],
     },
   ],

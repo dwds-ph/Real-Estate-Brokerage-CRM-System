@@ -24,6 +24,7 @@
     "e2e:ui": "playwright test --ui",
     "e2e:ci": "concurrently -k -s first \"firebase emulators:start --only firestore --project demo-crm\" \"node scripts/start-auth-emulator.cjs demo-crm 9099\" \"vite\" \"bash scripts/wait-for-emulators.sh && playwright test\"",
     "e2e:debug": "playwright test --debug",
+    "e2e:visual": "playwright test --grep @visual",
     "validate": "yarn typecheck && yarn lint && yarn test:coverage && yarn build",
     "validate:fast": "yarn lint && yarn typecheck"
   },

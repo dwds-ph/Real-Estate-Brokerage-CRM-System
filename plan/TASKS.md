@@ -1,8 +1,8 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 23 (Payment Gateway) COMPLETE** ✅. **Phase 24 (FB Lead Import) COMPLETE** ✅. **Phase 25 (WhatsApp/Viber) COMPLETE** ✅. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 31 (Production Deploy) COMPLETE** ✅. **Phase 32 (Polish Sprint) COMPLETE** ✅. **Phase 28 (i18n Foundation) at ~85%**. Phase 30 (E2E Coverage) at ~85%.
+> **Current state:** 21 phases complete. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 23 (Payment Gateway) COMPLETE** ✅. **Phase 24 (FB Lead Import) COMPLETE** ✅. **Phase 25 (WhatsApp/Viber) COMPLETE** ✅. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 31 (Production Deploy) COMPLETE** ✅. **Phase 32 (Polish Sprint) COMPLETE** ✅. **Phase 28 (i18n Foundation) COMPLETE** ✅. **Phase 30 (E2E Coverage) COMPLETE** ✅.
 >
-> **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
+> **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 72 test files (1439 tests) · 645-line Firestore rules · 4 E2E specs · 50+ routes.
 
 ---
 
@@ -230,7 +230,7 @@
 - [x] **28.6** Translation expansion — expanded en.json and fil.json with 17 new page-level sections (dashboard, expenses, vault, analytics, leaderboard, compliance, cma, mortgages, loans, projects, activity, coBrokerage, licenses, reports, audit, tours, checklists, errors) + updated AppLayout, LanguageSwitcher, ErrorBoundary to use t() calls ✅
 - [x] **28.7** Locale-aware formatting — created `src/lib/formatting.ts` with formatCurrencyPHP, formatDatePH, formatNumberPH, formatNumberInWords, abbreviateNumber using fil-PH locale ✅
 - [x] **28.8** PH-specific number formatting — check-writing format (numberInWords), piso/sentimo convention, fil-PH locale number formatting ✅
-- [ ] **28.9** Validation: typecheck ✓ lint ✓ build ✓
+- [x] **28.9** Validation: typecheck ✓ lint ✓ build ✓ tests ✓
 
 ### Files to create
 
@@ -296,13 +296,13 @@
 
 - [x] **30.1** Create E2E test plan — `e2e/test-plan.md` with 14 user flow categories, 55+ test cases, data dependency diagrams ✅
 - [x] **30.2** Expand E2E tests — 14 new spec files covering all modules: leads (10 tests), listings (9), payments (4), commissions (7), tours (7), tasks (6), dashboard (9), documents (6), analytics (5), projects (2), cobrokerage (5), licenses (3), loans (3), map (5) ✅
-- [ ] **30.3** Add visual regression testing
+- [x] **30.3** Add visual regression testing — playwright.config.ts `toHaveScreenshot` config + `e2e/visual-regression.spec.ts` with login/dashboard screenshots ✅
 - [x] **30.4** Add Firestore emulator seed data script ✅
 - [x] **30.5** Add unit test coverage for remaining services — 6 new test files (analytics, branch, coBroker, compliance, goal, team) adding 105 tests, total 611 tests across 25 files ✅
 - [x] **30.6** Expand leadRoutingService tests — 52 tests covering specialty rules, location rules, round-robin, edge cases ✅
 - [x] **30.7** Create `tests/e2e/setup.ts` — shared fixture with auto-login and auto-seed ✅
-- [ ] **30.8** Add CI matrix
-- [ ] **30.9** Validation
+- [x] **30.8** Add CI matrix — quality_matrix job (typecheck/lint/test parallel) + E2E browser matrix (chromium/firefox, PR exclude firefox) ✅
+- [x] **30.9** Validation: typecheck ✓ build ✓ tests ✓ (72 files, 1439 tests)
 
 ### Files to create
 
