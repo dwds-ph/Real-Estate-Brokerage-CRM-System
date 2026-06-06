@@ -79,9 +79,9 @@ jobs:
         browser: ['chromium', 'firefox']
         is_pr:
           - ${{ github.event_name == 'pull_request' }}
-      exclude:
-        - browser: firefox
-          is_pr: true
+        exclude:
+          - browser: firefox
+            is_pr: true
 
     steps:
       - name: Checkout
