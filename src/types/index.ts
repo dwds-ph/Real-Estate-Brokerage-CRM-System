@@ -18,3 +18,4 @@ export * from "./domains/email";
 export * from "./domains/session";
 export * from "./domains/facebook";
 export * from "./domains/paymentGateway";
+export * from "./domains/messaging";

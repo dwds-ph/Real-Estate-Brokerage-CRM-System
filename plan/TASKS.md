@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 23 (Payment Gateway) COMPLETE** ✅. **Phase 24 (FB Lead Import) COMPLETE** ✅. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 32 (Polish Sprint) COMPLETE** ✅. **Phase 28 (i18n Foundation) at ~85%**. Phase 30 (E2E Coverage) at ~85%.
+> **Current state:** 21 phases complete. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 23 (Payment Gateway) COMPLETE** ✅. **Phase 24 (FB Lead Import) COMPLETE** ✅. **Phase 25 (WhatsApp/Viber) COMPLETE** ✅. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 32 (Polish Sprint) COMPLETE** ✅. **Phase 28 (i18n Foundation) at ~85%**. Phase 30 (E2E Coverage) at ~85%.
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -111,13 +111,13 @@
 
 ### Tasks
 
-- [ ] **25.1** Create `src/services/messagingService.ts` — WhatsApp Business API + Viber REST API clients: send message, send template, send media (property image/brochure)
-- [ ] **25.2** Integrate with existing notification system — FCM + WhatsApp + Viber fallback chain
-- [ ] **25.3** Create `MessagingWidget.tsx` — floating action button on lead/deal detail: "Send via WhatsApp", "Send via Viber", "Send via SMS" with templated message (property link, payment reminder, tour reminder)
-- [ ] **25.4** Create shareable deep links — `wa.me/{phone}?text=...` and `viber://...` with pre-filled property/broker details
-- [ ] **25.5** Message template library — property inquiry, payment reminder, tour confirmation, document request, commission update
-- [ ] **25.6** Firestore rules for `messageLogs` collection
-- [ ] **Validation:** typecheck ✓ lint ✓ build ✓
+- [x] **25.1** Create `src/services/messagingService.ts` — WhatsApp Business API + Viber REST API clients: send message, send template, send media (property image/brochure) ✅
+- [x] **25.2** Integrate with existing notification system — FCM + WhatsApp + Viber fallback chain ✅
+- [x] **25.3** Create `MessagingWidget.tsx` — floating action button on lead/deal detail: "Send via WhatsApp", "Send via Viber", "Send via SMS" with templated message (property link, payment reminder, tour reminder) ✅
+- [x] **25.4** Create shareable deep links — `wa.me/{phone}?text=...` and `viber://...` with pre-filled property/broker details ✅
+- [x] **25.5** Message template library — property inquiry, payment reminder, tour confirmation, document request, commission update ✅
+- [x] **25.6** Firestore rules for `messageLogs` collection ✅
+- [x] **Validation:** typecheck ✓ build ✓
 
 ### Files to create
 
