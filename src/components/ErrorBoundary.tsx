@@ -1,6 +1,7 @@
 import { Component, type ReactNode, type ErrorInfo } from "react";
 import { AppError, getErrorMessage } from "@/lib/errors";
 import { createScopedLogger } from "@/lib/logger";
+import i18n from "@/lib/i18n";
 
 const logger = createScopedLogger("ErrorBoundary");
 
@@ -39,7 +40,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (!this.state.hasError) {return this.props.children;}
 
     const { error } = this.state;
-    const errorMessage = error ? getErrorMessage(error) : "An unexpected error occurred";
+    const errorMessage = error ? getErrorMessage(error) : i18n.t("errorPage.title");
 
     // If a fallback render prop is provided, use it
     if (typeof this.props.fallback === "function") {
@@ -61,14 +62,14 @@ export class ErrorBoundary extends Component<Props, State> {
           <span className="text-4xl" aria-hidden="true">
             ⚠️
           </span>
-          <h2 className="text-xl font-semibold">Something went wrong</h2>
+          <h2 className="text-xl font-semibold">{i18n.t("errors.generic")}</h2>
           <p className="text-sm text-muted-foreground">{errorMessage}</p>
           <div className="flex justify-center gap-3">
             <button
               onClick={this.handleRetry}
               className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 transition-colors"
             >
-              Try again
+              {i18n.t("common.retry")}
             </button>
             <button
               onClick={() => {
@@ -77,7 +78,7 @@ export class ErrorBoundary extends Component<Props, State> {
               }}
               className="rounded-lg border px-4 py-2 text-sm hover:bg-muted transition-colors"
             >
-              Go to Dashboard
+              {i18n.t("errorPage.goHome")}
             </button>
           </div>
         </div>

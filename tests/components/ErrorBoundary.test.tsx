@@ -2,6 +2,23 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
+// Mock i18n for ErrorBoundary (uses i18n.t() directly, not useTranslation())
+vi.mock("@/lib/i18n", () => ({
+  default: {
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        "errors.generic": "Something went wrong",
+        "errorPage.title": "An unexpected error occurred",
+        "common.retry": "Try Again",
+        "errorPage.goHome": "Go to Dashboard",
+      };
+      return translations[key] || key;
+    },
+    language: "en",
+    changeLanguage: vi.fn(),
+  },
+}));
+
 describe("ErrorBoundary", () => {
   beforeEach(() => {
     vi.spyOn(console, "error").mockImplementation(() => {});

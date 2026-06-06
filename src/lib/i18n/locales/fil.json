@@ -113,7 +113,14 @@
     "published": "Nai-publish",
     "updated": "Na-update",
     "created": "Nilikha",
-    "deleted": "Tinanggal"
+    "deleted": "Tinanggal",
+    "sidebarNavigation": "Pangunahing nabigasyon",
+    "sidebarPages": "Mga pahina ng sidebar",
+    "collapseSidebar": "I-collapse ang sidebar",
+    "expandSidebar": "Palawakin ang sidebar",
+    "openMenu": "Buksan ang menu",
+    "switchToFilipino": "Lumipat sa Filipino",
+    "switchToEnglish": "Lumipat sa English"
   },
   "leads": {
     "title": "Mga Lead",
@@ -509,7 +516,9 @@
     "uploadExcel": "Mag-upload ng Excel",
     "mappingFields": "I-map ang mga Field",
     "importPreview": "Preview ng Import",
-    "importResults": "Mga Resulta ng Import"
+    "importResults": "Mga Resulta ng Import",
+    "importLeads": "Mag-import ng mga Lead",
+    "importListings": "Mag-import ng mga Ari-arian"
   },
   "projectsPage": {
     "title": "Mga Proyekto",
@@ -530,6 +539,128 @@
     "marketTrends": "Mga Trend sa Merkado",
     "priceHistory": "Kasaysayan ng Presyo",
     "comps": "Mga Comparables"
+  },
+  "dashboardPage": {
+    "title": "Dashboard",
+    "subtitle": "Pangkalahatang-ideya ng iyong negosyo sa real estate",
+    "cards": {
+      "totalLeads": "Kabuuang mga Lead",
+      "activeListings": "Mga Aktibong Ari-arian",
+      "upcomingViewings": "Mga Paparating na Viewing",
+      "commissionEarned": "Kinita na Komisyon"
+    }
+  },
+  "expensesPage": {
+    "title": "Mga Gastos",
+    "subtitle": "Subaybayan at pamahalaan ang iyong mga gastos",
+    "addExpense": "Magdagdag ng Gastos",
+    "searchPlaceholder": "Maghanap ng mga gastos...",
+    "noExpenses": "Walang nakitang gastos",
+    "columns": {
+      "category": "Kategorya",
+      "amount": "Halaga",
+      "date": "Petsa",
+      "description": "Paglalarawan",
+      "receipt": "Resibo"
+    }
+  },
+  "vaultPage": {
+    "title": "Vault",
+    "subtitle": "Mag-imbak at mamahala ng iyong mga dokumento nang ligtas",
+    "addDocument": "Magdagdag ng Dokumento",
+    "searchPlaceholder": "Maghanap ng mga dokumento...",
+    "noDocuments": "Walang nakitang dokumento",
+    "columns": {
+      "name": "Pangalan",
+      "type": "Uri",
+      "size": "Laki",
+      "uploadedBy": "In-upload Ni",
+      "uploadedAt": "In-upload Noong"
+    }
+  },
+  "analyticsPage": {
+    "title": "Analytics",
+    "subtitle": "Suriin ang pagganap ng iyong negosyo",
+    "sections": {
+      "overview": "Pangkalahatang-ideya",
+      "leadsAnalytics": "Analytics ng mga Lead",
+      "dealsAnalytics": "Analytics ng mga Deal",
+      "revenueAnalytics": "Analytics ng Kita",
+      "agentPerformance": "Pagganap ng Ahente"
+    }
+  },
+  "leaderboardPage": {
+    "title": "Leaderboard",
+    "subtitle": "Tingnan ang mga nangungunang ahente"
+  },
+  "compliancePage": {
+    "title": "Compliance",
+    "subtitle": "Pamahalaan ang mga kinakailangan sa compliance",
+    "sections": {
+      "overview": "Pangkalahatang-ideya",
+      "requirements": "Mga Kinakailangan",
+      "audits": "Mga Pag-audit",
+      "documents": "Mga Dokumento"
+    }
+  },
+  "cmaPage": {
+    "title": "CMA",
+    "subtitle": "Comparative Market Analysis"
+  },
+  "mortgagesPage": {
+    "title": "Mga Mortgage",
+    "subtitle": "Pamahalaan ang mga aplikasyon ng mortgage",
+    "addMortgage": "Magdagdag ng Mortgage"
+  },
+  "loansPage": {
+    "title": "Mga Loan",
+    "subtitle": "Pamahalaan ang mga aplikasyon ng loan"
+  },
+  "activityPage": {
+    "title": "Aktibidad",
+    "subtitle": "Tingnan ang mga kamakailang aktibidad sa system"
+  },
+  "coBrokeragePage": {
+    "title": "Co-Brokerage",
+    "subtitle": "Pamahalaan ang mga kasunduan sa co-brokerage",
+    "sections": {
+      "agreements": "Mga Kasunduan",
+      "partners": "Mga Kasosyo",
+      "commissions": "Mga Komisyon",
+      "history": "Kasaysayan"
+    }
+  },
+  "licensesPage": {
+    "title": "Mga Lisensya",
+    "subtitle": "Pamahalaan ang iyong mga propesyonal na lisensya",
+    "addLicense": "Magdagdag ng Lisensya"
+  },
+  "auditPage": {
+    "title": "Audit Trail",
+    "subtitle": "Tingnan ang mga system audit log",
+    "sections": {
+      "overview": "Pangkalahatang-ideya",
+      "userActivity": "Aktibidad ng Gumagamit",
+      "dataChanges": "Mga Pagbabago sa Data",
+      "loginHistory": "Kasaysayan ng Pag-login"
+    }
+  },
+  "toursPage": {
+    "title": "Mga Tour",
+    "subtitle": "Mag-iskedyul at mamahala ng mga property tour",
+    "addTour": "Magdagdag ng Tour"
+  },
+  "checklistsPage": {
+    "title": "Mga Checklist",
+    "subtitle": "Pamahalaan ang mga template ng checklist"
+  },
+  "errorPage": {
+    "title": "Error",
+    "notFound": "Hindi Natagpuan ang Pahina",
+    "notFoundDescription": "Ang pahina na iyong hinahanap ay wala o nailipat na.",
+    "goHome": "Pumunta sa Dashboard",
+    "forbidden": "Bawal ang Pag-access",
+    "forbiddenDescription": "Wala kang pahintulot na ma-access ang pahinang ito."
   },
   "time": {
     "today": "Ngayon",

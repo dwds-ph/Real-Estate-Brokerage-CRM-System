@@ -1,53 +1,58 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: "📊" },
-  { to: "/leads", label: "Leads", icon: "👥" },
-  { to: "/deals", label: "Deals", icon: "🏆" },
-  { to: "/listings", label: "Listings", icon: "🏠" },
-  { to: "/viewings", label: "Viewings", icon: "📅" },
-  { to: "/commissions", label: "Commissions", icon: "💰" },
-  { to: "/payouts", label: "Payouts", icon: "💸" },
-  { to: "/import", label: "Import", icon: "📥" },
-  { to: "/tasks", label: "Tasks", icon: "✅" },
-  { to: "/agents", label: "Agents", icon: "👤" },
-  { to: "/offices", label: "Offices", icon: "🏢" },
-  { to: "/expenses", label: "Expenses", icon: "💳" },
-  { to: "/ph-tools", label: "PH Tools", icon: "🇵🇭" },
-  { to: "/vault", label: "Vault", icon: "📁" },
-  { to: "/mortgages", label: "Mortgages", icon: "🏦" },
-  { to: "/analytics", label: "Analytics", icon: "📈" },
-  { to: "/calendar", label: "Calendar", icon: "📅" },
-  { to: "/checklist-templates", label: "Checklists", icon: "✅" },
-  { to: "/activity", label: "Activity", icon: "🔄" },
-  { to: "/projects", label: "Projects", icon: "🏗️" },
-  { to: "/market", label: "Market", icon: "📈" },
-  { to: "/licenses", label: "Licenses", icon: "🆔" },
-  { to: "/tours", label: "Tours", icon: "📍" },
-  { to: "/leaderboard", label: "Leaderboard", icon: "🏆" },
-  { to: "/map", label: "Map", icon: "🗺️" },
-  { to: "/loans", label: "Loans", icon: "🏦" },
-  { to: "/cobrokerage", label: "Co-Brokerage", icon: "🤝" },
-  { to: "/documents", label: "Documents", icon: "📑" },
-  { to: "/compliance", label: "Compliance", icon: "✅" },
-  { to: "/cma", label: "CMA", icon: "📊" },
-  { to: "/seed-data", label: "Seed Data", icon: "🌱" },
-  { to: "/audit", label: "Audit Trail", icon: "🔍" },
-  { to: "/reports", label: "Reports", icon: "📊" },
-];
-
 export default function AppLayout() {
+  const { t } = useTranslation();
   const { userProfile, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+
+  const navItems = useMemo(
+    () => [
+      { to: "/dashboard", label: t("navigation.dashboard"), icon: "📊" },
+      { to: "/leads", label: t("navigation.leads"), icon: "👥" },
+      { to: "/deals", label: t("navigation.deals"), icon: "🏆" },
+      { to: "/listings", label: t("navigation.listings"), icon: "🏠" },
+      { to: "/viewings", label: t("navigation.viewings"), icon: "📅" },
+      { to: "/commissions", label: t("navigation.commissions"), icon: "💰" },
+      { to: "/payouts", label: t("navigation.payouts"), icon: "💸" },
+      { to: "/import", label: t("navigation.import"), icon: "📥" },
+      { to: "/tasks", label: t("navigation.tasks"), icon: "✅" },
+      { to: "/agents", label: t("navigation.agents"), icon: "👤" },
+      { to: "/offices", label: t("navigation.offices"), icon: "🏢" },
+      { to: "/expenses", label: t("navigation.expenses"), icon: "💳" },
+      { to: "/ph-tools", label: t("navigation.phTools"), icon: "🇵🇭" },
+      { to: "/vault", label: t("navigation.vault"), icon: "📁" },
+      { to: "/mortgages", label: t("navigation.mortgages"), icon: "🏦" },
+      { to: "/analytics", label: t("navigation.analytics"), icon: "📈" },
+      { to: "/calendar", label: t("navigation.calendar"), icon: "📅" },
+      { to: "/checklist-templates", label: t("navigation.checklists"), icon: "✅" },
+      { to: "/activity", label: t("navigation.activity"), icon: "🔄" },
+      { to: "/projects", label: t("navigation.projects"), icon: "🏗️" },
+      { to: "/market", label: t("navigation.market"), icon: "📈" },
+      { to: "/licenses", label: t("navigation.licenses"), icon: "🆔" },
+      { to: "/tours", label: t("navigation.tours"), icon: "📍" },
+      { to: "/leaderboard", label: t("navigation.leaderboard"), icon: "🏆" },
+      { to: "/map", label: t("navigation.map"), icon: "🗺️" },
+      { to: "/loans", label: t("navigation.loans"), icon: "🏦" },
+      { to: "/cobrokerage", label: t("navigation.coBrokerage"), icon: "🤝" },
+      { to: "/documents", label: t("navigation.documents"), icon: "📑" },
+      { to: "/compliance", label: t("navigation.compliance"), icon: "✅" },
+      { to: "/cma", label: t("navigation.cma"), icon: "📊" },
+      { to: "/seed-data", label: t("navigation.seedData"), icon: "🌱" },
+      { to: "/audit", label: t("navigation.auditTrail"), icon: "🔍" },
+      { to: "/reports", label: t("navigation.reports"), icon: "📊" },
+    ],
+    [t],
+  );
 
   // Detect mobile vs desktop on mount and adjust sidebar
   useEffect(() => {
@@ -84,7 +89,7 @@ export default function AppLayout() {
 
       {/* Sidebar */}
       <aside
-        aria-label="Main navigation"
+        aria-label={t("common.sidebarNavigation")}
         className={cn(
           "flex flex-col border-r bg-card transition-all duration-300 z-50",
           sidebarOpen
@@ -101,13 +106,13 @@ export default function AppLayout() {
             </span>
           </div>
           {sidebarOpen && (
-            <span className="text-sm font-semibold">Real Estate CRM</span>
+            <span className="text-sm font-semibold">{t("app.name")}</span>
           )}
         </div>
 
         {/* Navigation */}
         <nav
-          aria-label="Sidebar pages"
+          aria-label={t("common.sidebarPages")}
           className="flex-1 overflow-y-auto p-2 space-y-1"
         >
           {navItems.map((item) => (
@@ -140,16 +145,16 @@ export default function AppLayout() {
               navigate("/settings");
               handleNavClick();
             }}
-            aria-label="Settings"
+            aria-label={t("navigation.settings")}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <span className="text-lg shrink-0">⚙️</span>
-            {(sidebarOpen || !isMobile) && <span>Settings</span>}
+            {(sidebarOpen || !isMobile) && <span>{t("navigation.settings")}</span>}
           </button>
           <button
             onClick={toggleTheme}
             aria-label={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+              theme === "dark" ? t("theme.switchToLight") : t("theme.switchToDark")
             }
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
@@ -157,16 +162,16 @@ export default function AppLayout() {
               {theme === "dark" ? "☀️" : "🌙"}
             </span>
             {(sidebarOpen || !isMobile) && (
-              <span>{theme === "dark" ? "Light" : "Dark"}</span>
+              <span>{theme === "dark" ? t("theme.light") : t("theme.dark")}</span>
             )}
           </button>
           <button
             onClick={handleLogout}
-            aria-label="Logout"
+            aria-label={t("auth.logout")}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
           >
             <span className="text-lg shrink-0">🚪</span>
-            {(sidebarOpen || !isMobile) && <span>Logout</span>}
+            {(sidebarOpen || !isMobile) && <span>{t("auth.logout")}</span>}
           </button>
 
           {(sidebarOpen || !isMobile) && userProfile && (
@@ -184,7 +189,7 @@ export default function AppLayout() {
         {/* Desktop collapse button */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          aria-label={sidebarOpen ? t("common.collapseSidebar") : t("common.expandSidebar")}
           className="absolute bottom-4 left-4 hidden rounded-full border bg-background p-1 text-xs lg:block hover:bg-muted transition-colors"
         >
           {sidebarOpen ? "◀" : "▶"}
@@ -198,7 +203,7 @@ export default function AppLayout() {
           {/* Mobile hamburger */}
           <button
             onClick={() => setSidebarOpen(true)}
-            aria-label="Open menu"
+            aria-label={t("common.openMenu")}
             className="lg:hidden rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <svg

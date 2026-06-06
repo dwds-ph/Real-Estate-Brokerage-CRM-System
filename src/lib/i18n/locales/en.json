@@ -113,7 +113,14 @@
     "published": "Published",
     "updated": "Updated",
     "created": "Created",
-    "deleted": "Deleted"
+    "deleted": "Deleted",
+    "sidebarNavigation": "Main navigation",
+    "sidebarPages": "Sidebar pages",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "openMenu": "Open menu",
+    "switchToFilipino": "Switch to Filipino",
+    "switchToEnglish": "Switch to English"
   },
   "leads": {
     "title": "Leads",
@@ -509,7 +516,9 @@
     "uploadExcel": "Upload Excel",
     "mappingFields": "Map Fields",
     "importPreview": "Preview Import",
-    "importResults": "Import Results"
+    "importResults": "Import Results",
+    "importLeads": "Import Leads",
+    "importListings": "Import Listings"
   },
   "projectsPage": {
     "title": "Projects",
@@ -530,6 +539,128 @@
     "marketTrends": "Market Trends",
     "priceHistory": "Price History",
     "comps": "Comparables"
+  },
+  "dashboardPage": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your real estate business",
+    "cards": {
+      "totalLeads": "Total Leads",
+      "activeListings": "Active Listings",
+      "upcomingViewings": "Upcoming Viewings",
+      "commissionEarned": "Commission Earned"
+    }
+  },
+  "expensesPage": {
+    "title": "Expenses",
+    "subtitle": "Track and manage your expenses",
+    "addExpense": "Add Expense",
+    "searchPlaceholder": "Search expenses...",
+    "noExpenses": "No expenses found",
+    "columns": {
+      "category": "Category",
+      "amount": "Amount",
+      "date": "Date",
+      "description": "Description",
+      "receipt": "Receipt"
+    }
+  },
+  "vaultPage": {
+    "title": "Vault",
+    "subtitle": "Store and manage your documents securely",
+    "addDocument": "Add Document",
+    "searchPlaceholder": "Search documents...",
+    "noDocuments": "No documents found",
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "size": "Size",
+      "uploadedBy": "Uploaded By",
+      "uploadedAt": "Uploaded At"
+    }
+  },
+  "analyticsPage": {
+    "title": "Analytics",
+    "subtitle": "Analyze your business performance",
+    "sections": {
+      "overview": "Overview",
+      "leadsAnalytics": "Leads Analytics",
+      "dealsAnalytics": "Deals Analytics",
+      "revenueAnalytics": "Revenue Analytics",
+      "agentPerformance": "Agent Performance"
+    }
+  },
+  "leaderboardPage": {
+    "title": "Leaderboard",
+    "subtitle": "See top performing agents"
+  },
+  "compliancePage": {
+    "title": "Compliance",
+    "subtitle": "Manage compliance requirements",
+    "sections": {
+      "overview": "Overview",
+      "requirements": "Requirements",
+      "audits": "Audits",
+      "documents": "Documents"
+    }
+  },
+  "cmaPage": {
+    "title": "CMA",
+    "subtitle": "Comparative Market Analysis"
+  },
+  "mortgagesPage": {
+    "title": "Mortgages",
+    "subtitle": "Manage mortgage applications",
+    "addMortgage": "Add Mortgage"
+  },
+  "loansPage": {
+    "title": "Loans",
+    "subtitle": "Manage loan applications"
+  },
+  "activityPage": {
+    "title": "Activity",
+    "subtitle": "View recent activity across the system"
+  },
+  "coBrokeragePage": {
+    "title": "Co-Brokerage",
+    "subtitle": "Manage co-brokerage agreements",
+    "sections": {
+      "agreements": "Agreements",
+      "partners": "Partners",
+      "commissions": "Commissions",
+      "history": "History"
+    }
+  },
+  "licensesPage": {
+    "title": "Licenses",
+    "subtitle": "Manage your professional licenses",
+    "addLicense": "Add License"
+  },
+  "auditPage": {
+    "title": "Audit Trail",
+    "subtitle": "View system audit logs",
+    "sections": {
+      "overview": "Overview",
+      "userActivity": "User Activity",
+      "dataChanges": "Data Changes",
+      "loginHistory": "Login History"
+    }
+  },
+  "toursPage": {
+    "title": "Tours",
+    "subtitle": "Schedule and manage property tours",
+    "addTour": "Add Tour"
+  },
+  "checklistsPage": {
+    "title": "Checklists",
+    "subtitle": "Manage checklist templates"
+  },
+  "errorPage": {
+    "title": "Error",
+    "notFound": "Page Not Found",
+    "notFoundDescription": "The page you are looking for does not exist or has been moved.",
+    "goHome": "Go to Dashboard",
+    "forbidden": "Access Forbidden",
+    "forbiddenDescription": "You do not have permission to access this page."
   },
   "time": {
     "today": "Today",
