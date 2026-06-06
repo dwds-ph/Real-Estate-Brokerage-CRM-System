@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, useLocation } from "react-router-dom";
 import { Analytics } from "./components/Analytics";
 import { initAnalytics, logPageView } from "./services/analytics";
+import { initMonitoring } from "@/lib/monitoring";
 import App from "./App";
 import { enableMultiTabIndexedDbPersistence } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -12,6 +13,11 @@ import "./lib/i18n";
 
 // ── Initialise analytics on app load ─────────────────────────────────
 initAnalytics();
+
+// ── Initialise error monitoring (global handlers + navigation tracking)
+//     When an authenticated user is available, re-call with their UID
+//     from a component that has access to useAuth().
+initMonitoring();
 
 // ── Enable Firestore offline persistence ─────────────────────────────
 enableMultiTabIndexedDbPersistence(db).catch((err) => {
