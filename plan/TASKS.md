@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 32 (Polish Sprint) COMPLETE** ✅. **Phase 28 (i18n Foundation) at ~85%**. Phase 30 (E2E Coverage) at ~85%.
+> **Current state:** 21 phases complete. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 32 (Polish Sprint) COMPLETE** ✅. **Phase 24 (FB Lead Import) COMPLETE** ✅. **Phase 28 (i18n Foundation) at ~85%**. Phase 30 (E2E Coverage) at ~85%.
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -78,14 +78,14 @@
 
 ### Tasks
 
-- [ ] **24.1** Create `src/services/facebookLeadService.ts` — Facebook Graph API client: fetch leads from ad accounts, parse lead gen forms, deduplicate against existing leads
-- [ ] **24.2** Create `FacebookLeadImporter.tsx` — manual trigger + auto-poll toggle, last-sync timestamp, import count, error log, mapping UI (map FB fields → CRM fields)
-- [ ] **24.3** Create `src/lib/leadDeduplication.ts` — deduplication algorithm: match by phone → email → name+fuzzy address, auto-merge or flag for review
-- [ ] **24.4** Create Facebook Lead import settings in SettingsPage — connect/revoke FB page, select ad account, choose lead gen form
-- [ ] **24.5** Auto-assign imported leads via existing `leadRoutingService.ts`
-- [ ] **24.6** Track import history in Firestore — `facebookImportLogs` collection
-- [ ] **24.7** Firestore rules for `facebookImportLogs` collection
-- [ ] **Validation:** typecheck ✓ lint ✓ build ✓
+- [x] **24.1** Create `src/services/facebookLeadService.ts` — Facebook Graph API client: fetch leads from ad accounts, parse lead gen forms, deduplicate against existing leads ✅
+- [x] **24.2** Create `FacebookLeadImporter.tsx` — manual trigger + auto-poll toggle, last-sync timestamp, import count, error log, mapping UI (map FB fields → CRM fields) ✅
+- [x] **24.3** Create `src/lib/leadDeduplication.ts` — deduplication algorithm: match by phone → email → name+fuzzy address, auto-merge or flag for review ✅
+- [x] **24.4** Create Facebook Lead import settings in SettingsPage — connect/revoke FB page, select ad account, choose lead gen form ✅
+- [x] **24.5** Auto-assign imported leads via existing `leadRoutingService.ts` ✅
+- [x] **24.6** Track import history in Firestore — `facebookImportLogs` collection ✅
+- [x] **24.7** Firestore rules for `facebookImportLogs` collection ✅
+- [x] **Validation:** typecheck ✓ build ✓ tests ✓
 
 ### Files to create
 

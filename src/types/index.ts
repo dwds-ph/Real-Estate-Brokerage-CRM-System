@@ -16,3 +16,4 @@ export * from "./domains/automation";
 export * from "./domains/audit";
 export * from "./domains/email";
 export * from "./domains/session";
+export * from "./domains/facebook";

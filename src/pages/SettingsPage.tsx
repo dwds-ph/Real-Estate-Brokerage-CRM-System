@@ -287,6 +287,27 @@ export default function SettingsPage() {
 
       {/* Email & In-App Preferences */}
       <EmailPreferences />
+
+      {/* Facebook Integration */}
+      <section className="rounded-lg border bg-card p-6">
+        <h2 className="text-lg font-semibold mb-4">Facebook & Instagram Lead Import</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Connect your Facebook Page to automatically import leads from Facebook
+          Lead Ads and Instagram. Configure your connection, field mappings, and
+          import schedule on the Import page.
+        </p>
+        <a
+          href="/import"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.href = "/import";
+          }}
+        >
+          <span>📱</span>
+          <span>Go to Import Settings</span>
+        </a>
+      </section>
     </div>
   );
 }

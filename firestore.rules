@@ -723,5 +723,33 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }
 
+    // -----------------------------------------------------------------------
+    // FACEBOOK IMPORT LOGS  — append-only audit trail for Facebook lead imports
+    //   create:  any authenticated user
+    //   read:    same broker org, or broker/admin/compliance-officer
+    //   update:  NEVER (immutable log)
+    //   delete:  NEVER (immutable log)
+    // -----------------------------------------------------------------------
+    match /facebookImportLogs/{logId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && (inMyOrg(resource) || isBrokerOrAdmin() || isComplianceOfficer());
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // FACEBOOK SETTINGS  — per-broker Facebook integration config
+    //   read:    same broker org
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /facebookSettings/{settingsId} {
+      allow read: if request.auth != null && (inMyOrg(resource) || isBrokerOrAdmin());
+      allow create: if isBroker();
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
   }
 }

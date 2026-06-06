@@ -249,6 +249,7 @@ export const COLLECTIONS = {
   SCHEDULED_REPORTS: "scheduledReports",
   EMAIL_LOGS: "emailLogs",
   EMAIL_PREFERENCES: "emailPreferences",
+  FACEBOOK_IMPORT_LOGS: "facebookImportLogs",
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
