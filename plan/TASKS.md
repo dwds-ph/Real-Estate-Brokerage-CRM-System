@@ -1,6 +1,6 @@
 # Remaining Implementation Phases — Real Estate Brokerage CRM
 
-> **Current state:** 21 phases complete. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 32 (Polish Sprint) COMPLETE** ✅. **Phase 24 (FB Lead Import) COMPLETE** ✅. **Phase 28 (i18n Foundation) at ~85%**. Phase 30 (E2E Coverage) at ~85%.
+> **Current state:** 21 phases complete. **Phase 22 (Email Service) COMPLETE** ✅. **Phase 23 (Payment Gateway) COMPLETE** ✅. **Phase 24 (FB Lead Import) COMPLETE** ✅. **Phase 26 (Advanced Reporting) COMPLETE** ✅. **Phase 27 (Audit Trail) COMPLETE** ✅. **Phase 29 (Performance) COMPLETE** ✅. **Phase 32 (Polish Sprint) COMPLETE** ✅. **Phase 28 (i18n Foundation) at ~85%**. Phase 30 (E2E Coverage) at ~85%.
 >
 > **Codebase stats:** 41 pages · 111 components · 27 services · 15 type domains · 14 hooks · 50+ test files · 645-line Firestore rules · 3 E2E specs · 50+ routes.
 
@@ -45,14 +45,14 @@
 
 ### Tasks
 
-- [ ] **23.1** Add PayMongo SDK/API client — create payment intents, attach payment methods, confirm payments
-- [ ] **23.2** Create `src/services/paymentGatewayService.ts` — `createPaymentLink()`, `checkPaymentStatus()`, `createCheckoutSession()` for GCash/Maya/credit card
-- [ ] **23.3** Create `PaymentGatewayForm.tsx` — payment method selector embedded in deal payment flow (Pay via GCash / Maya / Card)
-- [ ] **23.4** Create webhook handler (client-side) for payment status updates (paid/failed/refunded)
-- [ ] **23.5** Integrate payment gateway into DealPaymentSection — "Pay Online" button next to each payment entry, status sync back to Firestore
-- [ ] **23.6** Offline payment fallback — receipt upload for cash/bank transfers
-- [ ] **23.7** Firestore rules for `paymentTransactions` collection (immutable record)
-- [ ] **Validation:** typecheck ✓ lint ✓ build ✓
+- [x] **23.1** Add PayMongo SDK/API client — create payment intents, attach payment methods, confirm payments ✅
+- [x] **23.2** Create `src/services/paymentGatewayService.ts` — `createPaymentLink()`, `checkPaymentStatus()`, `createCheckoutSession()` for GCash/Maya/credit card ✅
+- [x] **23.3** Create `PaymentGatewayForm.tsx` — payment method selector embedded in deal payment flow (Pay via GCash / Maya / Card) ✅
+- [x] **23.4** Create webhook handler (client-side) for payment status updates (paid/failed/refunded) ✅
+- [x] **23.5** Integrate payment gateway into DealPaymentSection — "Pay Online" button next to each payment entry, status sync back to Firestore ✅
+- [x] **23.6** Offline payment fallback — receipt upload for cash/bank transfers ✅
+- [x] **23.7** Firestore rules for `paymentTransactions` collection (immutable record) ✅
+- [x] **Validation:** typecheck ✓ build ✓
 
 ### Files to create
 

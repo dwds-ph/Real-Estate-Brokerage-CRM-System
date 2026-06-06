@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { PaymentSummary } from "./PaymentSummary";
 import { PaymentList } from "./PaymentList";
 import { PaymentForm } from "./PaymentForm";
+import PaymentGatewayForm from "./PaymentGatewayForm";
 import { subscribePaymentsForDeal } from "@/services/paymentService";
+import { useAuth } from "@/context/AuthContext";
 import { type Payment, type Deal } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 
@@ -11,9 +13,12 @@ interface DealPaymentSectionProps {
 }
 
 export function DealPaymentSection({ allDeals }: DealPaymentSectionProps) {
+  const { userProfile } = useAuth();
   const [expanded, setExpanded] = useState(false);
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [showGateway, setShowGateway] = useState(false);
+  const [gatewayDealId, setGatewayDealId] = useState<string | null>(null);
 
   if (allDeals.length === 0) {return null;}
 
@@ -49,6 +54,10 @@ export function DealPaymentSection({ allDeals }: DealPaymentSectionProps) {
                 setSelectedDealId(deal.id);
                 setShowForm(true);
               }}
+              onPayOnline={() => {
+                setGatewayDealId(deal.id);
+                setShowGateway(true);
+              }}
             />
           ))}
         </div>
@@ -65,6 +74,20 @@ export function DealPaymentSection({ allDeals }: DealPaymentSectionProps) {
           onSuccess={() => {}}
         />
       )}
+
+      {showGateway && gatewayDealId && (
+        <PaymentGatewayForm
+          dealId={gatewayDealId}
+          brokerId={userProfile?.brokerId || ""}
+          amount={allDeals.find((d) => d.id === gatewayDealId)?.dealPrice || 0}
+          open={showGateway}
+          onClose={() => {
+            setShowGateway(false);
+            setGatewayDealId(null);
+          }}
+          onSuccess={() => {}}
+        />
+      )}
     </div>
   );
 }
@@ -76,11 +99,13 @@ function DealPaymentRow({
   isSelected,
   onToggle,
   onAddPayment,
+  onPayOnline,
 }: {
   deal: Deal;
   isSelected: boolean;
   onToggle: () => void;
   onAddPayment: () => void;
+  onPayOnline: () => void;
 }) {
   const [payments, setPayments] = useState<Payment[]>([]);
 
@@ -132,12 +157,20 @@ function DealPaymentRow({
         <div className="border-t px-3 py-3 space-y-3">
           <PaymentSummary payments={payments} />
           <PaymentList payments={payments} onRefresh={refresh} />
-          <button
-            onClick={onAddPayment}
-            className="w-full rounded-lg border-2 border-dashed px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
-          >
-            + Add Payment
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={onAddPayment}
+              className="flex-1 rounded-lg border-2 border-dashed px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+            >
+              + Add Payment Record
+            </button>
+            <button
+              onClick={onPayOnline}
+              className="flex-1 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              💳 Pay Online Now
+            </button>
+          </div>
         </div>
       )}
     </div>

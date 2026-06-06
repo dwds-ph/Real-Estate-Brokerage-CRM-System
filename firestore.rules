@@ -724,6 +724,34 @@ service cloud.firestore {
     }
 
     // -----------------------------------------------------------------------
+    // PAYMENT TRANSACTIONS  — online payment gateway records
+    //   create:  any authenticated user
+    //   read:    same broker org
+    //   update:  broker or creator (for status updates from webhook)
+    //   delete:  NEVER (financial record immutability)
+    // -----------------------------------------------------------------------
+    match /paymentTransactions/{txnId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && (inMyOrg(resource) || hasReadAllAccess());
+      allow update: if isBroker() || resource.data.createdBy == request.auth.uid;
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // PAYMENT GATEWAY CONFIG  — per-broker PayMongo settings
+    //   read:    broker self
+    //   create:  broker only
+    //   update:  broker only
+    //   delete:  broker only
+    // -----------------------------------------------------------------------
+    match /paymentGatewayConfig/{configId} {
+      allow read: if isBrokerOrAdmin();
+      allow create: if isBroker();
+      allow update: if isBroker();
+      allow delete: if isBroker();
+    }
+
+    // -----------------------------------------------------------------------
     // FACEBOOK IMPORT LOGS  — append-only audit trail for Facebook lead imports
     //   create:  any authenticated user
     //   read:    same broker org, or broker/admin/compliance-officer
