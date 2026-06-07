@@ -31,8 +31,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
 
-      - name: Enable Corepack (for Yarn 4)
-        run: corepack enable
+      - name: Install Yarn 4
+        run: |
+          npm install -g yarn@4.15.0
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -67,8 +69,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
 
-      - name: Enable Corepack (for Yarn 4)
-        run: corepack enable
+      - name: Install Yarn 4
+        run: |
+          npm install -g yarn@4.15.0
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -99,8 +103,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
 
-      - name: Enable Corepack (for Yarn 4)
-        run: corepack enable
+      - name: Install Yarn 4
+        run: |
+          npm install -g yarn@4.15.0
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --immutable
