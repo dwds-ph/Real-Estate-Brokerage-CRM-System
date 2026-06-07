@@ -26,10 +26,12 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Enable Corepack & Set Yarn version
+      - name: Install Yarn 4
         run: |
-          corepack enable
-          yarn set version ${{ env.YARN_VERSION }}
+          hash -r
+          npm install -g yarn@4.15.0
+          hash -r
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -67,10 +69,12 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Enable Corepack & Set Yarn version
+      - name: Install Yarn 4
         run: |
-          corepack enable
-          yarn set version ${{ env.YARN_VERSION }}
+          hash -r
+          npm install -g yarn@4.15.0
+          hash -r
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --immutable

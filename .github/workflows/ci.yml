@@ -33,9 +33,9 @@ jobs:
 
       - name: Install Yarn 4
         run: |
-          sudo apt-get remove -y yarn 2>/dev/null || true
-          sudo rm -f /usr/bin/yarn /usr/bin/yarnpkg
+          hash -r
           npm install -g yarn@4.15.0
+          hash -r
           yarn --version
 
       - name: Install dependencies
@@ -73,9 +73,9 @@ jobs:
 
       - name: Install Yarn 4
         run: |
-          sudo apt-get remove -y yarn 2>/dev/null || true
-          sudo rm -f /usr/bin/yarn /usr/bin/yarnpkg
+          hash -r
           npm install -g yarn@4.15.0
+          hash -r
           yarn --version
 
       - name: Install dependencies
@@ -109,9 +109,9 @@ jobs:
 
       - name: Install Yarn 4
         run: |
-          sudo apt-get remove -y yarn 2>/dev/null || true
-          sudo rm -f /usr/bin/yarn /usr/bin/yarnpkg
+          hash -r
           npm install -g yarn@4.15.0
+          hash -r
           yarn --version
 
       - name: Install dependencies
