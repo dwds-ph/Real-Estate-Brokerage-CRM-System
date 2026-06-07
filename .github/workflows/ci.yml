@@ -34,7 +34,8 @@ jobs:
       - name: Install Yarn 4
         run: |
           hash -r
-          npm install -g yarn@4.15.0
+          sudo rm -f /usr/bin/yarn /usr/bin/yarnpkg /usr/local/bin/yarn /usr/local/bin/yarnpkg 2>/dev/null || true
+          npm install -g @yarnpkg/cli-dist@4.16.0
           hash -r
           yarn --version
 
@@ -74,7 +75,8 @@ jobs:
       - name: Install Yarn 4
         run: |
           hash -r
-          npm install -g yarn@4.15.0
+          sudo rm -f /usr/bin/yarn /usr/bin/yarnpkg /usr/local/bin/yarn /usr/local/bin/yarnpkg 2>/dev/null || true
+          npm install -g @yarnpkg/cli-dist@4.16.0
           hash -r
           yarn --version
 
@@ -110,7 +112,8 @@ jobs:
       - name: Install Yarn 4
         run: |
           hash -r
-          npm install -g yarn@4.15.0
+          sudo rm -f /usr/bin/yarn /usr/bin/yarnpkg /usr/local/bin/yarn /usr/local/bin/yarnpkg 2>/dev/null || true
+          npm install -g @yarnpkg/cli-dist@4.16.0
           hash -r
           yarn --version
 
