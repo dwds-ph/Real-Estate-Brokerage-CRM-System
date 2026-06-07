@@ -28,7 +28,7 @@ vi.mock("@/lib/firebase", () => ({ db: {} }));
 
 const now = Date.now();
 
-function sampleBranch(overrides: Partial<Branch> = {}): Branch {
+function _sampleBranch(overrides: Partial<Branch> = {}): Branch {
   return {
     id: "branch-1",
     name: "Main Office",

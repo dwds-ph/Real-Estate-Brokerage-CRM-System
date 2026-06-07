@@ -5,7 +5,6 @@ import {
   findNextAgent,
   autoAssignLead,
   type RoutingConfig,
-  type LeadRoutingRule,
 } from "@/services/leadRoutingService";
 import type { Lead, AppUser } from "@/types";
 

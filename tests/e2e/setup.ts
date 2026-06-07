@@ -31,7 +31,7 @@ export const test = base.extend<TestFixtures>({
    * as a worker fixture — it's shared across tests in the same worker.
    */
   seededData: [
-    async ({}, use) => {
+    async (_unused, use) => {
       // 1. Create Auth emulator users (broker + agent)
       await seedTestUsers();
 
