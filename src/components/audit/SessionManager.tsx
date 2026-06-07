@@ -70,8 +70,9 @@ export function SessionManager() {
   const isBroker = userProfile?.role === "broker";
   const canManage = canViewAudit;
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchSessions = useCallback(async () => {
-    if (!user) return;
+    if (!user) {return;}
     setLoading(true);
     setError(null);
 
@@ -94,11 +95,12 @@ export function SessionManager() {
   }, [user, isBroker, userProfile?.id]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSessions();
   }, [fetchSessions]);
 
   const handleRevoke = async (session: UserSession) => {
-    if (!user || !session.isActive) return;
+    if (!user || !session.isActive) {return;}
     setRevoking(session.id);
     try {
       await revokeSession(session.userId, session.id, user.uid);

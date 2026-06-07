@@ -195,7 +195,7 @@ export async function toggleScheduledReport(
  */
 export async function markReportSent(reportId: string): Promise<void> {
   const report = await getScheduledReportById(reportId);
-  if (!report) return;
+  if (!report) {return;}
 
   const nextScheduledAt = computeNextSchedule(
     report.frequency,
@@ -221,7 +221,7 @@ export async function getScheduledReportById(
       where("__name__", "==", reportId),
     ),
   );
-  if (snap.empty) return null;
+  if (snap.empty) {return null;}
   const d = snap.docs[0];
   return { id: d.id, ...d.data() } as unknown as ScheduledReport;
 }

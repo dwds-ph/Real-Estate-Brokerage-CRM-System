@@ -103,7 +103,7 @@ export default function ReportDashboard() {
   const [reportRun, setReportRun] = useState(false);
 
   const report = useMemo(() => {
-    if (!reportRun) return null;
+    if (!reportRun) {return null;}
 
     let data: unknown;
     switch (module) {
@@ -139,12 +139,12 @@ export default function ReportDashboard() {
   }, []);
 
   const handleExportCSV = useCallback(() => {
-    if (!report) return;
+    if (!report) {return;}
     exportToCSV(report.rows, report.title);
   }, [report]);
 
   const handleExportPDF = useCallback(() => {
-    if (!report) return;
+    if (!report) {return;}
     exportToPDF(report.title, report.rows, report.summary);
   }, [report]);
 
@@ -156,7 +156,7 @@ export default function ReportDashboard() {
   const [showBuilder, setShowBuilder] = useState(false);
 
   useEffect(() => {
-    if (!userProfile?.id) return;
+    if (!userProfile?.id) {return;}
     getScheduledReports(userProfile.id)
       .then((list) => {
         setSchedules(list);
@@ -186,12 +186,12 @@ export default function ReportDashboard() {
   const handleSaveSchedule = useCallback(
     async () => {
       // Re-fetch after save
-      if (!userProfile?.id) return;
+      if (!userProfile?.id) {return;}
       const list = await getScheduledReports(userProfile.id);
       setSchedules(list);
       setShowForm(false);
     },
-    [userProfile?.id],
+    [userProfile],
   );
 
   // ─── Render ──────────────────────────────────────────────────────────
@@ -284,7 +284,7 @@ export default function ReportDashboard() {
               value={toDateInputValue(dateStart)}
               onChange={(e) => {
                 const val = e.target.value;
-                setDateStart(val ? new Date(val + "T00:00:00").getTime() : 0);
+                setDateStart(val ? new Date(`${val  }T00:00:00`).getTime() : 0);
                 setReportRun(false);
               }}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -303,7 +303,7 @@ export default function ReportDashboard() {
                 const val = e.target.value;
                 setDateEnd(
                   val
-                    ? new Date(val + "T23:59:59").getTime()
+                    ? new Date(`${val  }T23:59:59`).getTime()
                     : Date.now(),
                 );
                 setReportRun(false);
@@ -485,7 +485,7 @@ export default function ReportDashboard() {
         {showForm && (
           <ScheduledReportForm
             onSave={async (data) => {
-              if (!userProfile?.id) return;
+              if (!userProfile?.id) {return;}
               await scheduleReport({
                 ...data,
                 userId: userProfile.id,
@@ -581,14 +581,14 @@ export default function ReportDashboard() {
 
 /** Convert a timestamp to YYYY-MM-DD for <input type="date">. */
 function toDateInputValue(ts: number): string {
-  if (!ts) return "";
+  if (!ts) {return "";}
   const d = new Date(ts);
   return d.toISOString().slice(0, 10);
 }
 
 /** Format a number as a locale-aware currency string. */
 function formatCurrency(value: number): string {
-  if (value === 0) return "0";
+  if (value === 0) {return "0";}
   return new Intl.NumberFormat("en-PH", {
     style: "currency",
     currency: "PHP",

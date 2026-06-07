@@ -82,11 +82,11 @@ async function checkOrphans(
 
   for (const childDoc of childSnap.docs) {
     const refId = childDoc.data()[childField] as string | undefined;
-    if (!refId) continue;
+    if (!refId) {continue;}
     parentIds.add(refId);
   }
 
-  if (parentIds.size === 0) return { orphans: 0, detail: "No references found" };
+  if (parentIds.size === 0) {return { orphans: 0, detail: "No references found" };}
 
   // Check each parent ID in batches (Firestore 'in' supports up to 10)
   const idArray = Array.from(parentIds);
@@ -104,7 +104,7 @@ async function checkOrphans(
     for (const id of batch) {
       if (!foundIds.has(id)) {
         missingCount++;
-        if (missingRefs.length < 5) missingRefs.push(id.slice(0, 12));
+        if (missingRefs.length < 5) {missingRefs.push(id.slice(0, 12));}
       }
     }
   }

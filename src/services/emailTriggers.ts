@@ -42,7 +42,7 @@ export async function notifyDealStatusChange(
   userId?: string,
   brokerId?: string,
 ): Promise<void> {
-  if (!isEmailEnabled() || !recipientEmail) return;
+  if (!isEmailEnabled() || !recipientEmail) {return;}
 
   const html = dealStatusChange(dealTitle, newStatus);
   const payload: EmailPayload = {
@@ -64,7 +64,7 @@ export async function notifyPaymentReceived(
   userId?: string,
   brokerId?: string,
 ): Promise<void> {
-  if (!isEmailEnabled() || !recipientEmail) return;
+  if (!isEmailEnabled() || !recipientEmail) {return;}
 
   const html = paymentReceived(amount, dealTitle);
   const payload: EmailPayload = {
@@ -86,7 +86,7 @@ export async function notifyPaymentOverdue(
   userId?: string,
   brokerId?: string,
 ): Promise<void> {
-  if (!isEmailEnabled() || !recipientEmail) return;
+  if (!isEmailEnabled() || !recipientEmail) {return;}
 
   const html = paymentOverdue(amount, dueDate);
   const payload: EmailPayload = {
@@ -109,7 +109,7 @@ export async function notifyTourConfirmed(
   userId?: string,
   brokerId?: string,
 ): Promise<void> {
-  if (!isEmailEnabled() || !recipientEmail) return;
+  if (!isEmailEnabled() || !recipientEmail) {return;}
 
   const html = tourConfirmed(property, date, time);
   const payload: EmailPayload = {
@@ -131,7 +131,7 @@ export async function notifyNewLeadAssigned(
   userId?: string,
   brokerId?: string,
 ): Promise<void> {
-  if (!isEmailEnabled() || !recipientEmail) return;
+  if (!isEmailEnabled() || !recipientEmail) {return;}
 
   const html = newLeadAssigned(leadName, agentName);
   const payload: EmailPayload = {
@@ -153,7 +153,7 @@ export async function notifyDocumentUploaded(
   userId?: string,
   brokerId?: string,
 ): Promise<void> {
-  if (!isEmailEnabled() || !recipientEmail) return;
+  if (!isEmailEnabled() || !recipientEmail) {return;}
 
   const html = documentUploaded(documentName, dealTitle);
   const payload: EmailPayload = {

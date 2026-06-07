@@ -62,6 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // ─── Session heartbeat ───────────────────────────────────────
+  // stopHeartbeat declared before startHeartbeat to avoid TDZ / immutability rule
+  const stopHeartbeat = useCallback(() => {
+    if (heartbeatIntervalRef.current) {
+      clearInterval(heartbeatIntervalRef.current);
+      heartbeatIntervalRef.current = null;
+    }
+  }, []);
+
   const startHeartbeat = useCallback(
     (uid: string, sid: string) => {
       stopHeartbeat(); // clear any existing interval
@@ -71,15 +79,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updateHeartbeat(uid, sid).catch(() => {});
       }, 60_000);
     },
-    [],
+    [stopHeartbeat],
   );
-
-  const stopHeartbeat = useCallback(() => {
-    if (heartbeatIntervalRef.current) {
-      clearInterval(heartbeatIntervalRef.current);
-      heartbeatIntervalRef.current = null;
-    }
-  }, []);
 
   // ─── End current session (if any) ────────────────────────────
   const endCurrentSession = useCallback(async () => {

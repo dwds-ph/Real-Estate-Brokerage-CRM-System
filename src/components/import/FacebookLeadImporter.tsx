@@ -200,8 +200,9 @@ export default function FacebookLeadImporter() {
 
   // ── Settings handlers ────────────────────────────────────────────
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const handleSaveSettings = useCallback(async () => {
-    if (!user || !userProfile?.brokerId) return;
+    if (!user || !userProfile?.brokerId) {return;}
 
     setSaving(true);
     setSaveSuccess(false);
@@ -250,8 +251,9 @@ export default function FacebookLeadImporter() {
 
   // ── Import handler ────────────────────────────────────────────────
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const handleImportNow = useCallback(async () => {
-    if (!settingsDoc?.id || !user || !userProfile?.brokerId) return;
+    if (!settingsDoc?.id || !user || !userProfile?.brokerId) {return;}
     if (!pageId.trim() || !pageAccessToken.trim()) {
       setImportError("Configure your Facebook connection and save settings first.");
       return;

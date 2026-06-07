@@ -75,7 +75,7 @@ export default function EmailPreferences() {
 
   // Load preferences from Firestore
   useEffect(() => {
-    if (!user) return;
+    if (!user) {return;}
 
     const prefsDocRef = doc(db, "emailPreferences", user.uid);
 
@@ -97,6 +97,7 @@ export default function EmailPreferences() {
         setLoading(false);
       },
       (err) => {
+        // eslint-disable-next-line no-console
         console.error("[EmailPreferences] Error loading preferences:", err);
         setLoading(false);
       },
@@ -118,7 +119,7 @@ export default function EmailPreferences() {
 
   // Save all preferences to Firestore
   const handleSave = async () => {
-    if (!user) return;
+    if (!user) {return;}
     setSaving(true);
     setError("");
     setSaved(false);
@@ -139,7 +140,7 @@ export default function EmailPreferences() {
     }
   };
 
-  if (!user) return null;
+  if (!user) {return null;}
 
   return (
     <section className="rounded-lg border bg-card p-6">

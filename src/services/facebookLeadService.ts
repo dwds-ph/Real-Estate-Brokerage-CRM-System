@@ -422,7 +422,7 @@ export async function saveFacebookSettings(
   userId: string,
 ): Promise<string> {
   if (settings.id) {
-    const { id, createdBy, createdAt, ...updateData } = settings;
+    const { id, createdBy: _createdBy, createdAt: _createdAt, ...updateData } = settings;
     await updateDocument<FacebookSettings>(
       FACEBOOK_SETTINGS_COLLECTION,
       id,

@@ -33,9 +33,9 @@ export interface SendResult {
 let _resend: Resend | null = null;
 
 function getResend(): Resend | null {
-  if (_resend) return _resend;
+  if (_resend) {return _resend;}
   const apiKey = getApiKey();
-  if (!apiKey) return null;
+  if (!apiKey) {return null;}
   _resend = new Resend(apiKey);
   return _resend;
 }
@@ -77,6 +77,7 @@ async function logEmail(
       brokerId: brokerId ?? "",
       resendId,
       error,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
   } catch {
     // Silently fail — logging should never block the app

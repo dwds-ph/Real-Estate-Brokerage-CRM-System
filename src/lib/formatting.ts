@@ -34,9 +34,9 @@ interface FormatNumberOptions {
  * Normalise a DateLike value into a Date object (or null).
  */
 function toDate(value: DateLike): Date | null {
-  if (value == null) return null;
-  if (value instanceof Date) return value;
-  if (typeof value === "number") return new Date(value);
+  if (value === null) { return null; }
+  if (value instanceof Date) { return value; }
+  if (typeof value === "number") { return new Date(value); }
   if (typeof value === "string") {
     const d = new Date(value);
     return Number.isNaN(d.getTime()) ? null : d;
@@ -53,8 +53,8 @@ function toDate(value: DateLike): Date | null {
  * Safely coerce a nullish value to a number, returning fallback if needed.
  */
 function coerceNumber(value: number | null | undefined, fallback: number): number {
-  if (value == null) return fallback;
-  if (typeof value !== "number" || Number.isNaN(value)) return fallback;
+  if (value === null) { return fallback; }
+  if (typeof value !== "number" || Number.isNaN(value)) { return fallback; }
   return value;
 }
 
@@ -109,7 +109,7 @@ export function formatDatePH(
   options?: FormatDateOptions,
 ): string {
   const d = toDate(date);
-  if (!d) return "";
+  if (!d) { return ""; }
 
   const style = options?.style ?? "medium";
   const dateOpts = dateStyleMap[style];
@@ -143,10 +143,10 @@ export function formatNumberPH(
   const fmt = new Intl.NumberFormat("fil-PH", {
     style,
     ...(style === "percent" && { minimumFractionDigits: 0, maximumFractionDigits: 2 }),
-    ...(options?.minimumFractionDigits != null && {
+    ...(typeof options?.minimumFractionDigits === "number" && {
       minimumFractionDigits: options.minimumFractionDigits,
     }),
-    ...(options?.maximumFractionDigits != null && {
+    ...(typeof options?.maximumFractionDigits === "number" && {
       maximumFractionDigits: options.maximumFractionDigits,
     }),
   });
@@ -176,7 +176,7 @@ const SCALE_VALUES = [1, 1_000, 1_000_000, 1_000_000_000] as const;
  * Convert an integer (0–999) to words.
  */
 function hundredsToWords(n: number): string {
-  if (n === 0) return "";
+  if (n === 0) { return ""; }
 
   const parts: string[] = [];
 
@@ -205,7 +205,7 @@ function hundredsToWords(n: number): string {
  * Convert a positive integer to English words (up to billions).
  */
 function integerToWords(n: number): string {
-  if (n === 0) return "zero";
+  if (n === 0) { return "zero"; }
 
   const parts: string[] = [];
 
@@ -239,13 +239,13 @@ function integerToWords(n: number): string {
  */
 export function formatNumberInWords(value: number): string {
   // Handle NaN
-  if (typeof value !== "number" || Number.isNaN(value)) return "zero";
+  if (typeof value !== "number" || Number.isNaN(value)) { return "zero"; }
 
   // Handle negative
-  if (value < 0) return `negative ${formatNumberInWords(-value)}`;
+  if (value < 0) { return `negative ${formatNumberInWords(-value)}`; }
 
   // Handle zero
-  if (value === 0) return "zero";
+  if (value === 0) { return "zero"; }
 
   // Split integer and fractional parts
   const integerPart = Math.floor(value);
