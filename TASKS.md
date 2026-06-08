@@ -2,7 +2,7 @@
 
 All features below are **purely client-side** (React + Firestore + Firebase Storage + browser APIs). No Cloud Functions, no server-side logic, no external API proxies.
 
-**All 21 phases complete ✅**
+**All 32 phases complete ✅ — see plan/TASKS.md for P22-P32 details**
 
 ---
 
